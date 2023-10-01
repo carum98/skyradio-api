@@ -1,0 +1,22 @@
+{
+  "name": "skyradio-api",
+  "private": true,
+  "version": "1.0.0",
+  "description": "RESTful API to manage radio inventory",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carum98/skyradio-api.git"
+  },
+  "author": "Carlos Eduardo Umaña Acevedo <cumana3098@gmail.com>",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/carum98/skyradio-api/issues"
+  },
+  "homepage": "https://github.com/carum98/skyradio-api#readme"
+}
