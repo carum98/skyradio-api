@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  api:
+    image: skyradio-api
+    container_name: skyradio-api
+    build: .
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - db
+    links:
+      - db
+    environment:
+      - PORT=${PORT}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+      - SECRET_TOKEN=${SECRET_TOKEN}
+      - SECRET_REFRESH_TOKEN=${SECRET_REFRESH_TOKEN}
+  
+  db:
+    image: mysql:8.1.0
+    container_name: skyradio-db
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d

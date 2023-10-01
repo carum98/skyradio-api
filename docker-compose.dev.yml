@@ -1,0 +1,11 @@
+services:
+    api:
+      volumes:
+        - ./src:/app/src
+  
+      # Install nodemon and run it
+      command: npm run tsc
+    
+    db:
+      ports:
+        - 3306:3306

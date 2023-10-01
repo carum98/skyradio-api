@@ -1,0 +1,17 @@
+**/node_modules/
+**/dist
+
+Dockerfile
+docker-compose
+Dockerfile.*
+docker-compose*
+
+.db
+.gitignore
+.git
+.devcontainer
+
+.env
+.env.example
+
+run.sh

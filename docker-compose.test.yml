@@ -1,0 +1,7 @@
+services:
+    api:
+      environment:
+        - NODE_ENV=test
+  
+      # Wait for the database to be ready before starting the application
+      command: sh -c "while ! nc -z db 3306; do sleep 1; done; npm run test"

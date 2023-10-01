@@ -1,0 +1,18 @@
+**/node_modules/
+**/dist
+
+.DS_Store
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log
+logs
+*.log
+
+# Optional npm cache directory
+.npm

@@ -1,0 +1,11 @@
+services:
+    api:
+      environment:
+        - NODE_ENV=production
+
+      # Start the API service
+      command: npm run start
+    
+    db:
+      volumes:
+        - ./.db:/var/lib/mysql
