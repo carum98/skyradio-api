@@ -2,8 +2,9 @@ services:
     api:
       volumes:
         - ./src:/app/src
+        - ./.git:/app/.git
+        - ..:/workspaces:cached
   
-      # Install nodemon and run it
       command: npm run tsc
     
     db:

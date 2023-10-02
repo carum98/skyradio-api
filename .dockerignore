@@ -7,10 +7,11 @@ Dockerfile.*
 docker-compose*
 
 .db
-.gitignore
+# .gitignore
 .git
 .devcontainer
 
+# dotenv environment variable files
 .env
 .env.example
 

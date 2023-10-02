@@ -4,7 +4,6 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install -g typescript
 RUN npm install && npm cache clean --force
 
 COPY . .

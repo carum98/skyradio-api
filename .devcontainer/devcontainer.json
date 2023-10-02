@@ -6,5 +6,6 @@
 		"../docker-compose.dev.yml"
 	],
 	"service": "api",
-	"workspaceFolder": "/app"
+	"workspaceFolder": "/app",
+	"postCreateCommand": "apk add --no-cache git"
 }
