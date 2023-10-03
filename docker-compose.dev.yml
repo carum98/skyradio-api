@@ -3,6 +3,17 @@ services:
       volumes:
         - ./src:/app/src
         - ./.git:/app/.git
+        # 
+        - .devcontainer:/app/.devcontainer
+        - .env.example:/app/.env.example
+        - .gitignore:/app/.gitignore
+        - ./docker-compose.dev.yml:/app/docker-compose.dev.yml
+        - ./docker-compose.prod.yml:/app/docker-compose.prod.yml
+        - ./docker-compose.test.yml:/app/docker-compose.test.yml
+        - ./docker-compose.yml:/app/docker-compose.yml
+        - ./Dockerfile:/app/Dockerfile
+        - ./run.sh:/app/run.sh
+        # 
         - ..:/workspaces:cached
   
       command: npm run tsc

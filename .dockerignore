@@ -7,7 +7,7 @@ Dockerfile.*
 docker-compose*
 
 .db
-# .gitignore
+.gitignore
 .git
 .devcontainer
 
