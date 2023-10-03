@@ -13,10 +13,11 @@ services:
         - ./docker-compose.yml:/app/docker-compose.yml
         - ./Dockerfile:/app/Dockerfile
         - ./run.sh:/app/run.sh
+        - ./package.json:/app/package.json
         # 
         - ..:/workspaces:cached
   
-      command: npm run tsc
+      command: npm run dev
     
     db:
       ports:

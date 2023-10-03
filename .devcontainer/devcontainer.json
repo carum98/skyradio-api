@@ -7,5 +7,15 @@
 	],
 	"service": "api",
 	"workspaceFolder": "/app",
-	"postCreateCommand": "apk add --no-cache git"
+	"postCreateCommand": "apk add --no-cache git",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"GitHub.copilot",
+				"dbaeumer.vscode-eslint",
+				"whizkydee.material-palenight-theme",
+				"vscodevim.vim"
+			]
+		}
+	}
 }
