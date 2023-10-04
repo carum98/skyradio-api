@@ -3,7 +3,7 @@
 	"shutdownAction": "stopCompose",
 	"dockerComposeFile": [
 		"../docker-compose.yml",
-		"../docker-compose.dev.yml"
+		"../docker/docker-compose.dev.yml"
 	],
 	"service": "api",
 	"workspaceFolder": "/app",

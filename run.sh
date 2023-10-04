@@ -52,13 +52,13 @@ fi
 # Run action
 case "$accion" in
   (dev)
-    docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+    docker-compose -f docker-compose.yml -f docker/docker-compose.dev.yml up -d --build
     ;;
   (prod)
-    docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+    docker-compose -f docker-compose.yml -f docker/docker-compose.prod.yml up -d --build
     ;;
   (test)
-    docker-compose -f docker-compose.yml -f docker-compose.test.yml up --build --abort-on-container-exit && docker-compose -f docker-compose.yml -f docker-compose.test.yml down
+    docker-compose -f docker-compose.yml -f docker/docker-compose.test.yml up --build --abort-on-container-exit && docker-compose -f docker-compose.yml -f docker/docker-compose.test.yml down
     ;;
   (stop)
     docker-compose down
