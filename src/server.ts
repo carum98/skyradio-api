@@ -3,10 +3,12 @@ import express, { Express, Router } from 'express'
 export class Server {
     private readonly app: Express
 
-    constructor () {
+    constructor (routes: Array<[string, Router]>) {
         this.app = express()
 
         this.app.use(express.json())
+
+        this.routes(routes)
 
         console.log('Server initialized')
     }
