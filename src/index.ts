@@ -1,8 +1,8 @@
-import { Database } from './database'
-import { Server } from './server'
-import { UserController } from './controllers/users.controller'
-import { usersRoutes } from './routes/users.routes'
-import databaseConfig from '../config/database.config'
+import { Database } from '@/database'
+import { Server } from '@/server'
+import { UserController } from '@controllers/users.controller'
+import { usersRoutes } from '@routes/users.routes'
+import databaseConfig from '@config/database.config'
 
 const port = process.env.PORT ?? 3000
 

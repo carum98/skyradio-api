@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Database } from '../database'
+import { Database } from '@/database'
 
 export class UserController {
     private readonly db: Database
