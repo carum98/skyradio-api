@@ -5,7 +5,7 @@
   "description": "RESTful API to manage radio inventory",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev -r tsconfig-paths/register ./src/index.ts",
+    "dev": "ts-node-dev -r tsconfig-paths/register --inspect=2000 ./src/index.ts",
     "start": "tsc && tsc-alias && node ./dist/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

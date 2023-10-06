@@ -4,6 +4,7 @@ services:
         - ./src:/app/src
         - ./.git:/app/.git
         # 
+        - ./.vscode:/app/.vscode
         - ./config:/app/config
         - .devcontainer:/app/.devcontainer
         - .env.example:/app/.env.example
