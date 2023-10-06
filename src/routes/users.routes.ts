@@ -20,6 +20,9 @@ export class UserRouter implements RouteBase {
 
         router.get('/', controller.getAll as RequestHandler)
         router.post('/', controller.create as RequestHandler)
+        router.get('/:id', controller.get as RequestHandler)
+        router.put('/:id', controller.update as RequestHandler)
+        router.delete('/:id', controller.delete as RequestHandler)
 
         this.path = '/users'
         this.router = router
