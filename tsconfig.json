@@ -33,6 +33,11 @@
       "@/*": ["./src/*"],
       "@routes/*": ["./src/routes/*"],
       "@controllers/*": ["./src/controllers/*"],
+      "@middlewares/*": ["./src/middlewares/*"],
+      "@models/*": ["./src/models/*"],
+      "@services/*": ["./src/services/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@repositories/*": ["./src/repositories/*"],
       "@config/*": ["./config/*"],
     },                                      /* Specify a set of entries that re-map imports to additional lookup locations. */
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */

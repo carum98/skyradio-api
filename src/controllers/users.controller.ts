@@ -1,15 +1,11 @@
 import { Request, Response } from 'express'
-import { Database } from '@/database'
+import { UserService } from '@services/users.service'
 
 export class UserController {
-    private readonly db: Database
+    constructor (private readonly service: UserService) {}
 
-    constructor (db: Database) {
-        this.db = db
-    }
-
-    public getAll = async (req: Request, res: Response): Promise<void> => {
-        const data = await this.db.query('SELECT * FROM users')
+    public getAll = async (_req: Request, res: Response): Promise<void> => {
+        const data = await this.service.getAll()
 
         res.json(data)
     }
@@ -17,7 +13,7 @@ export class UserController {
     public create = async (req: Request, res: Response): Promise<void> => {
         const { name, user_name, password } = req.body
 
-        const data = await this.db.query('INSERT INTO users (name, user_name, password) VALUES (?, ?, ?)', [name, user_name, password])
+        const data = await this.service.create(name, user_name, password)
 
         res.json({
             id: data.insertId,

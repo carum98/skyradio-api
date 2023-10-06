@@ -1,17 +1,16 @@
-import { Database } from '@/database'
-import { Server } from '@/server'
-import { UserController } from '@controllers/users.controller'
-import { usersRoutes } from '@routes/users.routes'
 import databaseConfig from '@config/database.config'
 
-const port = process.env.PORT ?? 3000
+import { Database } from '@/database'
+import { Server } from '@/server'
+
+import { UserRouter } from '@routes/users.routes'
 
 const database = new Database(databaseConfig)
 
-const server = new Server(
-    [
-        ['/users', usersRoutes(new UserController(database))]
-    ]
-)
+const server = new Server()
 
-server.listen(port)
+server.routes([
+    new UserRouter(database)
+])
+
+server.listen(process.env.PORT ?? 3000)

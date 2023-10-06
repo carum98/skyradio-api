@@ -1,15 +1,12 @@
-import express, { Express, Router } from 'express'
+import express, { Express } from 'express'
+import { RouteBase } from '@routes/routes'
 
 export class Server {
     private readonly app: Express
 
-    constructor (routes: Array<[string, Router]>) {
+    constructor () {
         this.app = express()
-
         this.app.use(express.json())
-
-        this.routes(routes)
-
         console.log('Server initialized')
     }
 
@@ -19,9 +16,9 @@ export class Server {
         })
     }
 
-    public routes (routes: Array<[string, Router]>): void {
-        routes.forEach(route => {
-            this.app.use(route[0], route[1])
+    public routes (routes: RouteBase[]): void {
+        routes.forEach(item => {
+            this.app.use(item.path, item.router)
         })
     }
 }
