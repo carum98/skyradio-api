@@ -5,24 +5,12 @@ export class AuthController {
     constructor (private readonly service: AuthService) {}
 
     public login = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const data = await this.service.login(req)
-            res.json(data)
-        } catch (error) {
-            res.status(500).json({
-                message: 'Internal server error'
-            })
-        }
+        const data = await this.service.login(req)
+        res.json(data)
     }
 
     public register = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const data = await this.service.register(req)
-            res.json(data)
-        } catch (error) {
-            res.status(500).json({
-                message: 'Internal server error'
-            })
-        }
+        const data = await this.service.register(req)
+        res.json(data)
     }
 }

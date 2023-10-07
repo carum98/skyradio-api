@@ -1,5 +1,6 @@
 import express, { Express } from 'express'
 import { RouteBase } from '@routes/routes'
+import { errorMiddleware } from '@middlewares/errors.middleware'
 
 export class Server {
     private readonly app: Express
@@ -7,6 +8,8 @@ export class Server {
     constructor () {
         this.app = express()
         this.app.use(express.json())
+        this.app.use(express.urlencoded({ extended: true }))
+
         console.log('Server initialized')
     }
 
@@ -20,5 +23,7 @@ export class Server {
         routes.forEach(item => {
             this.app.use(item.path, item.router)
         })
+
+        this.app.use(errorMiddleware)
     }
 }

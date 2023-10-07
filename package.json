@@ -3,7 +3,6 @@
   "private": true,
   "version": "1.0.0",
   "description": "RESTful API to manage radio inventory",
-  "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev -r tsconfig-paths/register --inspect=2000 ./src/index.ts",

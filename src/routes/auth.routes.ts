@@ -1,6 +1,7 @@
 import express, { RequestHandler, Router } from 'express'
+import util from 'node:util'
 
-import { RouteBase } from '@/routes/routes'
+import { RouteBase } from '@routes/routes'
 import { Database } from '@/database'
 
 import { AuthRepository } from '@repositories/auth.repository'
@@ -20,8 +21,16 @@ export class AuthRouter implements RouteBase {
 
         const router = express.Router()
 
-        router.post('/login', requestMiddleware({ body: AuthLoginSchema }) as RequestHandler, controller.login as RequestHandler)
-        router.post('/register', controller.register as RequestHandler)
+        router.post(
+            '/login',
+            requestMiddleware({ body: AuthLoginSchema }) as RequestHandler,
+            util.callbackify(controller.login) as RequestHandler
+        )
+
+        router.post(
+            '/register',
+            util.callbackify(controller.register) as RequestHandler
+        )
 
         this.path = '/'
         this.router = router
