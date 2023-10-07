@@ -6,9 +6,9 @@ export class AuthService {
     constructor (private readonly repository: IAuthRepository) { }
 
     public async login (req: Request): Promise<AuthLoginResponseSchemaType> {
-        const { user_name, password } = req.body as AuthLoginSchemaType
+        const { email, password } = req.body as AuthLoginSchemaType
 
-        await this.repository.login(user_name, password)
+        await this.repository.login(email, password)
 
         const response = {
             token: 'token'
@@ -18,8 +18,8 @@ export class AuthService {
     }
 
     public async register (req: Request): Promise<any> {
-        const { name, user_name, password } = req.body as AuthRegisterSchemaType
+        const { name, email, password } = req.body as AuthRegisterSchemaType
 
-        return await this.repository.register(name, user_name, password)
+        return await this.repository.register(name, email, password)
     }
 }

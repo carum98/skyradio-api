@@ -8,7 +8,7 @@ import { AuthRepository } from '@repositories/auth.repository'
 import { AuthService } from '@services/auth.service'
 import { AuthController } from '@controllers/auth.controller'
 import { requestMiddleware } from '@middlewares/request.middleware'
-import { AuthLoginSchema } from '@models/auth.shemas'
+import { AuthLoginSchema, AuthRegisterSchema } from '@models/auth.shemas'
 
 export class AuthRouter implements RouteBase {
     public readonly path: string
@@ -29,6 +29,7 @@ export class AuthRouter implements RouteBase {
 
         router.post(
             '/register',
+            requestMiddleware({ body: AuthRegisterSchema }) as RequestHandler,
             util.callbackify(controller.register) as RequestHandler
         )
 

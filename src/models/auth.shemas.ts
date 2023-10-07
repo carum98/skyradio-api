@@ -2,15 +2,13 @@ import { z } from 'zod'
 
 // Request schemas
 export const AuthLoginSchema = z.object({
-    user_name: z.string(),
+    email: z.string().email(),
     password: z.string().min(6)
 })
 
-export const AuthRegisterSchema = z.object({
-    name: z.string(),
-    user_name: z.string(),
-    password: z.string().min(6)
-})
+export const AuthRegisterSchema = AuthLoginSchema.merge(z.object({
+    name: z.string()
+}))
 
 export type AuthLoginSchemaType = z.infer<typeof AuthLoginSchema>
 export type AuthRegisterSchemaType = z.infer<typeof AuthRegisterSchema>
