@@ -1,42 +1,35 @@
 import { Request } from 'express'
 
-import { UserRepository } from '@repositories/users.repository'
 import { IService } from './service'
-import { IUser } from '@models/users.model'
+import { UserRepository } from '@repositories/users.repository'
+import { UserSchemaResponse, UserSchemaResponseType } from '@models/users.shema'
 
-export class UserService implements IService<IUser> {
+export class UserService implements IService<UserSchemaResponseType> {
     constructor (private readonly repository: UserRepository) {}
 
-    public async getAll (): Promise<IUser[]> {
-        return await this.repository.getAll()
+    public async getAll (): Promise<UserSchemaResponseType[]> {
+        const response = await this.repository.getAll()
+
+        return UserSchemaResponse.array().parse(response)
     }
 
-    public async get (req: Request): Promise<IUser> {
+    public async get (req: Request): Promise<UserSchemaResponseType> {
         const { id } = req.params
 
-        return await this.repository.get(id)
+        const response = await this.repository.get(id)
+
+        return UserSchemaResponse.parse(response)
     }
 
-    public async create (req: Request): Promise<IUser> {
-        const { name, user_name, password } = req.body
-
-        return await this.repository.create(name, user_name, password)
+    public async create (req: Request): Promise<UserSchemaResponseType> {
+        throw new Error('Method not implemented.')
     }
 
-    public async update (req: Request): Promise<IUser> {
-        const { id } = req.params
-        const { name, user_name, password } = req.body
-
-        return await this.repository.update(id, { name, user_name, password })
+    public async update (req: Request): Promise<UserSchemaResponseType> {
+        throw new Error('Method not implemented.')
     }
 
-    public async delete (req: Request): Promise<IUser> {
-        const { id } = req.params
-
-        await this.repository.delete(id)
-
-        const data = await this.repository.get(id)
-
-        return data
+    public async delete (req: Request): Promise<UserSchemaResponseType> {
+        throw new Error('Method not implemented.')
     }
 }

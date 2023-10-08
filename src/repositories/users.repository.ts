@@ -1,4 +1,5 @@
 import { Database } from '@/database'
+import { NotFoundError } from '@utils/errors'
 
 export class UserRepository {
     constructor (private readonly db: Database) {}
@@ -11,6 +12,10 @@ export class UserRepository {
 
     public async get (id: string): Promise<any> {
         const data = await this.db.query('SELECT * FROM users WHERE id = ?', [id])
+
+        if (data.length === 0) {
+            throw new NotFoundError('User not found')
+        }
 
         return data
     }

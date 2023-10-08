@@ -4,13 +4,7 @@ import { JwtPayload, TokenExpiredError } from 'jsonwebtoken'
 import { verify } from '@utils/jwt'
 import { UnauthorizedError } from '@utils/errors'
 
-export function authMiddleware (req: Request, res: Response, next: NextFunction): void {
-    const exclude = ['/login', '/register']
-
-    if (exclude.includes(req.path)) {
-        return next()
-    }
-
+export function authMiddleware (req: Request, _res: Response, next: NextFunction): void {
     const token = req.headers.authorization?.split(' ').at(-1)
 
     if (token == null) {

@@ -5,57 +5,27 @@ export class UserController {
     constructor (private readonly service: UserService) {}
 
     public getAll = async (_req: Request, res: Response): Promise<void> => {
-        try {
-            const data = await this.service.getAll()
-            res.json(data)
-        } catch (error) {
-            res.status(500).json({
-                message: 'Internal server error'
-            })
-        }
+        const data = await this.service.getAll()
+        res.json(data)
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const data = await this.service.create(req)
-            res.json(data)
-        } catch (error) {
-            res.status(500).json({
-                message: 'Internal server error'
-            })
-        }
+        const data = await this.service.create(req)
+        res.json(data)
     }
 
     public get = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const data = await this.service.get(req)
-            res.json(data)
-        } catch (error) {
-            res.status(500).json({
-                message: 'Internal server error'
-            })
-        }
+        const data = await this.service.get(req)
+        res.json(data)
     }
 
     public update = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const data = await this.service.update(req)
-            res.json(data)
-        } catch (error) {
-            res.status(500).json({
-                message: 'Internal server error'
-            })
-        }
+        const data = await this.service.update(req)
+        res.json(data)
     }
 
     public delete = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const data = await this.service.delete(req)
-            res.json(data)
-        } catch (error) {
-            res.status(500).json({
-                message: 'Internal server error'
-            })
-        }
+        const data = await this.service.delete(req)
+        res.json(data)
     }
 }
