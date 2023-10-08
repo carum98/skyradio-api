@@ -14,16 +14,10 @@ export type AuthLoginSchemaType = z.infer<typeof AuthLoginSchema>
 export type AuthRegisterSchemaType = z.infer<typeof AuthRegisterSchema>
 
 // Response schemas
-export const AuthLoginResponseSchema = z.object({
-    token: z.string()
+export const AuthTokenResponseSchema = z.object({
+    token: z.string(),
+    refreshToken: z.string(),
+    expiredAt: z.number()
 })
 
-export const AuthRegisterResponseSchema = z.object({
-    id: z.number(),
-    name: z.string(),
-    user_name: z.string(),
-    password: z.string()
-})
-
-export type AuthLoginResponseSchemaType = z.infer<typeof AuthLoginResponseSchema>
-export type AuthRegisterResponseSchemaType = z.infer<typeof AuthRegisterResponseSchema>
+export type AuthTokenResponseSchemaType = z.infer<typeof AuthTokenResponseSchema>

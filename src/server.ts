@@ -1,9 +1,8 @@
-import express, { Express } from 'express'
+import express, { ErrorRequestHandler, Express, RequestHandler } from 'express'
 import { RouteBase } from '@routes/routes'
-import { errorMiddleware } from '@middlewares/errors.middleware'
 
 export class Server {
-    private readonly app: Express
+    public readonly app: Express
 
     constructor () {
         this.app = express()
@@ -23,7 +22,9 @@ export class Server {
         routes.forEach(item => {
             this.app.use(item.path, item.router)
         })
+    }
 
-        this.app.use(errorMiddleware)
+    public middleware (middleware: RequestHandler | ErrorRequestHandler): void {
+        this.app.use(middleware)
     }
 }
