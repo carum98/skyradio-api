@@ -3,7 +3,7 @@ import util from 'node:util'
 import { RequestHandler, Router } from 'express'
 import { IRouterCore, IRouterCoreConstructor, RouteCoreMethod, RouteCoreParams, RouteCoreMiddleware } from './router'
 
-export class RouterCore implements IRouterCore {
+export abstract class RouterCore implements IRouterCore {
     public readonly path: string
     public readonly router: Router
 

@@ -1,8 +1,9 @@
 import { Database } from '@/database'
 import { NotFoundError } from '@utils/errors'
+import { IUserRepository } from './repositories'
 
-export class UserRepository {
-    constructor (private readonly db: Database) {}
+export class UserRepository implements IUserRepository {
+    constructor (public readonly db: Database) {}
 
     public async getAll (): Promise<any> {
         const data = await this.db.query('SELECT * FROM users')

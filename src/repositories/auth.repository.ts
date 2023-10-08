@@ -4,7 +4,7 @@ import { UserSchema, UserSchemaType } from '@models/users.shema'
 import { NotFoundError } from '@utils/errors'
 
 export class AuthRepository implements IAuthRepository {
-    constructor (private readonly db: Database) {}
+    constructor (public readonly db: Database) {}
 
     public async login (email: string, password: string): Promise<UserSchemaType> {
         const data = await this.db.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, password]) as any[]

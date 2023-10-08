@@ -1,19 +1,18 @@
-import { Database } from '@/database'
-
 import { UserController } from '@controllers/users.controller'
 import { UserRepository } from '@repositories/users.repository'
 import { UserService } from '@services/users.service'
 import { RouterCore } from '@/core/router.core'
 import { authMiddleware } from '@middlewares/auth.middleware'
+import { DataSource } from '@/core/data-source.core'
 
 export class UserRouter extends RouterCore {
-    constructor (db: Database) {
+    constructor (datasource: DataSource) {
         super({
             path: '/users',
             middlewares: [authMiddleware]
-         })
+        })
 
-        const repository = new UserRepository(db)
+        const repository = datasource.create(UserRepository)
         const service = new UserService(repository)
         const controller = new UserController(service)
 

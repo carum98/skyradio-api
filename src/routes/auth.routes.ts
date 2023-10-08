@@ -1,17 +1,16 @@
-import { Database } from '@/database'
-
 import { AuthRepository } from '@repositories/auth.repository'
 import { AuthService } from '@services/auth.service'
 import { AuthController } from '@controllers/auth.controller'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { AuthLoginSchema, AuthRegisterSchema } from '@models/auth.shemas'
 import { RouterCore } from '@/core/router.core'
+import { DataSource } from '@/core/data-source.core'
 
 export class AuthRouter extends RouterCore {
-    constructor (db: Database) {
+    constructor (datasource: DataSource) {
         super({ path: '/' })
 
-        const repository = new AuthRepository(db)
+        const repository = datasource.create(AuthRepository)
         const service = new AuthService(repository)
         const controller = new AuthController(service)
 

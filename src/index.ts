@@ -1,21 +1,19 @@
-import databaseConfig from '@config/database.config'
-
-import { Database } from '@/database'
 import { Server } from '@/server'
 
 import { UserRouter } from '@routes/users.routes'
 import { AuthRouter } from '@routes/auth.routes'
 
 import { errorMiddleware } from '@middlewares/errors.middleware'
+import { DataSource } from './core/data-source.core'
 
-const database = new Database(databaseConfig)
+const datasource = new DataSource()
 
 const server = new Server()
 
 // Setup routes
 server.routes([
-    new AuthRouter(database),
-    new UserRouter(database)
+    new AuthRouter(datasource),
+    new UserRouter(datasource)
 ])
 
 // Error middleware
