@@ -6,23 +6,15 @@ import { Server } from '@/server'
 import { UserRouter } from '@routes/users.routes'
 import { AuthRouter } from '@routes/auth.routes'
 
-import { authMiddleware } from '@middlewares/auth.middleware'
 import { errorMiddleware } from '@middlewares/errors.middleware'
 
 const database = new Database(databaseConfig)
 
 const server = new Server()
 
-// Unauthorized routes
+// Setup routes
 server.routes([
-    new AuthRouter(database)
-])
-
-// Middleware for authorized routes
-server.middleware(authMiddleware)
-
-// Authorized routes
-server.routes([
+    new AuthRouter(database),
     new UserRouter(database)
 ])
 

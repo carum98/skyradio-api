@@ -1,5 +1,5 @@
 import express, { ErrorRequestHandler, Express, RequestHandler } from 'express'
-import { RouteBase } from '@routes/routes'
+import { RouterCore } from '@/core/router.core'
 
 export class Server {
     public readonly app: Express
@@ -18,7 +18,7 @@ export class Server {
         })
     }
 
-    public routes (routes: RouteBase[]): void {
+    public routes (routes: RouterCore[]): void {
         routes.forEach(item => {
             this.app.use(item.path, item.router)
         })
