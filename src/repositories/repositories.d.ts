@@ -7,6 +7,7 @@ export interface IRepository {
 export interface IAuthRepository extends IRepository {
     login: (email: string, password: string) => Promise<UserSchemaType>
     register: (name: string, email: string, password: string) => Promise<UserSchemaType>
+    refreshToken: (id: number, token: string) => Promise<void>
 }
 
 export interface IUserRepository extends IRepository {

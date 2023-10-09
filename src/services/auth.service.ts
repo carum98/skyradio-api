@@ -11,6 +11,7 @@ export class AuthService {
 
         const user = await this.repository.login(email, password)
         const response = await generate(user.id)
+        await this.repository.refreshToken(user.id, response.refreshToken)
 
         return AuthTokenResponseSchema.parse(response)
     }
@@ -20,6 +21,7 @@ export class AuthService {
 
         const user = await this.repository.register(name, email, password)
         const response = await generate(user.id)
+        await this.repository.refreshToken(user.id, response.refreshToken)
 
         return AuthTokenResponseSchema.parse(response)
     }

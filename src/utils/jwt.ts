@@ -1,7 +1,8 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import config from '@config/jwt.config'
+import { AuthTokenResponseSchemaType } from '@models/auth.shemas'
 
-export async function generate (userId: number): Promise<object> {
+export async function generate (userId: number): Promise<AuthTokenResponseSchemaType> {
     const payload = {
         userId
     }
@@ -14,13 +15,11 @@ export async function generate (userId: number): Promise<object> {
         expiresIn: config.refreshToken.expiresIn
     })
 
-    const data = {
+    return {
         token,
         refreshToken,
         expiredAt: Date.now() + config.token.expiresIn * 1000
     }
-
-    return data
 }
 
 export function verify (token: string): string | JwtPayload {

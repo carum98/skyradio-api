@@ -1,9 +1,12 @@
 import { z } from 'zod'
 
+const rolesEnum = z.enum(['admin', 'user'])
+
 export const UserSchema = z.object({
     id: z.number(),
     name: z.string(),
     email: z.string().email(),
+    role: rolesEnum,
     password: z.string(),
     created_at: z.date(),
     updated_at: z.date()
