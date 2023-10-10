@@ -13,4 +13,9 @@ export class Database {
 
         return rows
     }
+
+    public async close (): Promise<void> {
+        await this.db.end()
+        console.log('Database disconnected')
+    }
 }
