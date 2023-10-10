@@ -33,4 +33,10 @@ export class AuthRepository implements IAuthRepository {
             await this.db.query('UPDATE refresh_tokens SET token = ? WHERE user_id = ?', [token, id])
         }
     }
+
+    public async checkRefreshToken (id: number, token: string): Promise<boolean> {
+        const data = await this.db.query('SELECT * FROM refresh_tokens WHERE user_id = ? AND token = ?', [id, token]) as any[]
+
+        return data.length > 0
+    }
 }

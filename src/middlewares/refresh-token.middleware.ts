@@ -1,18 +1,18 @@
 import { Request, Response, NextFunction } from 'express'
 import { JwtPayload, TokenExpiredError } from 'jsonwebtoken'
 
-import { verify } from '@utils/jwt'
+import { verifyRefreshToken } from '@utils/jwt'
 import { UnauthorizedError } from '@utils/errors'
 
-export function authMiddleware (req: Request, _res: Response, next: NextFunction): void {
-    const token = req.headers.authorization?.split(' ').at(-1)
+export function refreshTokenMiddleware (req: Request, _res: Response, next: NextFunction): void {
+    const { refresh_token } = req.body
 
-    if (token == null) {
+    if (refresh_token == null) {
         throw new UnauthorizedError('Token not found')
     }
 
     try {
-        const payload = verify(token)
+        const payload = verifyRefreshToken(refresh_token)
 
         req.body.user_id = (payload as JwtPayload).user_id
 

@@ -13,4 +13,9 @@ export class AuthController {
         const data = await this.service.register(req)
         res.json(data)
     }
+
+    public refreshToken = async (req: Request, res: Response): Promise<void> => {
+        const data = await this.service.refreshToken(req)
+        res.json(data)
+    }
 }

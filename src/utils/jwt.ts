@@ -2,9 +2,9 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 import config from '@config/jwt.config'
 import { AuthTokenResponseSchemaType } from '@models/auth.shemas'
 
-export async function generate (userId: number): Promise<AuthTokenResponseSchemaType> {
+export async function generate (user_id: number): Promise<AuthTokenResponseSchemaType> {
     const payload = {
-        userId
+        user_id
     }
 
     const token = jwt.sign(payload, config.token.secret, {
