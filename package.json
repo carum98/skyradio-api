@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "ts-node-dev -r tsconfig-paths/register --inspect=2000 ./src/index.ts",
     "start": "tsc && tsc-alias && node ./dist/src/index.js",
-    "db:migrations": "ts-node -r tsconfig-paths/register -e \"require('./src/core/migrations.ts').init()\"",
+    "db:migrations": "ts-node -r tsconfig-paths/register -e \"require('./src/core/migrations.core.ts').init()\"",
     "db:seeders": "ts-node -r tsconfig-paths/register -e \"require('./src/core/seeders.core.ts').init()\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
