@@ -1,7 +1,8 @@
-import { UnauthorizedError } from '@utils/errors'
+import { NotFoundError, UnauthorizedError } from '@utils/errors'
 import { generate } from '@/utils/jwt'
 import { IAuthRepository } from '@repositories/repositories'
 import { Request } from 'express'
+import bcrypt from 'bcrypt'
 
 import {
     AuthLoginSchemaType,
@@ -16,7 +17,18 @@ export class AuthService {
     public async login (req: Request): Promise<AuthTokenResponseSchemaType> {
         const { email, password } = req.body as AuthLoginSchemaType
 
-        const user = await this.repository.login(email, password)
+        const user = await this.repository.login(email)
+
+        if (user === null) {
+            throw new NotFoundError('User not found')
+        }
+
+        const passwordIsValid = await bcrypt.compare(password, user.password)
+
+        if (!passwordIsValid) {
+            throw new UnauthorizedError('Invalid password')
+        }
+
         const response = await generate(user.id)
         await this.repository.refreshToken(user.id, response.refreshToken)
 
@@ -26,7 +38,9 @@ export class AuthService {
     public async register (req: Request): Promise<AuthTokenResponseSchemaType> {
         const { name, email, password } = req.body as AuthRegisterSchemaType
 
-        const user = await this.repository.register(name, email, password)
+        const hashedPassword = await bcrypt.hash(password, 10)
+
+        const user = await this.repository.register(name, email, hashedPassword)
         const response = await generate(user.id)
         await this.repository.refreshToken(user.id, response.refreshToken)
 
