@@ -29,7 +29,7 @@ export class AuthService {
             throw new UnauthorizedError('Invalid password')
         }
 
-        const response = await generate(user.id)
+        const response = await generate(user.id, user.group_id)
         await this.repository.refreshToken(user.id, response.refreshToken)
 
         return AuthTokenResponseSchema.parse(response)
@@ -41,14 +41,14 @@ export class AuthService {
         const hashedPassword = await bcrypt.hash(password, 10)
 
         const user = await this.repository.register(name, email, hashedPassword)
-        const response = await generate(user.id)
+        const response = await generate(user.id, user.group_id)
         await this.repository.refreshToken(user.id, response.refreshToken)
 
         return AuthTokenResponseSchema.parse(response)
     }
 
     public async refreshToken (req: Request): Promise<AuthTokenResponseSchemaType> {
-        const { user_id, refresh_token } = req.body
+        const { user_id, group_id, refresh_token } = req.body
 
         const exists = await this.repository.checkRefreshToken(user_id, refresh_token)
 
@@ -56,7 +56,7 @@ export class AuthService {
             throw new UnauthorizedError('Token invalid')
         }
 
-        const response = await generate(user_id)
+        const response = await generate(user_id, group_id)
         await this.repository.refreshToken(user_id, response.refreshToken)
 
         return AuthTokenResponseSchema.parse(response)

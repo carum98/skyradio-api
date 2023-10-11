@@ -6,7 +6,7 @@ export class UserRepository implements IUserRepository {
     constructor (public readonly db: Database) {}
 
     public async getAll (): Promise<any> {
-        const data = await this.db.query('SELECT * FROM users')
+        const data = await this.db.query('SELECT users.*, `groups`.id as group_id, `groups`.name as group_name FROM users INNER JOIN `groups` ON users.group_id = `groups`.id')
 
         return data
     }

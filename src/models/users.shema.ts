@@ -7,6 +7,7 @@ export const UserSchema = z.object({
     name: z.string(),
     email: z.string().email(),
     role: rolesEnum,
+    group_id: z.number(),
     password: z.string(),
     created_at: z.date(),
     updated_at: z.date()

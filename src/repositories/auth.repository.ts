@@ -12,7 +12,7 @@ export class AuthRepository implements IAuthRepository {
     }
 
     public async register (name: string, email: string, password: string): Promise<UserSchemaType> {
-        const data = await this.db.query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name, email, password])
+        const data = await this.db.query('INSERT INTO users (name, email, password, group_id) VALUES (?, ?, ?, 1)', [name, email, password])
 
         const user = await this.db.query('SELECT * FROM users WHERE id = ?', [data.insertId]) as any[]
 
