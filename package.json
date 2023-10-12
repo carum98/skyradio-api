@@ -7,8 +7,10 @@
   "scripts": {
     "dev": "ts-node-dev -r tsconfig-paths/register --inspect=2000 ./src/index.ts",
     "start": "tsc && tsc-alias && node ./dist/src/index.js",
-    "db:migrations": "ts-node -r tsconfig-paths/register -e \"require('./src/core/migrations.core.ts').init()\"",
-    "db:seeders": "ts-node -r tsconfig-paths/register -e \"require('./src/core/seeders.core.ts').init()\"",
+    "db:generate": "drizzle-kit generate:mysql --config ./config/drizzle.config.ts",
+    "db:introspect": "drizzle-kit introspect:mysql --config ./config/drizzle.config.ts",
+    "db:migrate": "ts-node -r tsconfig-paths/register -e \"require('./src/core/migrations.core.ts').init()\"",
+    "db:studio": "npx drizzle-kit studio --port 3000 --verbose --config ./config/drizzle.config.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,6 +25,7 @@
   "homepage": "https://github.com/carum98/skyradio-api#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "drizzle-orm": "^0.28.6",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.6.1",
@@ -32,6 +35,7 @@
     "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.16.0",
     "@types/jsonwebtoken": "^9.0.3",
+    "drizzle-kit": "^0.19.13",
     "ts-node-dev": "^2.0.0",
     "ts-standard": "^12.0.2",
     "tsc-alias": "^1.8.8",
