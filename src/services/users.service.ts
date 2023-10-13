@@ -2,34 +2,30 @@ import { Request } from 'express'
 
 import { IService } from './service'
 import { UserRepository } from '@repositories/users.repository'
-import { UserSchemaResponse, UserSchemaResponseType } from '@models/users.shema'
+import { UserSchemaSelectType } from '@models/users.model'
 
-export class UserService implements IService<UserSchemaResponseType> {
+export class UserService implements IService<UserSchemaSelectType> {
     constructor (private readonly repository: UserRepository) {}
 
-    public async getAll (): Promise<UserSchemaResponseType[]> {
-        const response = await this.repository.getAll()
-
-        return UserSchemaResponse.array().parse(response)
+    public async getAll (): Promise<UserSchemaSelectType[]> {
+        return await this.repository.getAll()
     }
 
-    public async get (req: Request): Promise<UserSchemaResponseType> {
+    public async get (req: Request): Promise<UserSchemaSelectType> {
         const { id } = req.params
 
-        const response = await this.repository.get(id)
-
-        return UserSchemaResponse.parse(response)
+        return await this.repository.get(id)
     }
 
-    public async create (req: Request): Promise<UserSchemaResponseType> {
+    public async create (req: Request): Promise<UserSchemaSelectType> {
         throw new Error('Method not implemented.')
     }
 
-    public async update (req: Request): Promise<UserSchemaResponseType> {
+    public async update (req: Request): Promise<UserSchemaSelectType> {
         throw new Error('Method not implemented.')
     }
 
-    public async delete (req: Request): Promise<UserSchemaResponseType> {
+    public async delete (req: Request): Promise<UserSchemaSelectType> {
         throw new Error('Method not implemented.')
     }
 }

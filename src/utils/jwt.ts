@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import config from '@config/jwt.config'
-import { AuthTokenResponseSchemaType } from '@models/auth.shemas'
+import { AuthTokenResponseSchemaType } from '@/core/auth.shemas'
 
 export async function generate (user_id: number, group_id: number): Promise<AuthTokenResponseSchemaType> {
     const payload = {

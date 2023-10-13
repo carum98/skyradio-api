@@ -3,7 +3,7 @@ import { AuthService } from '@services/auth.service'
 import { AuthController } from '@controllers/auth.controller'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { refreshTokenMiddleware } from '@middlewares/refresh-token.middleware'
-import { AuthLoginSchema, AuthRefreshTokenSchema, AuthRegisterSchema } from '@models/auth.shemas'
+import { AuthLoginSchema, AuthRefreshTokenSchema, AuthRegisterSchema } from '@/core/auth.shemas'
 import { RouterCore } from '@/core/router.core'
 import { DataSource } from '@/core/data-source.core'
 

@@ -1,76 +1,79 @@
-import { Database } from '@/database'
 import { NotFoundError } from '@utils/errors'
 import { IUserRepository } from './repositories'
+import { UserSchemaSelect, UserSchemaSelectType, users } from '@models/users.model'
+import { MySql2Database } from 'drizzle-orm/mysql2'
+import { eq } from 'drizzle-orm'
 
 export class UserRepository implements IUserRepository {
-    constructor (public readonly db: Database) {}
+    constructor (public readonly db: MySql2Database) {}
 
-    public async getAll (): Promise<any> {
-        const data = await this.db.query('SELECT users.*, `groups`.id as group_id, `groups`.name as group_name FROM users INNER JOIN `groups` ON users.group_id = `groups`.id')
+    public async getAll (): Promise<UserSchemaSelectType[]> {
+        const data = await this.db.select().from(users)
 
-        return data
+        return UserSchemaSelect.array().parse(data)
     }
 
-    public async get (id: string): Promise<any> {
-        const data = await this.db.query('SELECT * FROM users WHERE id = ?', [id])
+    public async get (id: string): Promise<UserSchemaSelectType> {
+        const data = await this.db.select().from(users).where(eq(users.id, parseInt(id)))
 
         if (data.length === 0) {
             throw new NotFoundError('User not found')
         }
 
-        return data
+        return UserSchemaSelect.parse(data)
     }
 
-    public async create (name: string, user_name: string, password: string): Promise<any> {
-        const data = await this.db.query('INSERT INTO users (name, user_name, password) VALUES (?, ?, ?)', [name, user_name, password])
+    public async create (name: string, email: string, password: string): Promise<any> {
+        const data = await this.db.insert(users).values({ name, email, password, group_id: 1 })
 
         return {
-            id: data.insertId,
+            id: data[0].insertId,
             name,
-            user_name,
+            email,
             password
         }
     }
 
     public async update (id: string, { name, user_name, password }: { name?: string, user_name?: string, password?: string }): Promise<any> {
-        const updateFields = []
-        const updateValues = []
+        throw new Error('Method not implemented.')
+        // const updateFields = []
+        // const updateValues = []
 
-        if (name != null) {
-            updateFields.push('name = ?')
-            updateValues.push(name)
-        }
+        // if (name != null) {
+        //     updateFields.push('name = ?')
+        //     updateValues.push(name)
+        // }
 
-        if (user_name != null) {
-            updateFields.push('user_name = ?')
-            updateValues.push(user_name)
-        }
+        // if (user_name != null) {
+        //     updateFields.push('user_name = ?')
+        //     updateValues.push(user_name)
+        // }
 
-        if (password != null) {
-            updateFields.push('password = ?')
-            updateValues.push(password)
-        }
+        // if (password != null) {
+        //     updateFields.push('password = ?')
+        //     updateValues.push(password)
+        // }
 
-        if (updateFields.length === 0) {
-            throw new Error('At least one field must be provided to update')
-        }
+        // if (updateFields.length === 0) {
+        //     throw new Error('At least one field must be provided to update')
+        // }
 
-        const query = `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`
-        await this.db.query(query, [...updateValues, id])
+        // const query = `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`
+        // await this.db.query(query, [...updateValues, id])
 
-        return {
-            id,
-            name,
-            user_name,
-            password
-        }
+        // return {
+        //     id,
+        //     name,
+        //     user_name,
+        //     password
+        // }
     }
 
     public async delete (id: string): Promise<any> {
-        const data = await this.db.query('DELETE FROM users WHERE id = ?', [id])
+        const data = await this.db.delete(users).where(eq(users.id, parseInt(id)))
 
         return {
-            id: data.insertId
+            id: data[0].insertId
         }
     }
 }

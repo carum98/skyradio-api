@@ -9,7 +9,7 @@ import {
     AuthRegisterSchemaType,
     AuthTokenResponseSchema,
     AuthTokenResponseSchemaType
-} from '@models/auth.shemas'
+} from '@/core/auth.shemas'
 
 export class AuthService {
     constructor (private readonly repository: IAuthRepository) { }

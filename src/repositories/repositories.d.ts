@@ -1,20 +1,20 @@
-import { UserSchemaType } from '@models/users.shema'
+import { UserSchemaSelectType } from '@models/users'
 
 export interface IRepository {
     private readonly db: Database
 }
 
 export interface IAuthRepository extends IRepository {
-    login: (email: string) => Promise<UserSchemaType | null>
-    register: (name: string, email: string, password: string) => Promise<UserSchemaType>
+    login: (email: string) => Promise<UserSchemaSelectType | null>
+    register: (name: string, email: string, password: string) => Promise<UserSchemaSelectType>
     refreshToken: (id: number, token: string) => Promise<void>
     checkRefreshToken: (id: number, token: string) => Promise<boolean>
 }
 
 export interface IUserRepository extends IRepository {
-    getAll: () => Promise<UserSchemaType[]>
-    get: (id: string) => Promise<UserSchemaType>
-    create: (name: string, email: string, password: string) => Promise<UserSchemaType>
-    update: (id: string, { name, email, password }: { name?: string, email?: string, password?: string }) => Promise<UserSchemaType>
+    getAll: () => Promise<UserSchemaSelectType[]>
+    get: (id: string) => Promise<UserSchemaSelectType>
+    create: (name: string, email: string, password: string) => Promise<UserSchemaSelectType>
+    update: (id: string, { name, email, password }: { name?: string, email?: string, password?: string }) => Promise<UserSchemaSelectType>
     delete: (id: string) => Promise<void>
 }
