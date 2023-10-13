@@ -1,5 +1,6 @@
 import { UserSchemaSelectType } from '@models/users.model'
 import { CompanySchemaSelectType, CompanySchemaCreateType, CompanySchemaUpdateType } from '@models/companies.model'
+import { GroupSchemaCreateType, GroupSchemaSelectType, GroupSchemaUpdateType } from '@/models/groups.model'
 
 export interface IRepository {
     private readonly db: Database
@@ -26,4 +27,12 @@ export interface ICompanyRepository extends IRepository {
     create: (params: CompanySchemaCreateType) => Promise<CompanySchemaSelectType>
     update: (params: CompanySchemaUpdateType) => Promise<CompanySchemaSelectType>
     delete: (id: string) => Promise<boolean>
+}
+
+export interface IGroupRepository extends IRepository {
+    getAll: () => Promise<GroupSchemaSelectType[]>
+    get: (id: number) => Promise<GroupSchemaSelectType | null>
+    create: (params: GroupSchemaCreateType) => Promise<GroupSchemaSelectType>
+    update: (params: GroupSchemaUpdateType) => Promise<GroupSchemaSelectType | null>
+    delete: (id: number) => Promise<boolean>
 }

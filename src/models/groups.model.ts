@@ -18,7 +18,9 @@ export const groups = mysqlTable('groups', {
 })
 
 export const GroupSchemaCreate = createInsertSchema(groups)
-export const GroupSchemaSelect = createSelectSchema(groups)
+export const GroupSchemaSelect = createSelectSchema(groups).omit({ deleted_at: true, updated_at: true, created_at: true })
+export const GroupSchemaUpdate = GroupSchemaCreate.required().pick({ id: true, name: true })
 
 export type GroupSchemaCreateType = z.infer<typeof GroupSchemaCreate>
 export type GroupSchemaSelectType = z.infer<typeof GroupSchemaSelect>
+export type GroupSchemaUpdateType = z.infer<typeof GroupSchemaUpdate>
