@@ -1,4 +1,5 @@
-import { UserSchemaSelectType } from '@models/users'
+import { UserSchemaSelectType } from '@models/users.model'
+import { CompanySchemaSelectType, CompanySchemaCreateType, CompanySchemaUpdateType } from '@models/companies.model'
 
 export interface IRepository {
     private readonly db: Database
@@ -17,4 +18,12 @@ export interface IUserRepository extends IRepository {
     create: (name: string, email: string, password: string) => Promise<UserSchemaSelectType>
     update: (id: string, { name, email, password }: { name?: string, email?: string, password?: string }) => Promise<UserSchemaSelectType>
     delete: (id: string) => Promise<void>
+}
+
+export interface ICompanyRepository extends IRepository {
+    getAll: (group_id: number) => Promise<CompanySchemaSelectType[]>
+    get: (id: number) => Promise<CompanySchemaSelectType | null>
+    create: (params: CompanySchemaCreateType) => Promise<CompanySchemaSelectType>
+    update: (params: CompanySchemaUpdateType) => Promise<CompanySchemaSelectType>
+    delete: (id: string) => Promise<boolean>
 }
