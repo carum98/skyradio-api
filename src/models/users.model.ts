@@ -34,7 +34,7 @@ export const UserSchemaSelect = createSelectSchema(users, {
     created_at: (schema) => schema.created_at.pipe(z.coerce.date()),
     updated_at: (schema) => schema.updated_at.pipe(z.coerce.date())
 }).omit({
-	password: true,
+	// password: true,
 	deleted_at: true
 })
 

@@ -25,7 +25,7 @@ export class UserService implements IService<UserSchemaSelectType> {
         throw new Error('Method not implemented.')
     }
 
-    public async delete (req: Request): Promise<UserSchemaSelectType> {
+    public async delete (req: Request): Promise<boolean> {
         throw new Error('Method not implemented.')
     }
 }
