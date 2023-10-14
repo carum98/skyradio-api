@@ -15,27 +15,21 @@ export class GroupRepository implements IGroupRepository {
     public async get (id: number): Promise<GroupSchemaSelectType | null> {
         const data = await this.db.select().from(groups).where(eq(groups.id, id))
 
-        if (data.length === 0) {
-            return null
-        }
-
-        return GroupSchemaSelect.parse(data.at(0))
+        return data.length > 0
+            ? GroupSchemaSelect.parse(data.at(0))
+            : null
     }
 
-    public async create (params: GroupSchemaCreateType): Promise<GroupSchemaSelectType> {
+    public async create (params: GroupSchemaCreateType): Promise<number> {
         const data = await this.db.insert(groups).values(params)
 
-        const group = await this.get(data[0].insertId)
-
-        return group as GroupSchemaSelectType
+        return data[0].insertId
     }
 
-    public async update (params: GroupSchemaUpdateType): Promise<GroupSchemaSelectType | null> {
-        await this.db.update(groups).set({ name: params.name }).where(eq(groups.id, params.id))
+    public async update (id: number, params: GroupSchemaUpdateType): Promise<number> {
+        const data = await this.db.update(groups).set({ name: params.name }).where(eq(groups.id, id))
 
-        const group = await this.get(params.id)
-
-        return group as GroupSchemaSelectType
+        return data[0].affectedRows > 0 ? id : 0
     }
 
     public async delete (id: number): Promise<boolean> {

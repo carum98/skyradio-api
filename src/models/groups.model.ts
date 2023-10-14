@@ -17,9 +17,20 @@ export const groups = mysqlTable('groups', {
 	}
 })
 
-export const GroupSchemaCreate = createInsertSchema(groups)
-export const GroupSchemaSelect = createSelectSchema(groups).omit({ deleted_at: true, updated_at: true, created_at: true })
-export const GroupSchemaUpdate = GroupSchemaCreate.required().pick({ id: true, name: true })
+export const GroupSchemaSelect = createSelectSchema(groups)
+	.omit({ deleted_at: true, updated_at: true, created_at: true })
+
+export const GroupSchemaCreate = createInsertSchema(groups, {
+	name: (schema) => schema.name.min(3).max(100)
+}).pick({ name: true }).required()
+
+export const GroupSchemaUpdate = GroupSchemaCreate
+	.pick({ name: true })
+	.required()
+
+export const GroupSchemaUniqueIdentifier = createSelectSchema(groups, {
+	id: (schema) => schema.id.or(z.coerce.number())
+}).pick({ id: true }).required()
 
 export type GroupSchemaCreateType = z.infer<typeof GroupSchemaCreate>
 export type GroupSchemaSelectType = z.infer<typeof GroupSchemaSelect>

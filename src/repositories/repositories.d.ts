@@ -32,7 +32,7 @@ export interface ICompanyRepository extends IRepository {
 export interface IGroupRepository extends IRepository {
     getAll: () => Promise<GroupSchemaSelectType[]>
     get: (id: number) => Promise<GroupSchemaSelectType | null>
-    create: (params: GroupSchemaCreateType) => Promise<GroupSchemaSelectType>
-    update: (params: GroupSchemaUpdateType) => Promise<GroupSchemaSelectType | null>
+    create: (params: GroupSchemaCreateType) => Promise<number>
+    update: (id: number, params: GroupSchemaUpdateType) => Promise<number>
     delete: (id: number) => Promise<boolean>
 }
