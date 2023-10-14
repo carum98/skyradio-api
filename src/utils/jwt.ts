@@ -1,13 +1,8 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import config from '@config/jwt.config'
-import { AuthTokenResponseSchemaType } from '@/core/auth.shemas'
+import { AuthTokenContentSchemaType, AuthTokenResponseSchemaType } from '@/core/auth.shemas'
 
-export async function generate (user_id: number, group_id: number): Promise<AuthTokenResponseSchemaType> {
-    const payload = {
-        user_id,
-        group_id
-    }
-
+export async function generate (payload: AuthTokenContentSchemaType): Promise<AuthTokenResponseSchemaType> {
     const token = jwt.sign(payload, config.token.secret, {
         expiresIn: config.token.expiresIn
     })

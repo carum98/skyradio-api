@@ -6,12 +6,16 @@ import { authMiddleware } from '@middlewares/auth.middleware'
 import { DataSource } from '@/core/data-source.core'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { UserSchemaCreate, UserSchemaUniqueIdentifier, UserSchemaUpdate } from '@models/users.model'
+import { rolesMiddleware } from '@middlewares/roles.middleware'
 
 export class UserRouter extends RouterCore {
     constructor (datasource: DataSource) {
         super({
             path: '/users',
-            middlewares: [authMiddleware]
+            middlewares: [
+                authMiddleware,
+                rolesMiddleware(['admin'])
+            ]
         })
 
         const repository = datasource.create(UserRepository)

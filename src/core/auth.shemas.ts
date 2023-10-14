@@ -1,3 +1,4 @@
+import { UserSchemaRoles } from '@models/users.model'
 import { z } from 'zod'
 
 // Request schemas
@@ -20,4 +21,11 @@ export const AuthTokenResponseSchema = z.object({
     expiredAt: z.number()
 })
 
+export const AuthTokenContentSchema = z.object({
+    user_id: z.number(),
+    group_id: z.number(),
+    role: UserSchemaRoles
+})
+
 export type AuthTokenResponseSchemaType = z.infer<typeof AuthTokenResponseSchema>
+export type AuthTokenContentSchemaType = z.infer<typeof AuthTokenContentSchema>

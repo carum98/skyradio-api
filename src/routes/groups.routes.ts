@@ -6,12 +6,16 @@ import { GroupRepository } from '@repositories/groups.repository'
 import { GroupsService } from '@services/groups.service'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { GroupSchemaCreate, GroupSchemaUniqueIdentifier, GroupSchemaUpdate } from '@models/groups.model'
+import { rolesMiddleware } from '@middlewares/roles.middleware'
 
 export class GroupsRouter extends RouterCore {
     constructor (datasource: DataSource) {
         super({
             path: '/groups',
-            middlewares: [authMiddleware]
+            middlewares: [
+                authMiddleware,
+                rolesMiddleware(['admin'])
+            ]
         })
 
         const repository = datasource.create(GroupRepository)

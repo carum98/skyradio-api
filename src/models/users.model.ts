@@ -5,12 +5,14 @@ import { groups } from './groups.model'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 
+export const UserRoles = ['admin', 'user'] as const
+
 export const users = mysqlTable('users', {
 	id: int('id').autoincrement().notNull(),
 	name: varchar('name', { length: 255 }).notNull(),
 	email: varchar('email', { length: 255 }).notNull(),
 	password: varchar('password', { length: 255 }).notNull(),
-	role: mysqlEnum('role', ['admin', 'user']).default('user').notNull(),
+	role: mysqlEnum('role', UserRoles).default('user').notNull(),
 	group_id: int('group_id').notNull().references(() => groups.id),
 	created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updated_at: datetime('updated_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
@@ -25,8 +27,11 @@ export const users = mysqlTable('users', {
 	}
 })
 
+export const UserSchemaRoles = z.enum(UserRoles)
+
 export const UserSchema = createSelectSchema(users, {
-	email: z.string().email()
+	email: z.string().email(),
+	role: UserSchemaRoles
 })
 
 export const UserSchemaSelect = UserSchema.omit({
@@ -54,3 +59,4 @@ export type UserSchemaType = z.infer<typeof UserSchema>
 export type UserSchemaCreateType = z.infer<typeof UserSchemaCreate>
 export type UserSchemaSelectType = z.infer<typeof UserSchemaSelect>
 export type UserSchemaUpdateType = z.infer<typeof UserSchemaUpdate>
+export type UserRolesType = z.infer<typeof UserSchemaRoles>

@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from 'express'
-import { JwtPayload, TokenExpiredError } from 'jsonwebtoken'
+import { TokenExpiredError } from 'jsonwebtoken'
 
 import { verify } from '@utils/jwt'
 import { UnauthorizedError } from '@utils/errors'
+import { AuthTokenContentSchema } from '@/core/auth.shemas'
+import { ZodError } from 'zod'
 
 export function authMiddleware (req: Request, _res: Response, next: NextFunction): void {
     const token = req.headers.authorization?.split(' ').at(-1)
@@ -14,13 +16,20 @@ export function authMiddleware (req: Request, _res: Response, next: NextFunction
     try {
         const payload = verify(token)
 
-        req.body.user_id = (payload as JwtPayload).user_id
-        req.body.group_id = (payload as JwtPayload).group_id
+        const payloadContent = AuthTokenContentSchema.parse(payload)
+
+        req.body.user_id = payloadContent.user_id
+        req.body.group_id = payloadContent.group_id
+        req.body.role = payloadContent.role
 
         next()
     } catch (err) {
         if (err instanceof TokenExpiredError) {
             throw new UnauthorizedError('Token expired')
+        }
+
+        if (err instanceof ZodError) {
+            throw new UnauthorizedError('Invalid token payload')
         }
 
         throw new UnauthorizedError('Invalid token')

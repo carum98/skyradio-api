@@ -13,9 +13,13 @@ export class AuthController {
     }
 
     public refreshToken = async (req: Request, res: Response): Promise<void> => {
-        const { user_id, group_id, refresh_token } = req.body
+        const { user_id, group_id, refresh_token, role } = req.body
 
-        const data = await this.service.refreshToken(user_id, group_id, refresh_token)
+        const data = await this.service.refreshToken(refresh_token, {
+            user_id,
+            group_id,
+            role
+        })
 
         res.json(data)
     }
