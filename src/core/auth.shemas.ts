@@ -6,16 +6,11 @@ export const AuthLoginSchema = z.object({
     password: z.string().min(6)
 })
 
-export const AuthRegisterSchema = AuthLoginSchema.merge(z.object({
-    name: z.string()
-}))
-
 export const AuthRefreshTokenSchema = z.object({
     refresh_token: z.string()
 })
 
 export type AuthLoginSchemaType = z.infer<typeof AuthLoginSchema>
-export type AuthRegisterSchemaType = z.infer<typeof AuthRegisterSchema>
 export type AuthRefreshTokenSchemaType = z.infer<typeof AuthRefreshTokenSchema>
 
 // Response schemas

@@ -1,4 +1,4 @@
-import { UserSchemaCreateType, UserSchemaSelectType, UserSchemaUpdateType } from '@models/users.model'
+import { UserSchemaCreateType, UserSchemaSelectType, UserSchemaUpdateType, UserSchemaType } from '@models/users.model'
 import { CompanySchemaSelectType, CompanySchemaCreateType, CompanySchemaUpdateType } from '@models/companies.model'
 import { GroupSchemaCreateType, GroupSchemaSelectType, GroupSchemaUpdateType } from '@/models/groups.model'
 
@@ -7,8 +7,7 @@ export interface IRepository {
 }
 
 export interface IAuthRepository extends IRepository {
-    login: (email: string) => Promise<UserSchemaSelectType | null>
-    register: (name: string, email: string, password: string) => Promise<UserSchemaSelectType>
+    login: (email: string) => Promise<UserSchemaType | null>
     refreshToken: (id: number, token: string) => Promise<void>
     checkRefreshToken: (id: number, token: string) => Promise<boolean>
 }

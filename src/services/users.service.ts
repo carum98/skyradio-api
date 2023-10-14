@@ -1,6 +1,7 @@
 import { UserRepository } from '@repositories/users.repository'
 import { UserSchemaCreateType, UserSchemaSelectType, UserSchemaUpdateType } from '@models/users.model'
 import { NotFoundError } from '@/utils/errors'
+import { generatePassword } from '@/utils/hashed-password'
 
 export class UserService {
     constructor (private readonly repository: UserRepository) {}
@@ -20,13 +21,19 @@ export class UserService {
     }
 
     public async create (params: UserSchemaCreateType): Promise<UserSchemaSelectType> {
-        const id = await this.repository.create(params)
+        const id = await this.repository.create({
+            ...params,
+            password: await generatePassword(params.password)
+        })
 
         return await this.get(id)
     }
 
     public async update (id: number, params: UserSchemaUpdateType): Promise<UserSchemaSelectType> {
-        const updateId = await this.repository.update(id, params)
+        const updateId = await this.repository.update(id, {
+            ...params,
+            password: params.password != null ? await generatePassword(params.password) : undefined
+        })
 
         return await this.get(updateId)
     }

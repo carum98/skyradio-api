@@ -25,9 +25,12 @@ export const users = mysqlTable('users', {
 	}
 })
 
-export const UserSchemaSelect = createSelectSchema(users, {
-    email: (schema) => schema.email.email()
-}).omit({
+export const UserSchema = createSelectSchema(users, {
+	email: z.string().email()
+})
+
+export const UserSchemaSelect = UserSchema.omit({
+	password: true,
 	deleted_at: true,
 	created_at: true,
 	updated_at: true
@@ -47,6 +50,7 @@ export const UserSchemaUniqueIdentifier = createSelectSchema(users, {
 	id: (schema) => schema.id.or(z.coerce.number())
 }).pick({ id: true }).required()
 
+export type UserSchemaType = z.infer<typeof UserSchema>
 export type UserSchemaCreateType = z.infer<typeof UserSchemaCreate>
 export type UserSchemaSelectType = z.infer<typeof UserSchemaSelect>
 export type UserSchemaUpdateType = z.infer<typeof UserSchemaUpdate>

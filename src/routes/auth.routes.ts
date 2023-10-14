@@ -3,7 +3,7 @@ import { AuthService } from '@services/auth.service'
 import { AuthController } from '@controllers/auth.controller'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { refreshTokenMiddleware } from '@middlewares/refresh-token.middleware'
-import { AuthLoginSchema, AuthRefreshTokenSchema, AuthRegisterSchema } from '@/core/auth.shemas'
+import { AuthLoginSchema, AuthRefreshTokenSchema } from '@/core/auth.shemas'
 import { RouterCore } from '@/core/router.core'
 import { DataSource } from '@/core/data-source.core'
 
@@ -17,19 +17,18 @@ export class AuthRouter extends RouterCore {
 
         this.post({
             name: '/login',
-            middlewares: [requestMiddleware({ body: AuthLoginSchema })],
+            middlewares: [
+                requestMiddleware({ body: AuthLoginSchema })
+            ],
             handler: controller.login
         })
 
         this.post({
-            name: '/register',
-            middlewares: [requestMiddleware({ body: AuthRegisterSchema })],
-            handler: controller.register
-        })
-
-        this.post({
             name: '/refresh-token',
-            middlewares: [requestMiddleware({ body: AuthRefreshTokenSchema }), refreshTokenMiddleware],
+            middlewares: [
+                refreshTokenMiddleware,
+                requestMiddleware({ body: AuthRefreshTokenSchema })
+            ],
             handler: controller.refreshToken
         })
     }
