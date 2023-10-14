@@ -17,9 +17,9 @@ interface IError {
 export function requestMiddleware ({ body, query, params }: IRequest) {
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
+            if (params != null) req.params = params.parse(req.params)
             if (body != null) req.body = body.parse(req.body)
             if (query != null) req.query = query.parse(req.query)
-            if (params != null) req.params = params.parse(req.params)
 
             next()
         } catch (error) {

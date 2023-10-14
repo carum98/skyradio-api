@@ -18,9 +18,20 @@ export const companies = mysqlTable('companies', {
     }
 })
 
-export const CompanySchemaCreate = createInsertSchema(companies)
-export const CompanySchemaSelect = createSelectSchema(companies).omit({ deleted_at: true, updated_at: true, created_at: true })
-export const CompanySchemaUpdate = CompanySchemaCreate.required().pick({ id: true, name: true })
+export const CompanySchemaSelect = createSelectSchema(companies)
+    .omit({ deleted_at: true, updated_at: true, created_at: true })
+
+export const CompanySchemaCreate = createInsertSchema(companies, {
+    name: (schema) => schema.name.min(3).max(100)
+}).pick({ name: true, group_id: true }).required()
+
+export const CompanySchemaUpdate = CompanySchemaCreate
+    .pick({ id: true, name: true })
+    .required()
+
+export const CompanySchemaUniqueIdentifier = createSelectSchema(companies, {
+    id: (schema) => schema.id.or(z.coerce.number())
+}).pick({ id: true }).required()
 
 export type CompanySchemaCreateType = z.infer<typeof CompanySchemaCreate>
 export type CompanySchemaSelectType = z.infer<typeof CompanySchemaSelect>

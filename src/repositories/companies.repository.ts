@@ -20,24 +20,20 @@ export class CompaniesRepository implements ICompanyRepository {
             : null
     }
 
-    public async create (params: CompanySchemaCreateType): Promise<CompanySchemaSelectType> {
+    public async create (params: CompanySchemaCreateType): Promise<number> {
         const data = await this.db.insert(companies).values(params)
 
-        const company = await this.get(data[0].insertId)
-
-        return company as CompanySchemaSelectType
+        return data[0].insertId
     }
 
-    public async update (params: CompanySchemaUpdateType): Promise<CompanySchemaSelectType> {
-        const data = await this.db.update(companies).set({ name: params.name }).where(eq(companies.id, params.id))
+    public async update (id: number, params: CompanySchemaUpdateType): Promise<number> {
+        const data = await this.db.update(companies).set({ name: params.name }).where(eq(companies.id, id))
 
-        const company = await this.get(data[0].insertId)
-
-        return company as CompanySchemaSelectType
+        return data[0].affectedRows > 0 ? id : 0
     }
 
-    public async delete (id: string): Promise<boolean> {
-        const data = await this.db.delete(companies).where(eq(companies.id, parseInt(id)))
+    public async delete (id: number): Promise<boolean> {
+        const data = await this.db.delete(companies).where(eq(companies.id, id))
 
         return data[0].affectedRows > 0
     }

@@ -24,9 +24,9 @@ export interface IUserRepository extends IRepository {
 export interface ICompanyRepository extends IRepository {
     getAll: (group_id: number) => Promise<CompanySchemaSelectType[]>
     get: (id: number) => Promise<CompanySchemaSelectType | null>
-    create: (params: CompanySchemaCreateType) => Promise<CompanySchemaSelectType>
-    update: (params: CompanySchemaUpdateType) => Promise<CompanySchemaSelectType>
-    delete: (id: string) => Promise<boolean>
+    create: (params: CompanySchemaCreateType) => Promise<number>
+    update: (id: number, params: CompanySchemaUpdateType) => Promise<number>
+    delete: (id: number) => Promise<boolean>
 }
 
 export interface IGroupRepository extends IRepository {

@@ -4,6 +4,8 @@ import { RouterCore } from '@/core/router.core'
 import { CompaniesRepository } from '@repositories/companies.repository'
 import { CompaniesService } from '@services/companies.service'
 import { authMiddleware } from '@middlewares/auth.middleware'
+import { requestMiddleware } from '@middlewares/request.middleware'
+import { CompanySchemaCreate, CompanySchemaUniqueIdentifier, CompanySchemaUpdate } from '@models/companies.model'
 
 export class CompaniesRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -23,22 +25,43 @@ export class CompaniesRouter extends RouterCore {
 
         this.post({
             name: '/',
-            handler: controller.create
+            handler: controller.create,
+            middlewares: [
+                requestMiddleware({
+                    body: CompanySchemaCreate
+                })
+            ]
         })
 
         this.get({
             name: '/:id',
-            handler: controller.get
+            handler: controller.get,
+            middlewares: [
+                requestMiddleware({
+                    params: CompanySchemaUniqueIdentifier
+                })
+            ]
         })
 
         this.put({
             name: '/:id',
-            handler: controller.update
+            handler: controller.update,
+            middlewares: [
+                requestMiddleware({
+                    params: CompanySchemaUniqueIdentifier,
+                    body: CompanySchemaUpdate
+                })
+            ]
         })
 
         this.delete({
             name: '/:id',
-            handler: controller.delete
+            handler: controller.delete,
+            middlewares: [
+                requestMiddleware({
+                    params: CompanySchemaUniqueIdentifier
+                })
+            ]
         })
     }
 }
