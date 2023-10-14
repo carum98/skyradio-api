@@ -22,10 +22,10 @@ export interface IUserRepository extends IRepository {
 
 export interface ICompanyRepository extends IRepository {
     getAll: (group_id: number) => Promise<CompanySchemaSelectType[]>
-    get: (id: number) => Promise<CompanySchemaSelectType | null>
-    create: (params: CompanySchemaCreateType) => Promise<number>
-    update: (id: number, params: CompanySchemaUpdateType) => Promise<number>
-    delete: (id: number) => Promise<boolean>
+    get: (code: string) => Promise<CompanySchemaSelectType | null>
+    create: (params: CompanySchemaCreateType) => Promise<string>
+    update: (code: string, params: CompanySchemaUpdateType) => Promise<string>
+    delete: (code: string) => Promise<boolean>
 }
 
 export interface IGroupRepository extends IRepository {

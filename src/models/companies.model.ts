@@ -6,6 +6,7 @@ import { z } from 'zod'
 
 export const companies = mysqlTable('companies', {
     id: int('id').autoincrement().notNull(),
+    code: varchar('code', { length: 6 }).notNull(),
     name: varchar('name', { length: 255 }).notNull(),
 	group_id: int('group_id').notNull().references(() => groups.id),
 	created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
@@ -19,7 +20,7 @@ export const companies = mysqlTable('companies', {
 })
 
 export const CompanySchemaSelect = createSelectSchema(companies)
-    .omit({ deleted_at: true, updated_at: true, created_at: true })
+    .pick({ code: true, name: true })
 
 export const CompanySchemaCreate = createInsertSchema(companies, {
     name: (schema) => schema.name.min(3).max(100)
@@ -30,8 +31,8 @@ export const CompanySchemaUpdate = CompanySchemaCreate
     .required()
 
 export const CompanySchemaUniqueIdentifier = createSelectSchema(companies, {
-    id: (schema) => schema.id.or(z.coerce.number())
-}).pick({ id: true }).required()
+    code: (schema) => schema.code.length(6)
+}).pick({ code: true }).required()
 
 export type CompanySchemaCreateType = z.infer<typeof CompanySchemaCreate>
 export type CompanySchemaSelectType = z.infer<typeof CompanySchemaSelect>

@@ -34,7 +34,7 @@ export class CompaniesRouter extends RouterCore {
         })
 
         this.get({
-            name: '/:id',
+            name: '/:code',
             handler: controller.get,
             middlewares: [
                 requestMiddleware({
@@ -44,7 +44,7 @@ export class CompaniesRouter extends RouterCore {
         })
 
         this.put({
-            name: '/:id',
+            name: '/:code',
             handler: controller.update,
             middlewares: [
                 requestMiddleware({
@@ -55,7 +55,7 @@ export class CompaniesRouter extends RouterCore {
         })
 
         this.delete({
-            name: '/:id',
+            name: '/:code',
             handler: controller.delete,
             middlewares: [
                 requestMiddleware({

@@ -13,9 +13,9 @@ export class CompaniesController {
     }
 
     public get = async (req: Request, res: Response): Promise<void> => {
-        const { id } = req.params
+        const { code } = req.params
 
-        const data = await this.service.get(parseInt(id))
+        const data = await this.service.get(code)
 
         res.json(data)
     }
@@ -32,10 +32,10 @@ export class CompaniesController {
     }
 
     public update = async (req: Request, res: Response): Promise<void> => {
-        const { id } = req.params
+        const { code } = req.params
         const { name } = req.body
 
-        const data = await this.service.update(parseInt(id), {
+        const data = await this.service.update(code, {
             name
         })
 
@@ -43,9 +43,9 @@ export class CompaniesController {
     }
 
     public delete = async (req: Request, res: Response): Promise<void> => {
-        const { id } = req.params
+        const { code } = req.params
 
-        const data = await this.service.delete(parseInt(id))
+        const data = await this.service.delete(code)
 
         res.json(data)
     }

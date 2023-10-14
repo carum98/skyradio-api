@@ -9,8 +9,8 @@ export class CompaniesService {
         return await this.repository.getAll(group_id)
     }
 
-    public async get (id: number): Promise<CompanySchemaSelectType> {
-        const company = await this.repository.get(id)
+    public async get (code: string): Promise<CompanySchemaSelectType> {
+        const company = await this.repository.get(code)
 
         if (company === null) {
             throw new NotFoundError('Company not found')
@@ -20,18 +20,18 @@ export class CompaniesService {
     }
 
     public async create (params: CompanySchemaCreateType): Promise<CompanySchemaSelectType> {
-        const id = await this.repository.create(params)
+        const code = await this.repository.create(params)
 
-        return await this.get(id)
+        return await this.get(code)
     }
 
-    public async update (id: number, params: CompanySchemaUpdateType): Promise<CompanySchemaSelectType> {
-        const updateId = await this.repository.update(id, params)
+    public async update (code: string, params: CompanySchemaUpdateType): Promise<CompanySchemaSelectType> {
+        const updateId = await this.repository.update(code, params)
 
         return await this.get(updateId)
     }
 
-    public async delete (id: number): Promise<boolean> {
-        return await this.repository.delete(id)
+    public async delete (code: string): Promise<boolean> {
+        return await this.repository.delete(code)
     }
 }
