@@ -18,14 +18,14 @@ export class UserController {
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        const { name, email, password, group_id } = req.body
+        const { name, email, password, group_id, role } = req.body
 
         const data = await this.service.create({
             name,
             email,
             password,
             group_id: parseInt(group_id),
-            role: 'admin'
+            role
         })
 
         res.json(data)
