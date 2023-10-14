@@ -1,6 +1,5 @@
-import { NotFoundError } from '@utils/errors'
 import { IUserRepository } from './repositories'
-import { UserSchemaSelect, UserSchemaSelectType, users } from '@models/users.model'
+import { UserSchemaCreateType, UserSchemaSelect, UserSchemaSelectType, UserSchemaUpdateType, users } from '@models/users.model'
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { eq } from 'drizzle-orm'
 
@@ -13,67 +12,29 @@ export class UserRepository implements IUserRepository {
         return UserSchemaSelect.array().parse(data)
     }
 
-    public async get (id: string): Promise<UserSchemaSelectType> {
-        const data = await this.db.select().from(users).where(eq(users.id, parseInt(id)))
+    public async get (id: number): Promise<UserSchemaSelectType | null> {
+        const data = await this.db.select().from(users).where(eq(users.id, id))
 
-        if (data.length === 0) {
-            throw new NotFoundError('User not found')
-        }
-
-        return UserSchemaSelect.parse(data)
+        return data.length > 0
+            ? UserSchemaSelect.parse(data[0])
+            : null
     }
 
-    public async create (name: string, email: string, password: string): Promise<any> {
-        const data = await this.db.insert(users).values({ name, email, password, group_id: 1 })
+    public async create (params: UserSchemaCreateType): Promise<number> {
+        const data = await this.db.insert(users).values(params)
 
-        return {
-            id: data[0].insertId,
-            name,
-            email,
-            password
-        }
+        return data[0].insertId
     }
 
-    public async update (id: string, { name, user_name, password }: { name?: string, user_name?: string, password?: string }): Promise<any> {
-        throw new Error('Method not implemented.')
-        // const updateFields = []
-        // const updateValues = []
+    public async update (id: number, params: UserSchemaUpdateType): Promise<number> {
+        const data = await this.db.update(users).set(params).where(eq(users.id, id))
 
-        // if (name != null) {
-        //     updateFields.push('name = ?')
-        //     updateValues.push(name)
-        // }
-
-        // if (user_name != null) {
-        //     updateFields.push('user_name = ?')
-        //     updateValues.push(user_name)
-        // }
-
-        // if (password != null) {
-        //     updateFields.push('password = ?')
-        //     updateValues.push(password)
-        // }
-
-        // if (updateFields.length === 0) {
-        //     throw new Error('At least one field must be provided to update')
-        // }
-
-        // const query = `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`
-        // await this.db.query(query, [...updateValues, id])
-
-        // return {
-        //     id,
-        //     name,
-        //     user_name,
-        //     password
-        // }
+        return data[0].affectedRows > 0 ? id : 0
     }
 
-    public async delete (id: string): Promise<any> {
-        const data = await this.db.delete(users).where(eq(users.id, parseInt(id)))
+    public async delete (id: number): Promise<boolean> {
+        const data = await this.db.delete(users).where(eq(users.id, id))
 
-        return {
-            id: data[0].insertId
-        }
+        return data[0].affectedRows > 0
     }
 }

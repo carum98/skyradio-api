@@ -25,18 +25,28 @@ export const users = mysqlTable('users', {
 	}
 })
 
-export const UserSchemaCreate = createInsertSchema(users, {
+export const UserSchemaSelect = createSelectSchema(users, {
     email: (schema) => schema.email.email()
+}).omit({
+	deleted_at: true,
+	created_at: true,
+	updated_at: true
 })
 
-export const UserSchemaSelect = createSelectSchema(users, {
+export const UserSchemaCreate = createInsertSchema(users, {
     email: (schema) => schema.email.email(),
-    created_at: (schema) => schema.created_at.pipe(z.coerce.date()),
-    updated_at: (schema) => schema.updated_at.pipe(z.coerce.date())
-}).omit({
-	// password: true,
-	deleted_at: true
-})
+	password: (schema) => schema.password.min(3).max(100),
+	name: (schema) => schema.name.min(3).max(100)
+}).pick({ name: true, email: true, password: true, role: true, group_id: true }).required()
+
+export const UserSchemaUpdate = UserSchemaCreate
+	.pick({ name: true, email: true, password: true })
+	.partial()
+
+export const UserSchemaUniqueIdentifier = createSelectSchema(users, {
+	id: (schema) => schema.id.or(z.coerce.number())
+}).pick({ id: true }).required()
 
 export type UserSchemaCreateType = z.infer<typeof UserSchemaCreate>
 export type UserSchemaSelectType = z.infer<typeof UserSchemaSelect>
+export type UserSchemaUpdateType = z.infer<typeof UserSchemaUpdate>

@@ -1,4 +1,4 @@
-import { UserSchemaSelectType } from '@models/users.model'
+import { UserSchemaCreateType, UserSchemaSelectType, UserSchemaUpdateType } from '@models/users.model'
 import { CompanySchemaSelectType, CompanySchemaCreateType, CompanySchemaUpdateType } from '@models/companies.model'
 import { GroupSchemaCreateType, GroupSchemaSelectType, GroupSchemaUpdateType } from '@/models/groups.model'
 
@@ -15,10 +15,10 @@ export interface IAuthRepository extends IRepository {
 
 export interface IUserRepository extends IRepository {
     getAll: () => Promise<UserSchemaSelectType[]>
-    get: (id: string) => Promise<UserSchemaSelectType>
-    create: (name: string, email: string, password: string) => Promise<UserSchemaSelectType>
-    update: (id: string, { name, email, password }: { name?: string, email?: string, password?: string }) => Promise<UserSchemaSelectType>
-    delete: (id: string) => Promise<void>
+    get: (id: number) => Promise<UserSchemaSelectType | null>
+    create: (params: UserSchemaCreateType) => Promise<number>
+    update: (id: number, params: UserSchemaUpdateType) => Promise<number>
+    delete: (id: number) => Promise<boolean>
 }
 
 export interface ICompanyRepository extends IRepository {

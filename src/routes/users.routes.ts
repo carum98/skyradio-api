@@ -4,6 +4,8 @@ import { UserService } from '@services/users.service'
 import { RouterCore } from '@/core/router.core'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { DataSource } from '@/core/data-source.core'
+import { requestMiddleware } from '@middlewares/request.middleware'
+import { UserSchemaCreate, UserSchemaUniqueIdentifier, UserSchemaUpdate } from '@models/users.model'
 
 export class UserRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -23,22 +25,43 @@ export class UserRouter extends RouterCore {
 
         this.post({
             name: '/',
-            handler: controller.create
+            handler: controller.create,
+            middlewares: [
+                requestMiddleware({
+                    body: UserSchemaCreate
+                })
+            ]
         })
 
         this.get({
             name: '/:id',
-            handler: controller.get
+            handler: controller.get,
+            middlewares: [
+                requestMiddleware({
+                    params: UserSchemaUniqueIdentifier
+                })
+            ]
         })
 
         this.put({
             name: '/:id',
-            handler: controller.update
+            handler: controller.update,
+            middlewares: [
+                requestMiddleware({
+                    params: UserSchemaUniqueIdentifier,
+                    body: UserSchemaUpdate
+                })
+            ]
         })
 
         this.delete({
             name: '/:id',
-            handler: controller.delete
+            handler: controller.delete,
+            middlewares: [
+                requestMiddleware({
+                    params: UserSchemaUniqueIdentifier
+                })
+            ]
         })
     }
 }

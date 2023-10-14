@@ -1,31 +1,37 @@
-import { Request } from 'express'
-
-import { IService } from './service'
 import { UserRepository } from '@repositories/users.repository'
-import { UserSchemaSelectType } from '@models/users.model'
+import { UserSchemaCreateType, UserSchemaSelectType, UserSchemaUpdateType } from '@models/users.model'
+import { NotFoundError } from '@/utils/errors'
 
-export class UserService implements IService<UserSchemaSelectType> {
+export class UserService {
     constructor (private readonly repository: UserRepository) {}
 
     public async getAll (): Promise<UserSchemaSelectType[]> {
         return await this.repository.getAll()
     }
 
-    public async get (req: Request): Promise<UserSchemaSelectType> {
-        const { id } = req.params
+    public async get (id: number): Promise<UserSchemaSelectType> {
+        const user = await this.repository.get(id)
 
-        return await this.repository.get(id)
+        if (user === null) {
+            throw new NotFoundError('User not found')
+        }
+
+        return user
     }
 
-    public async create (req: Request): Promise<UserSchemaSelectType> {
-        throw new Error('Method not implemented.')
+    public async create (params: UserSchemaCreateType): Promise<UserSchemaSelectType> {
+        const id = await this.repository.create(params)
+
+        return await this.get(id)
     }
 
-    public async update (req: Request): Promise<UserSchemaSelectType> {
-        throw new Error('Method not implemented.')
+    public async update (id: number, params: UserSchemaUpdateType): Promise<UserSchemaSelectType> {
+        const updateId = await this.repository.update(id, params)
+
+        return await this.get(updateId)
     }
 
-    public async delete (req: Request): Promise<boolean> {
-        throw new Error('Method not implemented.')
+    public async delete (id: number): Promise<boolean> {
+        return await this.repository.delete(id)
     }
 }
