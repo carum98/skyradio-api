@@ -26,8 +26,8 @@ export class AuthRouter extends RouterCore {
         this.post({
             name: '/refresh-token',
             middlewares: [
-                refreshTokenMiddleware,
-                requestMiddleware({ body: AuthRefreshTokenSchema })
+                requestMiddleware({ body: AuthRefreshTokenSchema }),
+                refreshTokenMiddleware
             ],
             handler: controller.refreshToken
         })

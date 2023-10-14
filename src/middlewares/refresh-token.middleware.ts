@@ -15,6 +15,7 @@ export function refreshTokenMiddleware (req: Request, _res: Response, next: Next
         const payload = verifyRefreshToken(refresh_token)
 
         req.body.user_id = (payload as JwtPayload).user_id
+        req.body.group_id = (payload as JwtPayload).group_id
 
         next()
     } catch (err) {
