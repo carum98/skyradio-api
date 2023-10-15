@@ -5,6 +5,7 @@ import { CompanyModalitySchemaSelectType, CompanyModalitySchemaCreateType } from
 import { CompanySellerSchemaCreateType, CompanySellerSchemaSelectType, CompanySellerSchemaUpdateType } from '@models/companies_seller.model'
 import { SimsProviderShemaCreateType, SimsProviderShemaSelectType, SimsProviderShemaUpdateType } from '@models/sims_provider.model'
 import { SimsShemaCreateType, SimsShemaSelectType, SimsShemaUpdateType } from '@models/sims.model'
+import { RadiosModelShemaCreateType, RadiosModelShemaSelectType, RadiosModelShemaUpdateType } from '@models/radios_model.model'
 
 export interface IRepository {
     private readonly db: Database
@@ -69,5 +70,13 @@ export interface ISimsProviderRepository extends IRepository {
     get: (code: string) => Promise<SimsProviderShemaSelectType | null>
     create: (params: SimsProviderShemaCreateType) => Promise<string>
     update: (code: string, params: SimsProviderShemaUpdateType) => Promise<string>
+    delete: (code: string) => Promise<boolean>
+}
+
+export interface IRadiosModelRepository extends IRepository {
+    getAll: (group_id: number) => Promise<RadiosModelShemaSelectType[]>
+    get: (code: string) => Promise<RadiosModelShemaSelectType | null>
+    create: (params: RadiosModelShemaCreateType) => Promise<string>
+    update: (code: string, params: RadiosModelShemaUpdateType) => Promise<string>
     delete: (code: string) => Promise<boolean>
 }

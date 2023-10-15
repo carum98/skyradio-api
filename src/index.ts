@@ -8,6 +8,7 @@ import { CompaniesModalityRouter } from '@routes/companies_modality.routes'
 import { CompaniesSellerRouter } from '@routes/companies_seller.routes'
 import { SimsProviderRouter } from '@routes/sims_provider.routes'
 import { SimsRouter } from '@routes/sims.routes'
+import { RadiosModelRouter } from '@routes/radios_model.routes'
 
 import { errorMiddleware } from '@middlewares/errors.middleware'
 import { DataSource } from './core/data-source.core'
@@ -25,7 +26,8 @@ server.routes([
     new CompaniesModalityRouter(datasource),
     new CompaniesSellerRouter(datasource),
     new SimsProviderRouter(datasource),
-    new SimsRouter(datasource)
+    new SimsRouter(datasource),
+    new RadiosModelRouter(datasource)
 ])
 
 // Error middleware
