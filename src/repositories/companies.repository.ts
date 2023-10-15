@@ -3,12 +3,16 @@ import { and, eq, isNull, sql } from 'drizzle-orm'
 import { ICompanyRepository } from './repositories'
 import { CompanySchemaCreateType, CompanySchemaSelect, CompanySchemaSelectType, CompanySchemaUpdateType, companies } from '@models/companies.model'
 import { generateCode } from '@utils/code'
+import { companies_modality } from '@/models/companies_modality.model'
+import { companies_seller } from '@/models/companies_seller.model'
 
 export class CompaniesRepository implements ICompanyRepository {
     constructor (public readonly db: MySql2Database) {}
 
     public async getAll (group_id: number): Promise<CompanySchemaSelectType[]> {
         const data = await this.db.select().from(companies)
+            .leftJoin(companies_modality, eq(companies_modality.id, companies.modality_id))
+            .leftJoin(companies_seller, eq(companies_seller.id, companies.seller_id))
             .where(
                 and(
                     eq(companies.group_id, group_id),
@@ -16,11 +20,19 @@ export class CompaniesRepository implements ICompanyRepository {
                 )
             )
 
-        return CompanySchemaSelect.array().parse(data)
+        const values = data.map((item) => ({
+            ...item.companies,
+            seller: item.companies_seller,
+            modality: item.companies_modality
+        }))
+
+        return CompanySchemaSelect.array().parse(values)
     }
 
     public async get (code: string): Promise<CompanySchemaSelectType | null> {
         const data = await this.db.select().from(companies)
+            .leftJoin(companies_modality, eq(companies_modality.id, companies.modality_id))
+            .leftJoin(companies_seller, eq(companies_seller.id, companies.seller_id))
             .where(
                 and(
                     eq(companies.code, code),
@@ -28,8 +40,14 @@ export class CompaniesRepository implements ICompanyRepository {
                 )
             )
 
-        return data.length > 0
-            ? CompanySchemaSelect.parse(data.at(0))
+        const values = data.map((item) => ({
+            ...item.companies,
+            seller: item.companies_seller,
+            modality: item.companies_modality
+        }))
+
+        return values.length > 0
+            ? CompanySchemaSelect.parse(values[0])
             : null
     }
 

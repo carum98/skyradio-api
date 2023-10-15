@@ -3,8 +3,8 @@ import { groups } from './groups.model'
 import { sql } from 'drizzle-orm'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
-import { companies_modality } from './companies_modality.model'
-import { companies_seller } from './companies_seller.model'
+import { CompanyModalitySchemaSelect, companies_modality } from './companies_modality.model'
+import { CompanySellerSchemaSelect, companies_seller } from './companies_seller.model'
 
 export const companies = mysqlTable('companies', {
     id: int('id').autoincrement().notNull(),
@@ -27,6 +27,10 @@ export const companies = mysqlTable('companies', {
 
 export const CompanySchemaSelect = createSelectSchema(companies)
     .pick({ code: true, name: true })
+    .extend({
+        modality: CompanyModalitySchemaSelect.omit({ id: true }),
+        seller: CompanySellerSchemaSelect.omit({ id: true }).nullable()
+    })
 
 export const CompanySchemaCreate = createInsertSchema(companies, {
     name: (schema) => schema.name.min(3).max(100)
