@@ -4,7 +4,7 @@ import { rolesMiddleware } from '@middlewares/roles.middleware'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { SimsProviderRepository } from '@/repositories/sims_provider.repository'
 import { SimsProviderService } from '@services/sims_provider.service'
-import { SimsProviderController } from '@controllers/sims_provider'
+import { SimsProviderController } from '@controllers/sims_provider.controller'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { SimsProviderShemaCreate, SimsProviderShemaUniqueIdentifier, SimsProviderShemaUpdate } from '@/models/sims_provider.model'
 
@@ -12,10 +12,7 @@ export class SimsProviderRouter extends RouterCore {
     constructor (datasource: DataSource) {
         super({
             path: '/sims-provider',
-            middlewares: [
-                authMiddleware,
-                rolesMiddleware(['admin'])
-            ]
+            middlewares: [authMiddleware]
         })
 
         const repository = datasource.create(SimsProviderRepository)
@@ -31,6 +28,7 @@ export class SimsProviderRouter extends RouterCore {
             name: '/',
             handler: controller.create,
             middlewares: [
+                rolesMiddleware(['admin']),
                 requestMiddleware({
                     body: SimsProviderShemaCreate
                 })
@@ -51,6 +49,7 @@ export class SimsProviderRouter extends RouterCore {
             name: '/:code',
             handler: controller.update,
             middlewares: [
+                rolesMiddleware(['admin']),
                 requestMiddleware({
                     params: SimsProviderShemaUniqueIdentifier,
                     body: SimsProviderShemaUpdate
@@ -62,6 +61,7 @@ export class SimsProviderRouter extends RouterCore {
             name: '/:code',
             handler: controller.delete,
             middlewares: [
+                rolesMiddleware(['admin']),
                 requestMiddleware({
                     params: SimsProviderShemaUniqueIdentifier
                 })
