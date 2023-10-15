@@ -3,7 +3,8 @@ import { CompanySchemaSelectType, CompanySchemaCreateType, CompanySchemaUpdateTy
 import { GroupSchemaCreateType, GroupSchemaSelectType, GroupSchemaUpdateType } from '@models/groups.model'
 import { CompanyModalitySchemaSelectType, CompanyModalitySchemaCreateType } from '@models/companies_modality.model'
 import { CompanySellerSchemaCreateType, CompanySellerSchemaSelectType, CompanySellerSchemaUpdateType } from '@models/companies_seller.model'
-import { SimsProviderShemaCreateType, SimsProviderShemaSelectType, SimsProviderShemaUpdateType } from '@/models/sims_provider.model'
+import { SimsProviderShemaCreateType, SimsProviderShemaSelectType, SimsProviderShemaUpdateType } from '@models/sims_provider.model'
+import { SimsShemaCreateType, SimsShemaSelectType, SimsShemaUpdateType } from '@models/sims.model'
 
 export interface IRepository {
     private readonly db: Database
@@ -53,6 +54,14 @@ export interface IGroupRepository extends IRepository {
     create: (params: GroupSchemaCreateType) => Promise<number>
     update: (id: number, params: GroupSchemaUpdateType) => Promise<number>
     delete: (id: number) => Promise<boolean>
+}
+
+export interface ISimsRepository extends IRepository {
+    getAll: (group_id: number) => Promise<SimsShemaSelectType[]>
+    get: (code: string) => Promise<SimsShemaSelectType | null>
+    create: (params: SimsShemaCreateType) => Promise<string>
+    update: (code: string, params: SimsShemaUpdateType) => Promise<string>
+    delete: (code: string) => Promise<boolean>
 }
 
 export interface ISimsProviderRepository extends IRepository {

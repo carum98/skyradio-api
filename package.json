@@ -11,6 +11,7 @@
     "db:introspect": "drizzle-kit introspect:mysql --config ./config/drizzle.config.ts",
     "db:migrate": "ts-node -r tsconfig-paths/register -e \"require('./src/core/migrations.core.ts').init()\"",
     "db:drop": "drizzle-kit drop --config ./config/drizzle.config.ts",
+    "db:push": "drizzle-kit push:mysql --config ./config/drizzle.config.ts",
     "db:studio": "npx drizzle-kit studio --port 3000 --verbose --config ./config/drizzle.config.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
