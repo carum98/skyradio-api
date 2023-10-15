@@ -1,6 +1,7 @@
 import { UserSchemaCreateType, UserSchemaSelectType, UserSchemaUpdateType, UserSchemaType } from '@models/users.model'
 import { CompanySchemaSelectType, CompanySchemaCreateType, CompanySchemaUpdateType } from '@models/companies.model'
-import { GroupSchemaCreateType, GroupSchemaSelectType, GroupSchemaUpdateType } from '@/models/groups.model'
+import { GroupSchemaCreateType, GroupSchemaSelectType, GroupSchemaUpdateType } from '@models/groups.model'
+import { CompanyModalitySchemaSelectType, CompanyModalitySchemaCreateType } from '@models/companies_modality.model'
 
 export interface IRepository {
     private readonly db: Database
@@ -24,6 +25,14 @@ export interface ICompanyRepository extends IRepository {
     getAll: (group_id: number) => Promise<CompanySchemaSelectType[]>
     get: (code: string) => Promise<CompanySchemaSelectType | null>
     create: (params: CompanySchemaCreateType) => Promise<string>
+    update: (code: string, params: CompanySchemaUpdateType) => Promise<string>
+    delete: (code: string) => Promise<boolean>
+}
+
+export interface ICompanyModalityRepository extends IRepository {
+    getAll: (group_id: number) => Promise<CompanyModalitySchemaSelectType[]>
+    get: (code: string) => Promise<CompanyModalitySchemaSelectType | null>
+    create: (params: CompanyModalitySchemaCreateType) => Promise<string>
     update: (code: string, params: CompanySchemaUpdateType) => Promise<string>
     delete: (code: string) => Promise<boolean>
 }

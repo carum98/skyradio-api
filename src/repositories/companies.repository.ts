@@ -2,7 +2,7 @@ import { MySql2Database } from 'drizzle-orm/mysql2'
 import { eq } from 'drizzle-orm'
 import { ICompanyRepository } from './repositories'
 import { CompanySchemaCreateType, CompanySchemaSelect, CompanySchemaSelectType, CompanySchemaUpdateType, companies } from '@models/companies.model'
-import crypto from 'crypto'
+import { generateCode } from '@utils/code'
 
 export class CompaniesRepository implements ICompanyRepository {
     constructor (public readonly db: MySql2Database) {}
@@ -24,7 +24,7 @@ export class CompaniesRepository implements ICompanyRepository {
     }
 
     public async create (params: CompanySchemaCreateType): Promise<string> {
-        const code = crypto.randomBytes(3).toString('hex')
+        const code = generateCode()
 
         await this.db.insert(companies).values({
             ...params,
