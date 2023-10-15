@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
-import { CompaniesService } from '@services/companies.service'
+import { CompaniesSellerService } from '@services/companies_seller.service'
 
-export class CompaniesController {
-    constructor (private readonly service: CompaniesService) {}
+export class CompaniesSellerController {
+    constructor (private readonly service: CompaniesSellerService) {}
 
     public getAll = async (req: Request, res: Response): Promise<void> => {
         const { group_id } = req.body
@@ -21,13 +21,11 @@ export class CompaniesController {
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        const { name, group_id, modality_id, seller_id } = req.body
+        const { name, group_id } = req.body
 
         const data = await this.service.create({
             name,
-            group_id: parseInt(group_id),
-            modality_id: parseInt(modality_id),
-            seller_id: parseInt(seller_id)
+            group_id: parseInt(group_id)
         })
 
         res.json(data)

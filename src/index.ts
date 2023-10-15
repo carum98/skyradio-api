@@ -5,6 +5,7 @@ import { AuthRouter } from '@routes/auth.routes'
 import { CompaniesRouter } from '@routes/companies.routes'
 import { GroupsRouter } from '@routes/groups.routes'
 import { CompaniesModalityRouter } from '@routes/companies_modality.routes'
+import { CompaniesSellerRouter } from '@routes/companies_seller.routes'
 
 import { errorMiddleware } from '@middlewares/errors.middleware'
 import { DataSource } from './core/data-source.core'
@@ -19,7 +20,8 @@ server.routes([
     new UserRouter(datasource),
     new CompaniesRouter(datasource),
     new GroupsRouter(datasource),
-    new CompaniesModalityRouter(datasource)
+    new CompaniesModalityRouter(datasource),
+    new CompaniesSellerRouter(datasource)
 ])
 
 // Error middleware

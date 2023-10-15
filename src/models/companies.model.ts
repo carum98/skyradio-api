@@ -4,6 +4,7 @@ import { sql } from 'drizzle-orm'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 import { companies_modality } from './companies_modality.model'
+import { companies_seller } from './companies_seller.model'
 
 export const companies = mysqlTable('companies', {
     id: int('id').autoincrement().notNull(),
@@ -11,6 +12,7 @@ export const companies = mysqlTable('companies', {
     name: varchar('name', { length: 255 }).notNull(),
 	group_id: int('group_id').notNull().references(() => groups.id),
     modality_id: int('modality_id').notNull().references(() => companies_modality.id),
+    seller_id: int('seller_id').references(() => companies_seller.id),
 	created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updated_at: datetime('updated_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
 	deleted_at: datetime('deleted_at', { mode: 'string' })
@@ -18,7 +20,8 @@ export const companies = mysqlTable('companies', {
     return {
 		group_id: index('group_id').on(table.group_id),
         companies_id: primaryKey(table.id),
-        modality_id: index('modality_id').on(table.modality_id)
+        modality_id: index('modality_id').on(table.modality_id),
+        seller_id: index('seller_id').on(table.seller_id)
     }
 })
 
@@ -30,7 +33,8 @@ export const CompanySchemaCreate = createInsertSchema(companies, {
 }).pick({
     name: true,
     group_id: true,
-    modality_id: true
+    modality_id: true,
+    seller_id: true
 }).required()
 
 export const CompanySchemaUpdate = CompanySchemaCreate
