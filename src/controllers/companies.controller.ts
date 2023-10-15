@@ -49,6 +49,10 @@ export class CompaniesController {
 
         const data = await this.service.delete(code)
 
-        res.json(data)
+        if (data) {
+            res.status(204).json()
+        } else {
+            res.status(400).json()
+        }
     }
 }
