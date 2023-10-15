@@ -5,49 +5,28 @@ import { CompanySchemaCreateType, CompanySchemaSelect, CompanySchemaSelectType, 
 import { generateCode } from '@utils/code'
 import { companies_modality } from '@/models/companies_modality.model'
 import { companies_seller } from '@/models/companies_seller.model'
+import { SQL } from 'drizzle-orm/sql'
 
 export class CompaniesRepository implements ICompanyRepository {
     constructor (public readonly db: MySql2Database) {}
 
     public async getAll (group_id: number): Promise<CompanySchemaSelectType[]> {
-        const data = await this.db.select().from(companies)
-            .leftJoin(companies_modality, eq(companies_modality.id, companies.modality_id))
-            .leftJoin(companies_seller, eq(companies_seller.id, companies.seller_id))
-            .where(
-                and(
-                    eq(companies.group_id, group_id),
-                    isNull(companies.deleted_at)
-                )
-            )
+        const data = await this.selector(and(
+            eq(companies.group_id, group_id),
+            isNull(companies.deleted_at)
+        ))
 
-        const values = data.map((item) => ({
-            ...item.companies,
-            seller: item.companies_seller,
-            modality: item.companies_modality
-        }))
-
-        return CompanySchemaSelect.array().parse(values)
+        return CompanySchemaSelect.array().parse(data)
     }
 
     public async get (code: string): Promise<CompanySchemaSelectType | null> {
-        const data = await this.db.select().from(companies)
-            .leftJoin(companies_modality, eq(companies_modality.id, companies.modality_id))
-            .leftJoin(companies_seller, eq(companies_seller.id, companies.seller_id))
-            .where(
-                and(
-                    eq(companies.code, code),
-                    isNull(companies.deleted_at)
-                )
-            )
+        const data = await this.selector(and(
+            eq(companies.code, code),
+            isNull(companies.deleted_at)
+        ))
 
-        const values = data.map((item) => ({
-            ...item.companies,
-            seller: item.companies_seller,
-            modality: item.companies_modality
-        }))
-
-        return values.length > 0
-            ? CompanySchemaSelect.parse(values[0])
+        return data.length > 0
+            ? CompanySchemaSelect.parse(data[0])
             : null
     }
 
@@ -80,5 +59,32 @@ export class CompaniesRepository implements ICompanyRepository {
             .where(eq(companies.code, code))
 
         return data[0].affectedRows > 0
+    }
+
+    private async selector (where: SQL | undefined): Promise<CompanySchemaSelectType[]> {
+        const data = await this.db.select({
+            companies: {
+                code: companies.code,
+                name: companies.name
+            },
+            companies_seller: {
+                code: companies_seller.code,
+                name: companies_seller.name
+            },
+            companies_modality: {
+                code: companies_modality.code,
+                name: companies_modality.name
+            }
+        })
+            .from(companies)
+            .leftJoin(companies_modality, eq(companies_modality.id, companies.modality_id))
+            .leftJoin(companies_seller, eq(companies_seller.id, companies.seller_id))
+            .where(where)
+
+        return data.map((item) => ({
+            ...item.companies,
+            seller: item.companies_seller,
+            modality: item.companies_modality
+        })) as CompanySchemaSelectType[]
     }
 }

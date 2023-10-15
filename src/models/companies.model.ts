@@ -28,8 +28,8 @@ export const companies = mysqlTable('companies', {
 export const CompanySchemaSelect = createSelectSchema(companies)
     .pick({ code: true, name: true })
     .extend({
-        modality: CompanyModalitySchemaSelect.omit({ id: true }),
-        seller: CompanySellerSchemaSelect.omit({ id: true }).nullable()
+        modality: CompanyModalitySchemaSelect.pick({ code: true, name: true }),
+        seller: CompanySellerSchemaSelect.pick({ code: true, name: true }).nullable()
     })
 
 export const CompanySchemaCreate = createInsertSchema(companies, {
