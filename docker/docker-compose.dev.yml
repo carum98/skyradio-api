@@ -13,6 +13,7 @@ services:
         - ./docker-compose.yml:/app/docker-compose.yml
         - ./run.sh:/app/run.sh
         - ./package.json:/app/package.json
+        - ./test:/app/test
         # 
         - ..:/workspaces:cached
   

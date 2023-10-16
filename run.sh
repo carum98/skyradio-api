@@ -58,7 +58,7 @@ case "$accion" in
     docker-compose -f docker-compose.yml -f docker/docker-compose.prod.yml up -d --build
     ;;
   (test)
-    docker-compose -f docker-compose.yml -f docker/docker-compose.test.yml up --build --abort-on-container-exit && docker-compose -f docker-compose.yml -f docker/docker-compose.test.yml down
+    docker-compose -f docker-compose.yml -f docker/docker-compose.test.yml up -V --build --abort-on-container-exit && docker-compose -f docker-compose.yml -f docker/docker-compose.test.yml down -v && ./run.sh clear
     ;;
   (stop)
     docker-compose down
