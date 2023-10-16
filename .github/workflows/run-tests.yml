@@ -26,5 +26,7 @@ jobs:
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }}
         SECRET_REFRESH_TOKEN: ${{ secrets.SECRET_REFRESH_TOKEN }}
-      run: ./run.sh --test
+      run: |
+        echo PORT: '${PORT}'
+        ./run.sh --test
    
