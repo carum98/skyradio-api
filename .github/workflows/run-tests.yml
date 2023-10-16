@@ -15,16 +15,15 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-      with:
-        secrets: |
-          "PORT=${{ secrets.PORT }}"
-          "DB_HOST=${{ secrets.DB_HOST }}"
-          "DB_PORT=${{ secrets.DB_PORT }}"
-          "DB_DATABASE=${{ secrets.DB_DATABASE }}"
-          "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
-          "SECRET_TOKEN=${{ secrets.SECRET_TOKEN }}"
-          "SECRET_REFRESH_TOKEN=${{ secrets.SECRET_REFRESH_TOKEN }}"
 
     - name: Run tests
       run:  ./run.sh --test
+      env:
+        PORT: ${{ secrets.PORT }}
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_DATABASE: ${{ secrets.DB_DATABASE }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }}
+        SECRET_REFRESH_TOKEN: ${{ secrets.SECRET_REFRESH_TOKEN }}
    
