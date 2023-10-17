@@ -7,6 +7,7 @@ import { radios_status } from '@models/radios_status.model'
 import { sims } from '@models/sims.model'
 import { generateCode } from '@utils/code'
 import { sims_provider } from '@models/sims_provider.model'
+import { NotFoundError } from '@/utils/errors'
 
 export class RadiosRepository implements IRadioRepository {
     constructor (public readonly db: MySql2Database) {}
@@ -145,13 +146,25 @@ export class RadiosRepository implements IRadioRepository {
             ? null
             : await trx.select({ id: radios_model.id }).from(radios_model).where(eq(radios_model.code, model_code))
 
+        if (model_code !== undefined && model?.length === 0) {
+            throw new NotFoundError(`Modality code ${model_code} not found`)
+        }
+
         const status = status_code === undefined
             ? null
             : await trx.select({ id: radios_status.id }).from(radios_status).where(eq(radios_status.code, status_code))
 
+        if (status_code !== undefined && status?.length === 0) {
+            throw new NotFoundError(`Seller code ${status_code} not found`)
+        }
+
         const sim = sim_code === undefined
             ? null
             : await trx.select({ id: sims.id }).from(sims).where(eq(sims.code, sim_code))
+
+        if (sim_code !== undefined && sim?.length === 0) {
+            throw new NotFoundError(`Seller code ${sim_code} not found`)
+        }
 
         const model_id = model?.at(0)?.id ?? undefined
         const status_id = status?.at(0)?.id ?? undefined

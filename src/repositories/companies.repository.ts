@@ -6,6 +6,7 @@ import { generateCode } from '@utils/code'
 import { companies_modality } from '@/models/companies_modality.model'
 import { companies_seller } from '@/models/companies_seller.model'
 import { SQL } from 'drizzle-orm/sql'
+import { NotFoundError } from '@/utils/errors'
 
 export class CompaniesRepository implements ICompanyRepository {
     constructor (public readonly db: MySql2Database) {}
@@ -119,9 +120,17 @@ export class CompaniesRepository implements ICompanyRepository {
             ? null
             : await trx.select({ id: companies_modality.id }).from(companies_modality).where(eq(companies_modality.code, modality_code))
 
+        if (modality_code !== undefined && modality?.length === 0) {
+            throw new NotFoundError(`Modality code ${modality_code} not found`)
+        }
+
         const seller = seller_code === undefined
             ? null
             : await trx.select({ id: companies_seller.id }).from(companies_seller).where(eq(companies_seller.code, seller_code))
+
+        if (seller_code !== undefined && seller?.length === 0) {
+            throw new NotFoundError(`Seller code ${seller_code} not found`)
+        }
 
         const modality_id = modality?.at(0)?.id ?? undefined
         const seller_id = seller?.at(0)?.id ?? undefined
