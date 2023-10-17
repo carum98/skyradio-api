@@ -26,4 +26,6 @@ jobs:
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }}
         SECRET_REFRESH_TOKEN: ${{ secrets.SECRET_REFRESH_TOKEN }}
-      run: docker-compose -f docker-compose.yml -f docker/docker-compose.test.yml up --build
+      run: |
+        ./run.sh --test && echo "Tests passed" && exit 0
+   
