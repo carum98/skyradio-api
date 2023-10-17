@@ -18,7 +18,7 @@ jobs:
 
     - name: Run tests
       env:
-        PORT: 8080
+        PORT: ${{ secrets.PORT }}
         DB_HOST: ${{ secrets.DB_HOST }}
         DB_PORT: ${{ secrets.DB_PORT }}
         DB_DATABASE: ${{ secrets.DB_DATABASE }}
@@ -26,7 +26,4 @@ jobs:
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }}
         SECRET_REFRESH_TOKEN: ${{ secrets.SECRET_REFRESH_TOKEN }}
-      run: |
-        echo PORT: '${PORT}'
-        ./run.sh --test
-   
+      run: docker-compose -f docker-compose.yml -f docker/docker-compose.test.yml up --build
