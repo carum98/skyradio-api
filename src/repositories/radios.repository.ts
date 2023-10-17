@@ -5,8 +5,8 @@ import { SQL, and, eq, isNull, sql } from 'drizzle-orm'
 import { radios_model } from '@models/radios_model.model'
 import { radios_status } from '@models/radios_status.model'
 import { sims } from '@models/sims.model'
-import { generateCode } from '@/utils/code'
-import { sims_provider } from '@/models/sims_provider.model'
+import { generateCode } from '@utils/code'
+import { sims_provider } from '@models/sims_provider.model'
 
 export class RadiosRepository implements IRadioRepository {
     constructor (public readonly db: MySql2Database) {}
@@ -34,22 +34,48 @@ export class RadiosRepository implements IRadioRepository {
     public async create (params: RadiosSchemaCreateType): Promise<string> {
         const code = generateCode()
 
-        await this.db.insert(radios).values({
-            ...params,
-            code
+        await this.db.transaction(async (trx) => {
+            const { model_id, status_id, sim_id } = await this.findIdsByCodes(
+                trx,
+                params.model_code,
+                params.status_code,
+                params.sim_code
+            )
+
+            await trx.insert(radios).values({
+                ...params,
+                code,
+                model_id: model_id ?? 0,
+                status_id,
+                sim_id
+            })
         })
 
         return code
     }
 
     public async update (code: string, params: RadiosSchemaUpdateType): Promise<string> {
-        const data = await this.db.update(radios).set(params)
-            .where(
-                and(
-                    eq(radios.code, code),
-                    isNull(radios.deleted_at)
-                )
+        const data = await this.db.transaction(async (trx) => {
+            const { model_id, status_id, sim_id } = await this.findIdsByCodes(
+                trx,
+                params.model_code,
+                params.status_code,
+                params.sim_code
             )
+
+            return await trx.update(radios).set({
+                name: params.name,
+                model_id,
+                status_id,
+                sim_id
+            })
+                .where(
+                    and(
+                        eq(radios.code, code),
+                        isNull(radios.deleted_at)
+                    )
+                )
+        })
 
         return data[0].affectedRows > 0 ? code : ''
     }
@@ -107,5 +133,34 @@ export class RadiosRepository implements IRadioRepository {
                 ? { ...item.sims, provider: item.sims_provider }
                 : null
         })) as RadiosSchemaSelectType[]
+    }
+
+    private async findIdsByCodes (
+        trx: MySql2Database,
+        model_code?: string,
+        status_code?: string,
+        sim_code?: string
+    ): Promise<{ model_id?: number, status_id?: number, sim_id?: number }> {
+        const model = model_code === undefined
+            ? null
+            : await trx.select({ id: radios_model.id }).from(radios_model).where(eq(radios_model.code, model_code))
+
+        const status = status_code === undefined
+            ? null
+            : await trx.select({ id: radios_status.id }).from(radios_status).where(eq(radios_status.code, status_code))
+
+        const sim = sim_code === undefined
+            ? null
+            : await trx.select({ id: sims.id }).from(sims).where(eq(sims.code, sim_code))
+
+        const model_id = model?.at(0)?.id ?? undefined
+        const status_id = status?.at(0)?.id ?? undefined
+        const sim_id = sim?.at(0)?.id ?? undefined
+
+        return {
+            model_id,
+            status_id,
+            sim_id
+        }
     }
 }

@@ -45,24 +45,25 @@ export const RadiosSchemaCreate = createInsertSchema(radios, {
     name: true,
     imei: true,
     serial: true,
-    group_id: true,
-    model_id: true,
-    status_id: true,
-    sim_id: true
+    group_id: true
+})
+.extend({
+    model_code: z.string().length(6),
+    status_code: z.string().length(6),
+    sim_code: z.string().length(6)
 })
 .required()
 .partial({
-    status_id: true,
-    sim_id: true
+    status_code: true,
+    sim_code: true
 })
 
 export const RadiosSchemaUpdate = RadiosSchemaCreate
     .pick({
         name: true,
-        group_id: true,
-        model_id: true,
-        status_id: true,
-        sim_id: true
+        model_code: true,
+        status_code: true,
+        sim_code: true
     })
     .partial()
 
