@@ -33,22 +33,44 @@ export class CompaniesRepository implements ICompanyRepository {
     public async create (params: CompanySchemaCreateType): Promise<string> {
         const code = generateCode()
 
-        await this.db.insert(companies).values({
-            ...params,
-            code
+        await this.db.transaction(async (trx) => {
+            const { modality_id, seller_id } = await this.findIdsByCodes(
+                trx,
+                params.modality_code,
+                params.seller_code
+            )
+
+            await trx.insert(companies).values({
+                ...params,
+                code,
+                seller_id,
+                modality_id: modality_id ?? 0
+            })
         })
 
         return code
     }
 
     public async update (code: string, params: CompanySchemaUpdateType): Promise<string> {
-        const data = await this.db.update(companies).set(params)
+        const data = await this.db.transaction(async (trx) => {
+            const { modality_id, seller_id } = await this.findIdsByCodes(
+                trx,
+                params.modality_code,
+                params.seller_code
+            )
+
+            return await trx.update(companies).set({
+                name: params.name,
+                seller_id,
+                modality_id
+            })
             .where(
                 and(
                     eq(companies.code, code),
                     isNull(companies.deleted_at)
                 )
             )
+        })
 
         return data[0].affectedRows > 0 ? code : ''
     }
@@ -86,5 +108,27 @@ export class CompaniesRepository implements ICompanyRepository {
             seller: item.companies_seller,
             modality: item.companies_modality
         })) as CompanySchemaSelectType[]
+    }
+
+    private async findIdsByCodes (
+        trx: MySql2Database,
+        modality_code?: string,
+        seller_code?: string
+    ): Promise<{ modality_id?: number, seller_id?: number }> {
+        const modality = modality_code === undefined
+            ? null
+            : await trx.select({ id: companies_modality.id }).from(companies_modality).where(eq(companies_modality.code, modality_code))
+
+        const seller = seller_code === undefined
+            ? null
+            : await trx.select({ id: companies_seller.id }).from(companies_seller).where(eq(companies_seller.code, seller_code))
+
+        const modality_id = modality?.at(0)?.id ?? undefined
+        const seller_id = seller?.at(0)?.id ?? undefined
+
+        return {
+            modality_id,
+            seller_id
+        }
     }
 }

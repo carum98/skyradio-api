@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { CompaniesService } from '@services/companies.service'
+import { CompanySchemaCreateType, CompanySchemaUpdateType } from '@models/companies.model'
 
 export class CompaniesController {
     constructor (private readonly service: CompaniesService) {}
@@ -21,25 +22,18 @@ export class CompaniesController {
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        const { name, group_id, modality_id, seller_id } = req.body
+        const params = req.body as CompanySchemaCreateType
 
-        const data = await this.service.create({
-            name,
-            group_id: parseInt(group_id),
-            modality_id: parseInt(modality_id),
-            seller_id: parseInt(seller_id)
-        })
+        const data = await this.service.create(params)
 
         res.json(data)
     }
 
     public update = async (req: Request, res: Response): Promise<void> => {
         const { code } = req.params
-        const { name } = req.body
+        const params = req.body as CompanySchemaUpdateType
 
-        const data = await this.service.update(code, {
-            name
-        })
+        const data = await this.service.update(code, params)
 
         res.json(data)
     }

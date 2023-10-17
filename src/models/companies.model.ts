@@ -36,14 +36,25 @@ export const CompanySchemaCreate = createInsertSchema(companies, {
     name: (schema) => schema.name.min(3).max(100)
 }).pick({
     name: true,
-    group_id: true,
-    modality_id: true,
-    seller_id: true
-}).required()
+    group_id: true
+})
+.extend({
+    modality_code: z.string().length(6),
+    seller_code: z.string().length(6)
+})
+.required()
+.partial({
+    seller_code: true
+})
 
 export const CompanySchemaUpdate = CompanySchemaCreate
-    .pick({ id: true, name: true })
-    .required()
+.pick({
+    id: true,
+    name: true,
+    modality_code: true,
+    seller_code: true
+})
+.partial()
 
 export const CompanySchemaUniqueIdentifier = createSelectSchema(companies, {
     code: (schema) => schema.code.length(6)

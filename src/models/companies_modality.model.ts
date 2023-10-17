@@ -20,7 +20,7 @@ export const companies_modality = mysqlTable('companies_modality', {
 })
 
 export const CompanyModalitySchemaSelect = createSelectSchema(companies_modality)
-    .pick({ id: true, code: true, name: true })
+    .pick({ code: true, name: true })
 
 export const CompanyModalitySchemaCreate = createInsertSchema(companies_modality, {
     name: (schema) => schema.name.min(3).max(100)
