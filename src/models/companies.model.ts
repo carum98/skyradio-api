@@ -29,7 +29,8 @@ export const CompanySchemaSelect = createSelectSchema(companies)
     .pick({ code: true, name: true })
     .extend({
         modality: CompanyModalitySchemaSelect.pick({ code: true, name: true }),
-        seller: CompanySellerSchemaSelect.pick({ code: true, name: true }).nullable()
+        seller: CompanySellerSchemaSelect.pick({ code: true, name: true }).nullable(),
+        radios_count: z.number().int()
     })
 
 export const CompanySchemaCreate = createInsertSchema(companies, {

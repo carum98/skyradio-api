@@ -7,6 +7,7 @@ import { companies_modality } from '@/models/companies_modality.model'
 import { companies_seller } from '@/models/companies_seller.model'
 import { SQL } from 'drizzle-orm/sql'
 import { NotFoundError } from '@/utils/errors'
+import { radios } from '@/models/radios.model'
 
 export class CompaniesRepository implements ICompanyRepository {
     constructor (public readonly db: MySql2Database) {}
@@ -97,7 +98,8 @@ export class CompaniesRepository implements ICompanyRepository {
             companies_modality: {
                 code: companies_modality.code,
                 name: companies_modality.name
-            }
+            },
+            radios_count: sql<number>`(select count(${radios.id}) from ${radios} where ${radios.company_id} = ${companies.id})`
         })
             .from(companies)
             .leftJoin(companies_modality, eq(companies_modality.id, companies.modality_id))
@@ -107,7 +109,8 @@ export class CompaniesRepository implements ICompanyRepository {
         return data.map((item) => ({
             ...item.companies,
             seller: item.companies_seller,
-            modality: item.companies_modality
+            modality: item.companies_modality,
+            radios_count: item.radios_count
         })) as CompanySchemaSelectType[]
     }
 

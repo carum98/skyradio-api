@@ -8,6 +8,7 @@ import { sims } from '@models/sims.model'
 import { generateCode } from '@utils/code'
 import { sims_provider } from '@models/sims_provider.model'
 import { NotFoundError } from '@/utils/errors'
+import { companies } from '@/models/companies.model'
 
 export class RadiosRepository implements IRadioRepository {
     constructor (public readonly db: MySql2Database) {}
@@ -36,11 +37,12 @@ export class RadiosRepository implements IRadioRepository {
         const code = generateCode()
 
         await this.db.transaction(async (trx) => {
-            const { model_id, status_id, sim_id } = await this.findIdsByCodes(
+            const { model_id, status_id, sim_id, company_id } = await this.findIdsByCodes(
                 trx,
                 params.model_code,
                 params.status_code,
-                params.sim_code
+                params.sim_code,
+                params.company_code
             )
 
             await trx.insert(radios).values({
@@ -48,7 +50,8 @@ export class RadiosRepository implements IRadioRepository {
                 code,
                 model_id: model_id ?? 0,
                 status_id,
-                sim_id
+                sim_id,
+                company_id
             })
         })
 
@@ -57,18 +60,20 @@ export class RadiosRepository implements IRadioRepository {
 
     public async update (code: string, params: RadiosSchemaUpdateType): Promise<string> {
         const data = await this.db.transaction(async (trx) => {
-            const { model_id, status_id, sim_id } = await this.findIdsByCodes(
+            const { model_id, status_id, sim_id, company_id } = await this.findIdsByCodes(
                 trx,
                 params.model_code,
                 params.status_code,
-                params.sim_code
+                params.sim_code,
+                params.company_code
             )
 
             return await trx.update(radios).set({
                 name: params.name,
                 model_id,
                 status_id,
-                sim_id
+                sim_id,
+                company_id
             })
                 .where(
                     and(
@@ -117,6 +122,10 @@ export class RadiosRepository implements IRadioRepository {
             sims_provider: {
                 code: sims_provider.code,
                 name: sims_provider.name
+            },
+            companies: {
+                code: companies.code,
+                name: companies.name
             }
         })
             .from(radios)
@@ -124,6 +133,7 @@ export class RadiosRepository implements IRadioRepository {
             .leftJoin(radios_status, eq(radios.status_id, radios_status.id))
             .leftJoin(sims, eq(radios.sim_id, sims.id))
             .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
+            .leftJoin(companies, eq(radios.company_id, companies.id))
             .where(where)
 
         return data.map((item) => ({
@@ -132,7 +142,8 @@ export class RadiosRepository implements IRadioRepository {
             status: item.radios_status,
             sim: item.sims !== null
                 ? { ...item.sims, provider: item.sims_provider }
-                : null
+                : null,
+            company: item.companies
         })) as RadiosSchemaSelectType[]
     }
 
@@ -140,8 +151,9 @@ export class RadiosRepository implements IRadioRepository {
         trx: MySql2Database,
         model_code?: string,
         status_code?: string,
-        sim_code?: string
-    ): Promise<{ model_id?: number, status_id?: number, sim_id?: number }> {
+        sim_code?: string,
+        company_code?: string
+    ): Promise<{ model_id?: number, status_id?: number, sim_id?: number, company_id?: number }> {
         const model = model_code === undefined
             ? null
             : await trx.select({ id: radios_model.id }).from(radios_model).where(eq(radios_model.code, model_code))
@@ -166,14 +178,24 @@ export class RadiosRepository implements IRadioRepository {
             throw new NotFoundError(`Seller code ${sim_code} not found`)
         }
 
+        const company = company_code === undefined
+            ? null
+            : await trx.select({ id: companies.id }).from(companies).where(eq(companies.code, company_code))
+
+        if (company_code !== undefined && company?.length === 0) {
+            throw new NotFoundError(`Company code ${company_code} not found`)
+        }
+
         const model_id = model?.at(0)?.id ?? undefined
         const status_id = status?.at(0)?.id ?? undefined
         const sim_id = sim?.at(0)?.id ?? undefined
+        const company_id = company?.at(0)?.id ?? undefined
 
         return {
             model_id,
             status_id,
-            sim_id
+            sim_id,
+            company_id
         }
     }
 }
