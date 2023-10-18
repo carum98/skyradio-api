@@ -49,4 +49,12 @@ export class CompaniesController {
             res.status(400).json()
         }
     }
+
+    public getRadios = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+
+        const data = await this.service.getRadios(code)
+
+        res.json(data)
+    }
 }

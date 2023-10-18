@@ -81,6 +81,7 @@ export interface IRadioRepository extends IRepository {
     create: (params: RadiosSchemaCreateType) => Promise<string>
     update: (code: string, params: RadiosSchemaUpdateType) => Promise<string>
     delete: (code: string) => Promise<boolean>
+    getByCompany: (company_code: string) => Promise<RadiosSchemaSelectType[]>
 }
 
 export interface IRadiosModelRepository extends IRepository {

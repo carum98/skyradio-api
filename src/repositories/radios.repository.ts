@@ -33,6 +33,15 @@ export class RadiosRepository implements IRadioRepository {
             : null
     }
 
+    public async getByCompany (company_code: string): Promise<RadiosSchemaSelectType[]> {
+        const data = await this.selector(and(
+            eq(companies.code, company_code),
+            isNull(radios.deleted_at)
+        ))
+
+        return RadiosSchemaSelect.array().parse(data)
+    }
+
     public async create (params: RadiosSchemaCreateType): Promise<string> {
         const code = generateCode()
 

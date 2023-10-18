@@ -6,6 +6,7 @@ import { CompaniesService } from '@services/companies.service'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { CompanySchemaCreate, CompanySchemaUniqueIdentifier, CompanySchemaUpdate } from '@models/companies.model'
+import { RadiosRepository } from '@repositories/radios.repository'
 
 export class CompaniesRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -15,7 +16,8 @@ export class CompaniesRouter extends RouterCore {
         })
 
         const repository = datasource.create(CompaniesRepository)
-        const service = new CompaniesService(repository)
+        const radiosRepository = datasource.create(RadiosRepository)
+        const service = new CompaniesService(repository, radiosRepository)
         const controller = new CompaniesController(service)
 
         this.get({
@@ -57,6 +59,16 @@ export class CompaniesRouter extends RouterCore {
         this.delete({
             name: '/:code',
             handler: controller.delete,
+            middlewares: [
+                requestMiddleware({
+                    params: CompanySchemaUniqueIdentifier
+                })
+            ]
+        })
+
+        this.get({
+            name: '/:code/radios',
+            handler: controller.getRadios,
             middlewares: [
                 requestMiddleware({
                     params: CompanySchemaUniqueIdentifier
