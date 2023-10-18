@@ -76,7 +76,7 @@ export interface ISimsProviderRepository extends IRepository {
 }
 
 export interface IRadioRepository extends IRepository {
-    getAll: (group_id: number) => Promise<RadiosSchemaSelectType[]>
+    getAll: (group_id: number, query: PaginationSchemaType) => Promise<RadiosSchemaSelectPaginatedType>
     get: (code: string) => Promise<RadiosSchemaSelectType | null>
     create: (params: RadiosSchemaCreateType) => Promise<string>
     update: (code: string, params: RadiosSchemaUpdateType) => Promise<string>

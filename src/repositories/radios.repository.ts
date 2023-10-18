@@ -1,6 +1,6 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { IRadioRepository } from './repositories'
-import { RadiosSchemaCreateType, RadiosSchemaSelect, RadiosSchemaSelectType, RadiosSchemaUpdateType, radios } from '@models/radios.model'
+import { RadiosSchemaCreateType, RadiosSchemaSelect, RadiosSchemaSelectPaginated, RadiosSchemaSelectPaginatedType, RadiosSchemaSelectType, RadiosSchemaUpdateType, radios } from '@models/radios.model'
 import { SQL, and, eq, isNull, sql } from 'drizzle-orm'
 import { radios_model } from '@models/radios_model.model'
 import { radios_status } from '@models/radios_status.model'
@@ -9,24 +9,31 @@ import { generateCode } from '@utils/code'
 import { sims_provider } from '@models/sims_provider.model'
 import { NotFoundError } from '@/utils/errors'
 import { companies } from '@/models/companies.model'
+import { PaginationSchemaType } from '@/utils/pagination'
 
 export class RadiosRepository implements IRadioRepository {
     constructor (public readonly db: MySql2Database) {}
 
-    public async getAll (group_id: number): Promise<RadiosSchemaSelectType[]> {
-        const data = await this.selector(and(
-            eq(radios.group_id, group_id),
-            isNull(radios.deleted_at)
-        ))
+    public async getAll (group_id: number, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
+        const data_count = await this.db.select({ count: sql<number>`count(${radios.id})` }).from(radios)
 
-        return RadiosSchemaSelect.array().parse(data)
+        const offset = (query.page - 1) * query.per_page
+
+        const data = await this.selector(eq(radios.group_id, group_id), query.per_page, offset)
+
+        return RadiosSchemaSelectPaginated.parse({
+            data,
+            pagination: {
+                total: data_count[0].count,
+                page: query.page,
+                per_page: query.per_page,
+                total_pages: Math.ceil(data_count[0].count / query.per_page)
+            }
+        })
     }
 
     public async get (code: string): Promise<RadiosSchemaSelectType | null> {
-        const data = await this.selector(and(
-            eq(radios.code, code),
-            isNull(radios.deleted_at)
-        ))
+        const data = await this.selector(eq(radios.code, code))
 
         return data.length > 0
             ? RadiosSchemaSelect.parse(data[0])
@@ -34,10 +41,7 @@ export class RadiosRepository implements IRadioRepository {
     }
 
     public async getByCompany (company_code: string): Promise<RadiosSchemaSelectType[]> {
-        const data = await this.selector(and(
-            eq(companies.code, company_code),
-            isNull(radios.deleted_at)
-        ))
+        const data = await this.selector(eq(companies.code, company_code))
 
         return RadiosSchemaSelect.array().parse(data)
     }
@@ -108,8 +112,12 @@ export class RadiosRepository implements IRadioRepository {
         return data[0].affectedRows > 0
     }
 
-    private async selector (where: SQL | undefined): Promise<RadiosSchemaSelectType[]> {
-        const data = await this.db.select({
+    private async selector (
+        where?: SQL,
+        limit?: number,
+        offset?: number
+    ): Promise<RadiosSchemaSelectType[]> {
+        let query = this.db.select({
             radios: {
                 code: radios.code,
                 name: radios.name,
@@ -143,7 +151,25 @@ export class RadiosRepository implements IRadioRepository {
             .leftJoin(sims, eq(radios.sim_id, sims.id))
             .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
             .leftJoin(companies, eq(radios.company_id, companies.id))
-            .where(where)
+
+        if (where !== undefined) {
+            query = query.where(
+                and(
+                    where,
+                    isNull(radios.deleted_at)
+                )
+            )
+        }
+
+        if (limit !== undefined) {
+            query = query.limit(limit)
+        }
+
+        if (offset !== undefined) {
+            query = query.offset(offset)
+        }
+
+        const data = await query
 
         return data.map((item) => ({
             ...item.radios,

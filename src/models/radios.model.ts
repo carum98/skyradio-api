@@ -7,6 +7,7 @@ import { CompanySchemaSelect, companies } from './companies.model'
 import { SimsShemaSelect, sims } from './sims.model'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
+import { ResponsePaginationSchema } from '@/utils/pagination'
 
 export const radios = mysqlTable('radios', {
     id: int('id').autoincrement().notNull(),
@@ -78,6 +79,9 @@ export const RadiosSchemaUniqueIdentifier = createSelectSchema(radios, {
     code: (schema) => schema.code.length(6)
 }).pick({ code: true }).required()
 
+export const RadiosSchemaSelectPaginated = ResponsePaginationSchema(RadiosSchemaSelect)
+
 export type RadiosSchemaCreateType = z.infer<typeof RadiosSchemaCreate>
 export type RadiosSchemaSelectType = z.infer<typeof RadiosSchemaSelect>
 export type RadiosSchemaUpdateType = z.infer<typeof RadiosSchemaUpdate>
+export type RadiosSchemaSelectPaginatedType = z.infer<typeof RadiosSchemaSelectPaginated>
