@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { SimsService } from '@/services/sims.service'
+import { SimsShemaCreateType, SimsShemaUpdateType } from '@/models/sims.model'
 
 export class SimsController {
     constructor (private readonly service: SimsService) {}
@@ -21,27 +22,18 @@ export class SimsController {
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        const { number, serial, group_id, provider_id } = req.body
+        const params = req.body as SimsShemaCreateType
 
-        const data = await this.service.create({
-            number,
-            serial,
-            group_id: parseInt(group_id),
-            provider_id: parseInt(provider_id)
-        })
+        const data = await this.service.create(params)
 
         res.json(data)
     }
 
     public update = async (req: Request, res: Response): Promise<void> => {
         const { code } = req.params
-        const { number, serial, provider_id } = req.body
+        const params = req.body as SimsShemaUpdateType
 
-        const data = await this.service.update(code, {
-            number,
-            serial,
-            provider_id: parseInt(provider_id)
-        })
+        const data = await this.service.update(code, params)
 
         res.json(data)
     }

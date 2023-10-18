@@ -35,14 +35,16 @@ export const SimsShemaCreate = createSelectSchema(sims, {
 }).pick({
     number: true,
     group_id: true,
-    provider_id: true,
     serial: true
+})
+.extend({
+    provider_code: z.string().length(6)
 })
 .required()
 .partial({ serial: true })
 
 export const SimsShemaUpdate = SimsShemaCreate
-    .pick({ number: true, serial: true, provider_id: true })
+    .pick({ number: true, serial: true, provider_code: true })
     .partial()
 
 export const SimsShemaUniqueIdentifier = createSelectSchema(sims, {
