@@ -5,6 +5,7 @@ import { MySql2Database, drizzle } from 'drizzle-orm/mysql2'
 
 export class DataSource {
     private readonly _db: MySql2Database
+    private readonly _repositories: Map<string, IRepository> = new Map()
 
     constructor () {
         const connection = mysql.createPool(DatabaseConfig as object)
@@ -12,7 +13,13 @@ export class DataSource {
     }
 
     public create<T extends IRepository>(Type: new(db: MySql2Database) => T): T {
-        console.log('create', Type)
-        return new Type(this._db)
+        const name = Type.name
+
+        if (!this._repositories.has(name)) {
+            console.log(`Creating repository ${name}`)
+            this._repositories.set(name, new Type(this._db))
+        }
+
+        return this._repositories.get(name) as T
     }
 }
