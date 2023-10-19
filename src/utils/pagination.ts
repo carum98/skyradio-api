@@ -5,7 +5,7 @@ export const PaginationSchema = z.object({
     per_page: z.coerce.number().int().positive().default(10)
 })
 
-export function ResponsePaginationSchema<T> (schema: z.ZodType<T>): z.ZodType<{ data: T[], pagination: { page: number, per_page: number, total: number } }> {
+export function ResponsePaginationSchema<T> (schema: z.ZodType<T>): z.ZodType<{ data: T[], pagination: { page: number, per_page: number, total: number, total_pages: number } }> {
     return z.object({
         data: z.array(schema),
         pagination: z.object({

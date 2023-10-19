@@ -15,21 +15,9 @@ export class RadiosRepository implements IRadioRepository {
     constructor (public readonly db: MySql2Database) {}
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
-        const data_count = await this.db.select({ count: sql<number>`count(${radios.id})` }).from(radios)
+        const data = await this.paginate(eq(radios.group_id, group_id), query)
 
-        const offset = (query.page - 1) * query.per_page
-
-        const data = await this.selector(eq(radios.group_id, group_id), query.per_page, offset)
-
-        return RadiosSchemaSelectPaginated.parse({
-            data,
-            pagination: {
-                total: data_count[0].count,
-                page: query.page,
-                per_page: query.per_page,
-                total_pages: Math.ceil(data_count[0].count / query.per_page)
-            }
-        })
+        return RadiosSchemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<RadiosSchemaSelectType | null> {
@@ -41,28 +29,13 @@ export class RadiosRepository implements IRadioRepository {
     }
 
     public async getByCompany (company_code: string, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
-        const company_id = await this.db.select({ id: companies.id }).from(companies).where(eq(companies.code, company_code))
+        const company_id = await this.db.select({ id: companies.id })
+            .from(companies)
+            .where(eq(companies.code, company_code))
 
-        const data_count = await this.db.select({ count: sql<number>`count(${radios.id})` }).from(radios).where(
-            and(
-                eq(radios.company_id, company_id[0].id),
-                isNull(radios.deleted_at)
-            )
-        )
+        const data = await this.paginate(eq(radios.company_id, company_id[0].id), query)
 
-        const offset = (query.page - 1) * query.per_page
-
-        const data = await this.selector(eq(radios.company_id, company_id[0].id), query.per_page, offset)
-
-        return RadiosSchemaSelectPaginated.parse({
-            data,
-            pagination: {
-                total: data_count[0].count,
-                page: query.page,
-                per_page: query.per_page,
-                total_pages: Math.ceil(data_count[0].count / query.per_page)
-            }
-        })
+        return RadiosSchemaSelectPaginated.parse(data)
     }
 
     public async create (params: RadiosSchemaCreateType): Promise<string> {
@@ -131,11 +104,7 @@ export class RadiosRepository implements IRadioRepository {
         return data[0].affectedRows > 0
     }
 
-    private async selector (
-        where?: SQL,
-        limit?: number,
-        offset?: number
-    ): Promise<RadiosSchemaSelectType[]> {
+    private async selector (where?: SQL, limit?: number, offset?: number): Promise<RadiosSchemaSelectType[]> {
         let query = this.db.select({
             radios: {
                 code: radios.code,
@@ -164,12 +133,12 @@ export class RadiosRepository implements IRadioRepository {
                 name: companies.name
             }
         })
-            .from(radios)
-            .leftJoin(radios_model, eq(radios.model_id, radios_model.id))
-            .leftJoin(radios_status, eq(radios.status_id, radios_status.id))
-            .leftJoin(sims, eq(radios.sim_id, sims.id))
-            .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
-            .leftJoin(companies, eq(radios.company_id, companies.id))
+        .from(radios)
+        .leftJoin(radios_model, eq(radios.model_id, radios_model.id))
+        .leftJoin(radios_status, eq(radios.status_id, radios_status.id))
+        .leftJoin(sims, eq(radios.sim_id, sims.id))
+        .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
+        .leftJoin(companies, eq(radios.company_id, companies.id))
 
         if (where !== undefined) {
             query = query.where(
@@ -250,6 +219,27 @@ export class RadiosRepository implements IRadioRepository {
             status_id,
             sim_id,
             company_id
+        }
+    }
+
+    private async paginate (where: SQL, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
+        const data_count = await this.db.select({ count: sql<number>`count(${radios.id})` }).from(radios).where(and(
+            where,
+            isNull(radios.deleted_at)
+        ))
+
+        const offset = (query.page - 1) * query.per_page
+
+        const data = await this.selector(where, query.per_page, offset)
+
+        return {
+            data,
+            pagination: {
+                total: data_count[0].count,
+                page: query.page,
+                per_page: query.per_page,
+                total_pages: Math.ceil(data_count[0].count / query.per_page)
+            }
         }
     }
 }

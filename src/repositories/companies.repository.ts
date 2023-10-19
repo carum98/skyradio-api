@@ -14,21 +14,9 @@ export class CompaniesRepository implements ICompanyRepository {
     constructor (public readonly db: MySql2Database) {}
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<CompanySchemaSelectPaginatedType> {
-        const data_count = await this.db.select({ count: sql<number>`count(${companies.id})` }).from(companies)
+        const data = await this.paginate(eq(companies.group_id, group_id), query)
 
-        const offset = (query.page - 1) * query.per_page
-
-        const data = await this.selector(eq(companies.group_id, group_id), query.per_page, offset)
-
-        return CompanySchemaSelectPaginated.parse({
-            data,
-            pagination: {
-                total: data_count[0].count,
-                page: query.page,
-                per_page: query.per_page,
-                total_pages: Math.ceil(data_count[0].count / query.per_page)
-            }
-        })
+        return CompanySchemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<CompanySchemaSelectType | null> {
@@ -112,9 +100,9 @@ export class CompaniesRepository implements ICompanyRepository {
             },
             radios_count: sql<number>`(select count(${radios.id}) from ${radios} where ${radios.company_id} = ${companies.id})`
         })
-            .from(companies)
-            .leftJoin(companies_modality, eq(companies_modality.id, companies.modality_id))
-            .leftJoin(companies_seller, eq(companies_seller.id, companies.seller_id))
+        .from(companies)
+        .leftJoin(companies_modality, eq(companies_modality.id, companies.modality_id))
+        .leftJoin(companies_seller, eq(companies_seller.id, companies.seller_id))
 
         if (where !== undefined) {
             query = query.where(
@@ -171,5 +159,26 @@ export class CompaniesRepository implements ICompanyRepository {
             modality_id,
             seller_id
         }
+    }
+
+    private async paginate (where: SQL, query: PaginationSchemaType): Promise<CompanySchemaSelectPaginatedType> {
+        const data_count = await this.db.select({ count: sql<number>`count(${companies.id})` }).from(companies).where(and(
+            where,
+            isNull(companies.deleted_at)
+        ))
+
+        const offset = (query.page - 1) * query.per_page
+
+        const data = await this.selector(where, query.per_page, offset)
+
+        return CompanySchemaSelectPaginated.parse({
+            data,
+            pagination: {
+                total: data_count[0].count,
+                page: query.page,
+                per_page: query.per_page,
+                total_pages: Math.ceil(data_count[0].count / query.per_page)
+            }
+        })
     }
 }
