@@ -7,6 +7,7 @@ import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { CompanySchemaCreate, CompanySchemaUniqueIdentifier, CompanySchemaUpdate } from '@models/companies.model'
 import { RadiosRepository } from '@repositories/radios.repository'
+import { PaginationSchema } from '@/utils/pagination'
 
 export class CompaniesRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -22,7 +23,12 @@ export class CompaniesRouter extends RouterCore {
 
         this.get({
             name: '/',
-            handler: controller.getAll
+            handler: controller.getAll,
+            middlewares: [
+                requestMiddleware({
+                    query: PaginationSchema
+                })
+            ]
         })
 
         this.post({
@@ -71,6 +77,7 @@ export class CompaniesRouter extends RouterCore {
             handler: controller.getRadios,
             middlewares: [
                 requestMiddleware({
+                    query: PaginationSchema,
                     params: CompanySchemaUniqueIdentifier
                 })
             ]

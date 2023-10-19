@@ -11,8 +11,8 @@ export function ResponsePaginationSchema<T> (schema: z.ZodType<T>): z.ZodType<{ 
         pagination: z.object({
             page: z.number().int().positive(),
             per_page: z.number().int().positive(),
-            total: z.number().int().positive(),
-            total_pages: z.number().int().positive()
+            total: z.number().int().nonnegative(),
+            total_pages: z.number().int().nonnegative()
         })
     })
 }

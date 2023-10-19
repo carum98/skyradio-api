@@ -40,10 +40,29 @@ export class RadiosRepository implements IRadioRepository {
             : null
     }
 
-    public async getByCompany (company_code: string): Promise<RadiosSchemaSelectType[]> {
-        const data = await this.selector(eq(companies.code, company_code))
+    public async getByCompany (company_code: string, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
+        const company_id = await this.db.select({ id: companies.id }).from(companies).where(eq(companies.code, company_code))
 
-        return RadiosSchemaSelect.array().parse(data)
+        const data_count = await this.db.select({ count: sql<number>`count(${radios.id})` }).from(radios).where(
+            and(
+                eq(radios.company_id, company_id[0].id),
+                isNull(radios.deleted_at)
+            )
+        )
+
+        const offset = (query.page - 1) * query.per_page
+
+        const data = await this.selector(eq(radios.company_id, company_id[0].id), query.per_page, offset)
+
+        return RadiosSchemaSelectPaginated.parse({
+            data,
+            pagination: {
+                total: data_count[0].count,
+                page: query.page,
+                per_page: query.per_page,
+                total_pages: Math.ceil(data_count[0].count / query.per_page)
+            }
+        })
     }
 
     public async create (params: RadiosSchemaCreateType): Promise<string> {

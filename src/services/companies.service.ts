@@ -1,8 +1,9 @@
-import { CompanySchemaCreateType, CompanySchemaSelectType, CompanySchemaUpdateType } from '@models/companies.model'
+import { CompanySchemaCreateType, CompanySchemaSelectPaginatedType, CompanySchemaSelectType, CompanySchemaUpdateType } from '@models/companies.model'
 import { CompaniesRepository } from '@repositories/companies.repository'
 import { NotFoundError } from '@/utils/errors'
 import { RadiosRepository } from '@repositories/radios.repository'
-import { RadiosSchemaSelectType } from '@models/radios.model'
+import { PaginationSchemaType } from '@/utils/pagination'
+import { RadiosSchemaSelectPaginatedType } from '@models/radios.model'
 
 export class CompaniesService {
     constructor (
@@ -10,8 +11,8 @@ export class CompaniesService {
         private readonly radiosRepository: RadiosRepository
     ) {}
 
-    public async getAll (group_id: number): Promise<CompanySchemaSelectType[]> {
-        return await this.repository.getAll(group_id)
+    public async getAll (group_id: number, query: PaginationSchemaType): Promise<CompanySchemaSelectPaginatedType> {
+        return await this.repository.getAll(group_id, query)
     }
 
     public async get (code: string): Promise<CompanySchemaSelectType> {
@@ -40,7 +41,7 @@ export class CompaniesService {
         return await this.repository.delete(code)
     }
 
-    public async getRadios (code: string): Promise<RadiosSchemaSelectType[]> {
-        return await this.radiosRepository.getByCompany(code)
+    public async getRadios (code: string, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
+        return await this.radiosRepository.getByCompany(code, query)
     }
 }

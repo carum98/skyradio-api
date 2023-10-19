@@ -1,31 +1,38 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { and, eq, isNull, sql } from 'drizzle-orm'
 import { ICompanyRepository } from './repositories'
-import { CompanySchemaCreateType, CompanySchemaSelect, CompanySchemaSelectType, CompanySchemaUpdateType, companies } from '@models/companies.model'
+import { CompanySchemaCreateType, CompanySchemaSelect, CompanySchemaSelectPaginated, CompanySchemaSelectPaginatedType, CompanySchemaSelectType, CompanySchemaUpdateType, companies } from '@models/companies.model'
 import { generateCode } from '@utils/code'
 import { companies_modality } from '@/models/companies_modality.model'
 import { companies_seller } from '@/models/companies_seller.model'
 import { SQL } from 'drizzle-orm/sql'
 import { NotFoundError } from '@/utils/errors'
 import { radios } from '@/models/radios.model'
+import { PaginationSchemaType } from '@/utils/pagination'
 
 export class CompaniesRepository implements ICompanyRepository {
     constructor (public readonly db: MySql2Database) {}
 
-    public async getAll (group_id: number): Promise<CompanySchemaSelectType[]> {
-        const data = await this.selector(and(
-            eq(companies.group_id, group_id),
-            isNull(companies.deleted_at)
-        ))
+    public async getAll (group_id: number, query: PaginationSchemaType): Promise<CompanySchemaSelectPaginatedType> {
+        const data_count = await this.db.select({ count: sql<number>`count(${companies.id})` }).from(companies)
 
-        return CompanySchemaSelect.array().parse(data)
+        const offset = (query.page - 1) * query.per_page
+
+        const data = await this.selector(eq(companies.group_id, group_id), query.per_page, offset)
+
+        return CompanySchemaSelectPaginated.parse({
+            data,
+            pagination: {
+                total: data_count[0].count,
+                page: query.page,
+                per_page: query.per_page,
+                total_pages: Math.ceil(data_count[0].count / query.per_page)
+            }
+        })
     }
 
     public async get (code: string): Promise<CompanySchemaSelectType | null> {
-        const data = await this.selector(and(
-            eq(companies.code, code),
-            isNull(companies.deleted_at)
-        ))
+        const data = await this.selector(eq(companies.code, code))
 
         return data.length > 0
             ? CompanySchemaSelect.parse(data[0])
@@ -85,8 +92,12 @@ export class CompaniesRepository implements ICompanyRepository {
         return data[0].affectedRows > 0
     }
 
-    private async selector (where: SQL | undefined): Promise<CompanySchemaSelectType[]> {
-        const data = await this.db.select({
+    private async selector (
+        where?: SQL,
+        limit?: number,
+        offset?: number
+    ): Promise<CompanySchemaSelectType[]> {
+        let query = this.db.select({
             companies: {
                 code: companies.code,
                 name: companies.name
@@ -104,7 +115,25 @@ export class CompaniesRepository implements ICompanyRepository {
             .from(companies)
             .leftJoin(companies_modality, eq(companies_modality.id, companies.modality_id))
             .leftJoin(companies_seller, eq(companies_seller.id, companies.seller_id))
-            .where(where)
+
+        if (where !== undefined) {
+            query = query.where(
+                and(
+                    where,
+                    isNull(companies.deleted_at)
+                )
+            )
+        }
+
+        if (limit !== undefined) {
+            query = query.limit(limit)
+        }
+
+        if (offset !== undefined) {
+            query = query.offset(offset)
+        }
+
+        const data = await query
 
         return data.map((item) => ({
             ...item.companies,

@@ -28,7 +28,7 @@ export interface IUserRepository extends IRepository {
 }
 
 export interface ICompanyRepository extends IRepository {
-    getAll: (group_id: number) => Promise<CompanySchemaSelectType[]>
+    getAll: (group_id: number, query: PaginationSchemaType) => Promise<CompanySchemaSelectPaginatedType>
     get: (code: string) => Promise<CompanySchemaSelectType | null>
     create: (params: CompanySchemaCreateType) => Promise<string>
     update: (code: string, params: CompanySchemaUpdateType) => Promise<string>
@@ -81,7 +81,7 @@ export interface IRadioRepository extends IRepository {
     create: (params: RadiosSchemaCreateType) => Promise<string>
     update: (code: string, params: RadiosSchemaUpdateType) => Promise<string>
     delete: (code: string) => Promise<boolean>
-    getByCompany: (company_code: string) => Promise<RadiosSchemaSelectType[]>
+    getByCompany: (company_code: string, query: PaginationSchemaType) => Promise<RadiosSchemaSelectPaginatedType>
 }
 
 export interface IRadiosModelRepository extends IRepository {
