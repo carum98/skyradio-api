@@ -1,43 +1,28 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { eq, sql, and, isNull } from 'drizzle-orm'
+import { eq, and, isNull } from 'drizzle-orm'
 import { ICompanyModalityRepository } from './repositories'
 import { CompanyModalitySchemaCreateType, CompanyModalitySchemaSelect, CompanyModalitySchemaSelectPaginated, CompanyModalitySchemaSelectPaginatedType, CompanyModalitySchemaSelectType, CompanyModalitySchemaUpdateType, companies_modality } from '@models/companies_modality.model'
 import { generateCode } from '@utils/code'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { RepositoryCore } from '@/core/repository.core'
 
-export class CompaniesModalityRepository implements ICompanyModalityRepository {
-    constructor (public readonly db: MySql2Database) {}
+export class CompaniesModalityRepository extends RepositoryCore<CompanyModalitySchemaSelectType> implements ICompanyModalityRepository {
+    constructor (public readonly db: MySql2Database) {
+        super({
+            db,
+            table: companies_modality,
+            deletedColumn: companies_modality.deleted_at
+        })
+    }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<CompanyModalitySchemaSelectPaginatedType> {
-        // const data = await this.db.select().from(companies_modality)
-        //     .where(
-        //         and(
-        //             eq(companies_modality.group_id, group_id),
-        //             isNull(companies_modality.deleted_at)
-        //         )
-        //     )
-
-        const repo = new RepositoryCore(this.db, companies_modality, companies_modality.id)
-
-        const where = and(
-            eq(companies_modality.group_id, group_id),
-            isNull(companies_modality.deleted_at)
-        )
-
-        const data = await repo.paginate(where, query)
+        const data = await this.paginate(eq(companies_modality.group_id, group_id), query)
 
         return CompanyModalitySchemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<CompanyModalitySchemaSelectType | null> {
-        const data = await this.db.select().from(companies_modality)
-            .where(
-                and(
-                    eq(companies_modality.code, code),
-                    isNull(companies_modality.deleted_at)
-                )
-            )
+        const data = await this.selector(eq(companies_modality.code, code))
 
         return data.length > 0
             ? CompanyModalitySchemaSelect.parse(data.at(0))
@@ -69,10 +54,8 @@ export class CompaniesModalityRepository implements ICompanyModalityRepository {
     }
 
     public async delete (code: string): Promise<boolean> {
-        const data = await this.db.update(companies_modality)
-            .set({ deleted_at: sql`CURRENT_TIMESTAMP` })
-            .where(eq(companies_modality.code, code))
+        const where = eq(companies_modality.code, code)
 
-        return data[0].affectedRows > 0
+        return await this.softDelete(where)
     }
 }
