@@ -7,6 +7,7 @@ import { CompanyModalitySchemaCreate, CompanyModalitySchemaUniqueIdentifier, Com
 import { CompaniesModalityRepository } from '@repositories/companies_modality.repository'
 import { CompaniesModalityService } from '@services/companies_modality.service'
 import { rolesMiddleware } from '@/middlewares/roles.middleware'
+import { PaginationSchema } from '@/utils/pagination'
 
 export class CompaniesModalityRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -21,7 +22,12 @@ export class CompaniesModalityRouter extends RouterCore {
 
         this.get({
             name: '/',
-            handler: controller.getAll
+            handler: controller.getAll,
+            middlewares: [
+                requestMiddleware({
+                    query: PaginationSchema
+                })
+            ]
         })
 
         this.post({

@@ -3,6 +3,7 @@ import { sql } from 'drizzle-orm'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 import { groups } from './groups.model'
+import { ResponsePaginationSchema } from '@/utils/pagination'
 
 export const companies_modality = mysqlTable('companies_modality', {
     id: int('id').autoincrement().notNull(),
@@ -34,6 +35,9 @@ export const CompanyModalitySchemaUniqueIdentifier = createSelectSchema(companie
     code: (schema) => schema.code.length(6)
 }).pick({ code: true }).required()
 
+export const CompanyModalitySchemaSelectPaginated = ResponsePaginationSchema(CompanyModalitySchemaSelect)
+
 export type CompanyModalitySchemaCreateType = z.infer<typeof CompanyModalitySchemaCreate>
 export type CompanyModalitySchemaSelectType = z.infer<typeof CompanyModalitySchemaSelect>
 export type CompanyModalitySchemaUpdateType = z.infer<typeof CompanyModalitySchemaUpdate>
+export type CompanyModalitySchemaSelectPaginatedType = z.infer<typeof CompanyModalitySchemaSelectPaginated>

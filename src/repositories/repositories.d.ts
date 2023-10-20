@@ -36,7 +36,7 @@ export interface ICompanyRepository extends IRepository {
 }
 
 export interface ICompanyModalityRepository extends IRepository {
-    getAll: (group_id: number) => Promise<CompanyModalitySchemaSelectType[]>
+    getAll: (group_id: number, query: PaginationSchemaType) => Promise<CompanyModalitySchemaSelectPaginated>
     get: (code: string) => Promise<CompanyModalitySchemaSelectType | null>
     create: (params: CompanyModalitySchemaCreateType) => Promise<string>
     update: (code: string, params: CompanySchemaUpdateType) => Promise<string>
