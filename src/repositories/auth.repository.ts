@@ -1,9 +1,10 @@
+import { IRepository } from '@/core/repository.core'
 import { refresh_tokens } from '@models/refresh-token.model'
 import { UserSchema, UserSchemaType, users } from '@models/users.model'
 import { and, eq } from 'drizzle-orm'
 import { MySql2Database } from 'drizzle-orm/mysql2'
 
-export class AuthRepository {
+export class AuthRepository implements IRepository {
     constructor (public readonly db: MySql2Database) {}
 
     public async login (email: string): Promise<UserSchemaType | null> {

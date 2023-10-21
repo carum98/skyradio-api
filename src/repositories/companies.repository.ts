@@ -5,9 +5,9 @@ import { companies_modality } from '@/models/companies_modality.model'
 import { companies_seller } from '@/models/companies_seller.model'
 import { radios } from '@/models/radios.model'
 import { PaginationSchemaType } from '@/utils/pagination'
-import { RepositoryCore } from '@/core/repository.core'
+import { IRepository, RepositoryCore } from '@/core/repository.core'
 
-export class CompaniesRepository extends RepositoryCore<CompanySchemaSelectType, CompanySchemaCreateRawType, CompanySchemaUpdateRawType> {
+export class CompaniesRepository extends RepositoryCore<CompanySchemaSelectType, CompanySchemaCreateRawType, CompanySchemaUpdateRawType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
         const table = companies
 

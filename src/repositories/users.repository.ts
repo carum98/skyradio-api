@@ -1,8 +1,9 @@
 import { UserSchemaCreateType, UserSchemaSelect, UserSchemaSelectType, UserSchemaUpdateType, users } from '@models/users.model'
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { eq, isNull, sql, and } from 'drizzle-orm'
+import { IRepository } from '@/core/repository.core'
 
-export class UserRepository {
+export class UserRepository implements IRepository {
     constructor (public readonly db: MySql2Database) {}
 
     public async getAll (): Promise<UserSchemaSelectType[]> {

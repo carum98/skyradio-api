@@ -7,9 +7,9 @@ import { sims } from '@models/sims.model'
 import { sims_provider } from '@models/sims_provider.model'
 import { companies } from '@/models/companies.model'
 import { PaginationSchemaType } from '@/utils/pagination'
-import { RepositoryCore } from '@/core/repository.core'
+import { IRepository, RepositoryCore } from '@/core/repository.core'
 
-export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, RadiosSchemaCreateRawType, RadiosSchemaUpdateRawType> {
+export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, RadiosSchemaCreateRawType, RadiosSchemaUpdateRawType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
         const table = radios
 

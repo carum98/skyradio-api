@@ -2,9 +2,9 @@ import { MySql2Database } from 'drizzle-orm/mysql2'
 import { eq } from 'drizzle-orm'
 import { CompanyModalitySchemaCreateType, CompanyModalitySchemaSelect, CompanyModalitySchemaSelectPaginated, CompanyModalitySchemaSelectPaginatedType, CompanyModalitySchemaSelectType, CompanyModalitySchemaUpdateType, companies_modality } from '@models/companies_modality.model'
 import { PaginationSchemaType } from '@/utils/pagination'
-import { RepositoryCore } from '@/core/repository.core'
+import { IRepository, RepositoryCore } from '@/core/repository.core'
 
-export class CompaniesModalityRepository extends RepositoryCore<CompanyModalitySchemaSelectType, CompanyModalitySchemaCreateType, CompanyModalitySchemaUpdateType> {
+export class CompaniesModalityRepository extends RepositoryCore<CompanyModalitySchemaSelectType, CompanyModalitySchemaCreateType, CompanyModalitySchemaUpdateType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
         const table = companies_modality
 

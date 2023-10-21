@@ -1,10 +1,10 @@
-import { RepositoryCore } from '@/core/repository.core'
+import { IRepository, RepositoryCore } from '@/core/repository.core'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { RadiosModelShemaCreateType, RadiosModelShemaSelectPaginatedType, RadiosModelShemaSelectType, RadiosModelShemaUpdateType, radios_model } from '@models/radios_model.model'
 import { eq } from 'drizzle-orm'
 import { MySql2Database } from 'drizzle-orm/mysql2'
 
-export class RadiosModelRepository extends RepositoryCore<RadiosModelShemaSelectType, RadiosModelShemaCreateType, RadiosModelShemaUpdateType> {
+export class RadiosModelRepository extends RepositoryCore<RadiosModelShemaSelectType, RadiosModelShemaCreateType, RadiosModelShemaUpdateType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
         const table = radios_model
 

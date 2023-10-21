@@ -2,9 +2,9 @@ import { MySql2Database } from 'drizzle-orm/mysql2'
 import { eq } from 'drizzle-orm'
 import { CompanySellerSchemaCreateType, CompanySellerSchemaSelect, CompanySellerSchemaSelectPaginated, CompanySellerSchemaSelectPaginatedType, CompanySellerSchemaSelectType, CompanySellerSchemaUpdateType, companies_seller } from '@models/companies_seller.model'
 import { PaginationSchemaType } from '@/utils/pagination'
-import { RepositoryCore } from '@/core/repository.core'
+import { IRepository, RepositoryCore } from '@/core/repository.core'
 
-export class CompaniesSellerRepository extends RepositoryCore<CompanySellerSchemaSelectType, CompanySellerSchemaCreateType, CompanySellerSchemaUpdateType> {
+export class CompaniesSellerRepository extends RepositoryCore<CompanySellerSchemaSelectType, CompanySellerSchemaCreateType, CompanySellerSchemaUpdateType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
         const table = companies_seller
 

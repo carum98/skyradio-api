@@ -2,9 +2,9 @@ import { GroupSchemaCreateType, GroupSchemaSelect, GroupSchemaSelectPaginated, G
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { eq, isNull } from 'drizzle-orm'
 import { PaginationSchemaType } from '@/utils/pagination'
-import { RepositoryCore } from '@/core/repository.core'
+import { IRepository, RepositoryCore } from '@/core/repository.core'
 
-export class GroupRepository extends RepositoryCore<GroupSchemaSelectType, GroupSchemaCreateType, GroupSchemaUpdateType> {
+export class GroupRepository extends RepositoryCore<GroupSchemaSelectType, GroupSchemaCreateType, GroupSchemaUpdateType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
         const table = groups
 

@@ -6,6 +6,10 @@ import { MySqlColumn, MySqlSelect, MySqlTable, getTableConfig } from 'drizzle-or
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { SelectMode } from 'drizzle-orm/query-builders/select.types'
 
+export interface IRepository {
+    db: MySql2Database
+}
+
 type Where = SQL<unknown> | undefined
 
 interface RepositoryCoreParams {

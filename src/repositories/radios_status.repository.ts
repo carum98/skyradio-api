@@ -2,9 +2,9 @@ import { MySql2Database } from 'drizzle-orm/mysql2'
 import { RadiosStatusShemaCreateType, RadiosStatusShemaSelectPaginatedType, RadiosStatusShemaSelectType, RadiosStatusShemaUpdateType, radios_status } from '@models/radios_status.model'
 import { eq } from 'drizzle-orm'
 import { PaginationSchemaType } from '@/utils/pagination'
-import { RepositoryCore } from '@/core/repository.core'
+import { IRepository, RepositoryCore } from '@/core/repository.core'
 
-export class RadiosStatusRepository extends RepositoryCore<RadiosStatusShemaSelectType, RadiosStatusShemaCreateType, RadiosStatusShemaUpdateType> {
+export class RadiosStatusRepository extends RepositoryCore<RadiosStatusShemaSelectType, RadiosStatusShemaCreateType, RadiosStatusShemaUpdateType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
         const table = radios_status
 

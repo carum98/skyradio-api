@@ -2,9 +2,9 @@ import { MySql2Database } from 'drizzle-orm/mysql2'
 import { SimsProviderShemaCreateType, SimsProviderShemaSelectPaginatedType, SimsProviderShemaSelectType, SimsProviderShemaUpdateType, sims_provider } from '@/models/sims_provider.model'
 import { eq } from 'drizzle-orm'
 import { PaginationSchemaType } from '@/utils/pagination'
-import { RepositoryCore } from '@/core/repository.core'
+import { IRepository, RepositoryCore } from '@/core/repository.core'
 
-export class SimsProviderRepository extends RepositoryCore<SimsProviderShemaSelectType, SimsProviderShemaCreateType, SimsProviderShemaUpdateType> {
+export class SimsProviderRepository extends RepositoryCore<SimsProviderShemaSelectType, SimsProviderShemaCreateType, SimsProviderShemaUpdateType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
         const table = sims_provider
 

@@ -3,9 +3,9 @@ import { MySql2Database } from 'drizzle-orm/mysql2'
 import { eq } from 'drizzle-orm'
 import { sims_provider } from '@/models/sims_provider.model'
 import { PaginationSchemaType } from '@/utils/pagination'
-import { RepositoryCore } from '@/core/repository.core'
+import { IRepository, RepositoryCore } from '@/core/repository.core'
 
-export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsSchemaCreateRawType, SimsSchemaUpdateRawType> {
+export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsSchemaCreateRawType, SimsSchemaUpdateRawType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
         const table = sims
 
