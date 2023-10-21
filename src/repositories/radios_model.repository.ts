@@ -18,7 +18,7 @@ export class RadiosModelRepository extends RepositoryCore<RadiosModelShemaSelect
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<RadiosModelShemaSelectPaginatedType> {
-        const data = await this.paginate({
+        const data = await super.getAllCore({
             query,
             where: eq(radios_model.group_id, group_id)
         })
@@ -27,7 +27,7 @@ export class RadiosModelRepository extends RepositoryCore<RadiosModelShemaSelect
     }
 
     public async get (code: string): Promise<RadiosModelShemaSelectType> {
-        const data = await this.getOne({
+        const data = await super.getOneCore({
             where: eq(radios_model.code, code)
         })
 
@@ -35,7 +35,7 @@ export class RadiosModelRepository extends RepositoryCore<RadiosModelShemaSelect
     }
 
     public async create (params: RadiosModelShemaCreateType): Promise<string> {
-        const code = await this.insert({
+        const code = await super.insertCore({
             params
         })
 
@@ -43,7 +43,7 @@ export class RadiosModelRepository extends RepositoryCore<RadiosModelShemaSelect
     }
 
     public async update (code: string, params: RadiosModelShemaUpdateType): Promise<string> {
-        const data = await this.set({
+        const data = await super.updateCore({
             params,
             where: eq(radios_model.code, code)
         })
@@ -52,6 +52,6 @@ export class RadiosModelRepository extends RepositoryCore<RadiosModelShemaSelect
     }
 
     public async delete (code: string): Promise<boolean> {
-        return await this.softDelete(eq(radios_model.code, code))
+        return await super.deleteCore(eq(radios_model.code, code))
     }
 }

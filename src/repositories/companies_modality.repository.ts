@@ -18,7 +18,7 @@ export class CompaniesModalityRepository extends RepositoryCore<CompanyModalityS
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<CompanyModalitySchemaSelectPaginatedType> {
-        const data = await this.paginate({
+        const data = await super.getAllCore({
             query,
             where: eq(companies_modality.group_id, group_id)
         })
@@ -27,7 +27,7 @@ export class CompaniesModalityRepository extends RepositoryCore<CompanyModalityS
     }
 
     public async get (code: string): Promise<CompanyModalitySchemaSelectType> {
-        const data = await this.getOne({
+        const data = await super.getOneCore({
             where: eq(companies_modality.code, code)
         })
 
@@ -35,7 +35,7 @@ export class CompaniesModalityRepository extends RepositoryCore<CompanyModalityS
     }
 
     public async create (params: CompanyModalitySchemaCreateType): Promise<string> {
-        const code = await this.insert({
+        const code = await super.insertCore({
             params
         })
 
@@ -43,7 +43,7 @@ export class CompaniesModalityRepository extends RepositoryCore<CompanyModalityS
     }
 
     public async update (code: string, params: CompanyModalitySchemaUpdateType): Promise<string> {
-        const data = await this.set({
+        const data = await super.updateCore({
             params,
             where: eq(companies_modality.code, code)
         })
@@ -52,6 +52,6 @@ export class CompaniesModalityRepository extends RepositoryCore<CompanyModalityS
     }
 
     public async delete (code: string): Promise<boolean> {
-        return await this.softDelete(eq(companies_modality.code, code))
+        return await super.deleteCore(eq(companies_modality.code, code))
     }
 }

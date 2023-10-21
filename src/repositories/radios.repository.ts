@@ -1,7 +1,7 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { IRadioRepository } from './repositories'
 import { RadiosSchemaCreateType, RadiosSchemaSelect, RadiosSchemaSelectPaginated, RadiosSchemaSelectPaginatedType, RadiosSchemaSelectType, RadiosSchemaUpdateType, radios } from '@models/radios.model'
-import { and, eq, isNull, sql } from 'drizzle-orm'
+import { and, eq, isNull } from 'drizzle-orm'
 import { radios_model } from '@models/radios_model.model'
 import { radios_status } from '@models/radios_status.model'
 import { sims } from '@models/sims.model'
@@ -53,7 +53,7 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
-        const data = await this.paginate({
+        const data = await super.getAllCore({
             query,
             where: eq(radios.group_id, group_id)
         })
@@ -62,7 +62,7 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
     }
 
     public async get (code: string): Promise<RadiosSchemaSelectType> {
-        const data = await this.getOne({
+        const data = await super.getOneCore({
             where: eq(radios.code, code)
         })
 
@@ -74,7 +74,7 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
             .from(companies)
             .where(eq(companies.code, company_code))
 
-        const data = await this.paginate({
+        const data = await super.getAllCore({
             query,
             where: eq(radios.company_id, company_id[0].id)
         })
@@ -136,16 +136,7 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
     }
 
     public async delete (code: string): Promise<boolean> {
-        const data = await this.db.update(radios)
-            .set({ deleted_at: sql`CURRENT_TIMESTAMP` })
-            .where(
-                and(
-                    eq(radios.code, code),
-                    isNull(radios.deleted_at)
-                )
-            )
-
-        return data[0].affectedRows > 0
+        return await super.deleteCore(eq(radios.code, code))
     }
 
     private async findIdsByCodes (

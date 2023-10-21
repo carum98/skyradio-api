@@ -19,7 +19,7 @@ export class GroupRepository extends RepositoryCore<GroupSchemaSelectType, Group
     }
 
     public async getAll (query: PaginationSchemaType): Promise<GroupSchemaSelectPaginatedType> {
-        const data = await this.paginate({
+        const data = await super.getAllCore({
             query,
             where: isNull(groups.deleted_at)
         })
@@ -28,7 +28,7 @@ export class GroupRepository extends RepositoryCore<GroupSchemaSelectType, Group
     }
 
     public async get (id: number): Promise<GroupSchemaSelectType> {
-        const data = await this.getOne({
+        const data = await super.getOneCore({
             where: eq(groups.id, id)
         })
 
@@ -42,7 +42,7 @@ export class GroupRepository extends RepositoryCore<GroupSchemaSelectType, Group
     }
 
     public async update (id: number, params: GroupSchemaUpdateType): Promise<number> {
-        const data = await this.set({
+        const data = await this.updateCore({
             params,
             where: eq(groups.id, id)
         })
@@ -51,6 +51,6 @@ export class GroupRepository extends RepositoryCore<GroupSchemaSelectType, Group
     }
 
     public async delete (id: number): Promise<boolean> {
-        return await this.softDelete(eq(groups.id, id))
+        return await super.deleteCore(eq(groups.id, id))
     }
 }

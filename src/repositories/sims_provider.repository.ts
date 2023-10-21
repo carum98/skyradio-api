@@ -19,7 +19,7 @@ export class SimsProviderRepository extends RepositoryCore<SimsProviderShemaSele
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<SimsProviderShemaSelectPaginatedType> {
-        const data = await this.paginate({
+        const data = await super.getAllCore({
             query,
             where: eq(sims_provider.group_id, group_id)
         })
@@ -28,7 +28,7 @@ export class SimsProviderRepository extends RepositoryCore<SimsProviderShemaSele
     }
 
     public async get (code: string): Promise<SimsProviderShemaSelectType> {
-        const data = await this.getOne({
+        const data = await super.getOneCore({
             where: eq(sims_provider.code, code)
         })
 
@@ -36,7 +36,7 @@ export class SimsProviderRepository extends RepositoryCore<SimsProviderShemaSele
     }
 
     public async create (params: SimsProviderShemaCreateType): Promise<string> {
-        const code = await this.insert({
+        const code = await super.insertCore({
             params
         })
 
@@ -44,7 +44,7 @@ export class SimsProviderRepository extends RepositoryCore<SimsProviderShemaSele
     }
 
     public async update (code: string, params: SimsProviderShemaUpdateType): Promise<string> {
-        const data = await this.set({
+        const data = await super.updateCore({
             params,
             where: eq(sims_provider.code, code)
         })
@@ -53,6 +53,6 @@ export class SimsProviderRepository extends RepositoryCore<SimsProviderShemaSele
     }
 
     public async delete (code: string): Promise<boolean> {
-        return await this.softDelete(eq(sims_provider.code, code))
+        return await super.deleteCore(eq(sims_provider.code, code))
     }
 }

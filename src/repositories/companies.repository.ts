@@ -35,7 +35,7 @@ export class CompaniesRepository extends RepositoryCore<CompanySchemaSelectType,
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<CompanySchemaSelectPaginatedType> {
-        const data = await this.paginate({
+        const data = await super.getAllCore({
             query,
             where: eq(companies.group_id, group_id)
         })
@@ -44,7 +44,7 @@ export class CompaniesRepository extends RepositoryCore<CompanySchemaSelectType,
     }
 
     public async get (code: string): Promise<CompanySchemaSelectType> {
-        const data = await this.getOne({
+        const data = await super.getOneCore({
             where: eq(companies.code, code)
         })
 
@@ -97,7 +97,7 @@ export class CompaniesRepository extends RepositoryCore<CompanySchemaSelectType,
     }
 
     public async delete (code: string): Promise<boolean> {
-        return await this.softDelete(eq(companies.code, code))
+        return await super.deleteCore(eq(companies.code, code))
     }
 
     private async findIdsByCodes (

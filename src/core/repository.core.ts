@@ -34,7 +34,7 @@ interface UpdateParams<TUpdate> {
     params: Partial<TUpdate>
 }
 
-export class RepositoryCore<TSelect, TInsert, TUpdate> {
+export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
     protected readonly db: MySql2Database
     protected readonly table: MySqlTable
     protected readonly select: MySqlSelect<any, any, SelectMode, any>
@@ -54,68 +54,7 @@ export class RepositoryCore<TSelect, TInsert, TUpdate> {
         this.table_name = name
     }
 
-    private async query ({ where, offset, per_page }: SelectorParams): Promise<TSelect[]> {
-        let query = this.select.where(and(where, isNull(this.deleted_column)))
-
-        if (per_page !== undefined) {
-            query = query.limit(per_page)
-        }
-
-        if (offset !== undefined) {
-            query = query.offset(offset)
-        }
-
-        const data = await query
-
-        return this.parseResonse(data)
-    }
-
-    protected async getOne ({ where }: { where: Where }): Promise<TSelect> {
-        const data = await this.query({ where, per_page: 1 })
-
-        if (data.length === 0) {
-            throw new NotFoundError(`${this.table_name} not found`)
-        }
-
-        return data.at(0) as TSelect
-    }
-
-    protected async set ({ where, params }: UpdateParams<TUpdate>): Promise<boolean> {
-        const data = await this.db.update(this.table)
-            .set(params)
-            .where(and(where, isNull(this.deleted_column)))
-
-        return data[0].affectedRows > 0
-    }
-
-    protected async insert ({ params }: InsertParams<TInsert>): Promise<string> {
-        const code = generateCode()
-
-        await this.db.insert(this.table).values({
-            ...params,
-            code
-        })
-
-        return code
-    }
-
-    protected async softDelete (where: Where): Promise<boolean> {
-        const data = await this.db.update(this.table)
-            .set({ deleted_at: sql`CURRENT_TIMESTAMP` })
-            .where(and(where, isNull(this.deleted_column)))
-
-        return data[0].affectedRows > 0
-    }
-
-    protected async count (where: Where): Promise<number> {
-        const total = await this.db.select({ count: sql<number>`count(id)` })
-            .from(this.table)
-            .where(and(where, isNull(this.deleted_column)))
-
-        return total[0].count
-    }
-
-    protected async paginate ({ query, where }: PaginateParams): Promise<ResponsePaginationSchemaType<TSelect>> {
+    protected async getAllCore ({ query, where }: PaginateParams): Promise<ResponsePaginationSchemaType<TSelect>> {
         const { page, per_page } = query
 
         const offset = (page - 1) * per_page
@@ -134,31 +73,86 @@ export class RepositoryCore<TSelect, TInsert, TUpdate> {
         }
     }
 
-    private parseResonse (data: { [key: string]: any }): TSelect[] {
+    protected async getOneCore ({ where }: { where: Where }): Promise<TSelect> {
+        const data = await this.query({ where, per_page: 1 })
+
         if (data.length === 0) {
-            return [] as unknown as TSelect[]
+            throw new NotFoundError(`${this.table_name} not found`)
         }
 
-        const keys = Object.keys(data.at(0)).filter((key) => key.includes('__'))
+        return data.at(0) as TSelect
+    }
 
-        if (keys.length > 0) {
-            data.forEach((item: any) => {
-                keys.forEach((key) => {
-                    const [group, property] = key.split('__')
+    protected async updateCore ({ where, params }: UpdateParams<TUpdate>): Promise<boolean> {
+        const data = await this.db.update(this.table)
+            .set(params)
+            .where(and(where, isNull(this.deleted_column)))
 
-                    if (item[group] !== null) {
-                        item[group] = {
-                            ...item[group],
-                            [property]: item[key]
-                        }
+        return data[0].affectedRows > 0
+    }
 
-                        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-                        delete item[key]
-                    }
-                })
-            })
+    protected async insertCore ({ params }: InsertParams<TInsert>): Promise<string> {
+        const code = generateCode()
+
+        await this.db.insert(this.table).values({
+            ...params,
+            code
+        })
+
+        return code
+    }
+
+    protected async deleteCore (where: Where): Promise<boolean> {
+        const data = await this.db.update(this.table)
+            .set({ deleted_at: sql`CURRENT_TIMESTAMP` })
+            .where(and(where, isNull(this.deleted_column)))
+
+        return data[0].affectedRows > 0
+    }
+
+    protected async count (where: Where): Promise<number> {
+        const total = await this.db.select({ count: sql<number>`count(id)` })
+            .from(this.table)
+            .where(and(where, isNull(this.deleted_column)))
+
+        return total[0].count
+    }
+
+    private async query ({ where, offset, per_page }: SelectorParams): Promise<TSelect[]> {
+        let query = this.select.where(and(where, isNull(this.deleted_column)))
+
+        if (per_page !== undefined) {
+            query = query.limit(per_page)
+        }
+
+        if (offset !== undefined) {
+            query = query.offset(offset)
+        }
+
+        const data = await query
+
+        if (data.length !== 0) {
+            const keys = Object.keys(data.at(0) as object).filter((key) => key.includes('__'))
+
+            if (keys.length > 0) {
+                data.forEach((item: any) => keys.forEach((key) => this.parseObject(item, key)))
+            }
         }
 
         return data as unknown as TSelect[]
+    }
+
+    private parseObject (item: any, key: string): void {
+        const [group, property] = key.split('__')
+
+        if (item[group] !== null) {
+            item[group] = {
+                ...item[group],
+                [property]: item[key]
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+            delete item[key]
+        }
     }
 }

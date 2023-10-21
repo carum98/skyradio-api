@@ -27,7 +27,7 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsShem
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<SimsSchemaSelectPaginatedType> {
-        const data = await this.paginate({
+        const data = await super.getAllCore({
             query,
             where: eq(sims.group_id, group_id)
         })
@@ -36,7 +36,7 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsShem
     }
 
     public async get (code: string): Promise<SimsShemaSelectType> {
-        const data = await this.getOne({
+        const data = await super.getOneCore({
             where: eq(sims.code, code)
         })
 
@@ -85,7 +85,7 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsShem
     }
 
     public async delete (code: string): Promise<boolean> {
-        return await this.softDelete(eq(sims.code, code))
+        return await super.deleteCore(eq(sims.code, code))
     }
 
     private async findIdsByCodes (
