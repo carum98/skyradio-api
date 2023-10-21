@@ -1,7 +1,7 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { IRadioRepository } from './repositories'
 import { RadiosSchemaCreateType, RadiosSchemaSelect, RadiosSchemaSelectPaginated, RadiosSchemaSelectPaginatedType, RadiosSchemaSelectType, RadiosSchemaUpdateType, radios } from '@models/radios.model'
-import { SQL, and, eq, isNull, sql } from 'drizzle-orm'
+import { and, eq, isNull, sql } from 'drizzle-orm'
 import { radios_model } from '@models/radios_model.model'
 import { radios_status } from '@models/radios_status.model'
 import { sims } from '@models/sims.model'
@@ -10,22 +10,67 @@ import { sims_provider } from '@models/sims_provider.model'
 import { NotFoundError } from '@/utils/errors'
 import { companies } from '@/models/companies.model'
 import { PaginationSchemaType } from '@/utils/pagination'
+import { RepositoryCore } from '@/core/repository.core'
 
-export class RadiosRepository implements IRadioRepository {
-    constructor (public readonly db: MySql2Database) {}
+export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, RadiosSchemaCreateType, RadiosSchemaUpdateType> implements IRadioRepository {
+    constructor (public readonly db: MySql2Database) {
+        const table = radios
+
+        const select = db.select({
+            code: radios.code,
+            name: radios.name,
+            imei: radios.imei,
+            serial: radios.serial,
+            model: {
+                code: radios_model.code,
+                name: radios_model.name
+            },
+            status: {
+                code: radios_status.code,
+                name: radios_status.name
+            },
+            sim: {
+                code: sims.code,
+                number: sims.number
+            },
+            sim__provider: {
+                code: sims_provider.code,
+                name: sims_provider.name
+            },
+            company: {
+                code: companies.code,
+                name: companies.name
+            }
+        })
+        .from(table)
+        .leftJoin(radios_model, eq(radios.model_id, radios_model.id))
+        .leftJoin(radios_status, eq(radios.status_id, radios_status.id))
+        .leftJoin(sims, eq(radios.sim_id, sims.id))
+        .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
+        .leftJoin(companies, eq(radios.company_id, companies.id))
+
+        super({ db, table, select })
+    }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
-        const data = await this.paginate(eq(radios.group_id, group_id), query)
+        const data = await this.paginate({
+            query,
+            where: eq(radios.group_id, group_id)
+        })
 
         return RadiosSchemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<RadiosSchemaSelectType | null> {
-        const data = await this.selector(eq(radios.code, code))
+        const data = await this.selector({
+            where: eq(radios.code, code)
+        })
 
-        return data.length > 0
-            ? RadiosSchemaSelect.parse(data[0])
-            : null
+        if (data.length === 0) {
+            return null
+        }
+
+        return RadiosSchemaSelect.parse(data.at(0))
     }
 
     public async getByCompany (company_code: string, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
@@ -33,7 +78,10 @@ export class RadiosRepository implements IRadioRepository {
             .from(companies)
             .where(eq(companies.code, company_code))
 
-        const data = await this.paginate(eq(radios.company_id, company_id[0].id), query)
+        const data = await this.paginate({
+            query,
+            where: eq(radios.company_id, company_id[0].id)
+        })
 
         return RadiosSchemaSelectPaginated.parse(data)
     }
@@ -104,72 +152,6 @@ export class RadiosRepository implements IRadioRepository {
         return data[0].affectedRows > 0
     }
 
-    private async selector (where?: SQL, limit?: number, offset?: number): Promise<RadiosSchemaSelectType[]> {
-        let query = this.db.select({
-            radios: {
-                code: radios.code,
-                name: radios.name,
-                imei: radios.imei,
-                serial: radios.serial
-            },
-            radios_model: {
-                code: radios_model.code,
-                name: radios_model.name
-            },
-            radios_status: {
-                code: radios_status.code,
-                name: radios_status.name
-            },
-            sims: {
-                code: sims.code,
-                number: sims.number
-            },
-            sims_provider: {
-                code: sims_provider.code,
-                name: sims_provider.name
-            },
-            companies: {
-                code: companies.code,
-                name: companies.name
-            }
-        })
-        .from(radios)
-        .leftJoin(radios_model, eq(radios.model_id, radios_model.id))
-        .leftJoin(radios_status, eq(radios.status_id, radios_status.id))
-        .leftJoin(sims, eq(radios.sim_id, sims.id))
-        .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
-        .leftJoin(companies, eq(radios.company_id, companies.id))
-
-        if (where !== undefined) {
-            query = query.where(
-                and(
-                    where,
-                    isNull(radios.deleted_at)
-                )
-            )
-        }
-
-        if (limit !== undefined) {
-            query = query.limit(limit)
-        }
-
-        if (offset !== undefined) {
-            query = query.offset(offset)
-        }
-
-        const data = await query
-
-        return data.map((item) => ({
-            ...item.radios,
-            model: item.radios_model,
-            status: item.radios_status,
-            sim: item.sims !== null
-                ? { ...item.sims, provider: item.sims_provider }
-                : null,
-            company: item.companies
-        })) as RadiosSchemaSelectType[]
-    }
-
     private async findIdsByCodes (
         trx: MySql2Database,
         model_code?: string,
@@ -219,27 +201,6 @@ export class RadiosRepository implements IRadioRepository {
             status_id,
             sim_id,
             company_id
-        }
-    }
-
-    private async paginate (where: SQL, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
-        const data_count = await this.db.select({ count: sql<number>`count(${radios.id})` }).from(radios).where(and(
-            where,
-            isNull(radios.deleted_at)
-        ))
-
-        const offset = (query.page - 1) * query.per_page
-
-        const data = await this.selector(where, query.per_page, offset)
-
-        return {
-            data,
-            pagination: {
-                total: data_count[0].count,
-                page: query.page,
-                per_page: query.per_page,
-                total_pages: Math.ceil(data_count[0].count / query.per_page)
-            }
         }
     }
 }

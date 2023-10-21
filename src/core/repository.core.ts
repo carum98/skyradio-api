@@ -62,7 +62,9 @@ export class RepositoryCore<TSelect, TInsert, TUpdate> {
             query = query.offset(offset)
         }
 
-        return await query as TSelect[]
+        const data = await query
+
+        return this.parseResonse(data)
     }
 
     protected async set ({ where, params }: UpdateParams<TUpdate>): Promise<boolean> {
@@ -117,5 +119,29 @@ export class RepositoryCore<TSelect, TInsert, TUpdate> {
                 total_pages: Math.ceil(total / query.per_page)
             }
         }
+    }
+
+    private parseResonse (data: { [key: string]: any }): TSelect[] {
+        const keys = Object.keys(data.at(0)).filter((key) => key.includes('__'))
+
+        if (keys.length > 0) {
+            data.forEach((item: any) => {
+                keys.forEach((key) => {
+                    const [group, property] = key.split('__')
+
+                    if (item[group] !== null) {
+                        item[group] = {
+                            ...item[group],
+                            [property]: item[key]
+                        }
+
+                        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+                        delete item[key]
+                    }
+                })
+            })
+        }
+
+        return data as unknown as TSelect[]
     }
 }

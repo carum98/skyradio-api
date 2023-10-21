@@ -5,26 +5,54 @@ import { CompanySchemaCreateType, CompanySchemaSelect, CompanySchemaSelectPagina
 import { generateCode } from '@utils/code'
 import { companies_modality } from '@/models/companies_modality.model'
 import { companies_seller } from '@/models/companies_seller.model'
-import { SQL } from 'drizzle-orm/sql'
 import { NotFoundError } from '@/utils/errors'
 import { radios } from '@/models/radios.model'
 import { PaginationSchemaType } from '@/utils/pagination'
+import { RepositoryCore } from '@/core/repository.core'
 
-export class CompaniesRepository implements ICompanyRepository {
-    constructor (public readonly db: MySql2Database) {}
+export class CompaniesRepository extends RepositoryCore<CompanySchemaSelectType, CompanySchemaCreateType, CompanySchemaUpdateType> implements ICompanyRepository {
+    constructor (public readonly db: MySql2Database) {
+        const table = companies
+
+        const select = db.select({
+            code: companies.code,
+            name: companies.name,
+            modality: {
+                code: companies_modality.code,
+                name: companies_modality.name
+            },
+            seller: {
+                code: companies_seller.code,
+                name: companies_seller.name
+            },
+            radios_count: sql<number>`(select count(${radios.id}) from ${radios} where ${radios.company_id} = ${companies.id})`
+        })
+        .from(table)
+        .leftJoin(companies_modality, eq(companies_modality.id, companies.modality_id))
+        .leftJoin(companies_seller, eq(companies_seller.id, companies.seller_id))
+
+        super({ db, table, select })
+    }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<CompanySchemaSelectPaginatedType> {
-        const data = await this.paginate(eq(companies.group_id, group_id), query)
+        const data = await this.paginate({
+            query,
+            where: eq(companies.group_id, group_id)
+        })
 
         return CompanySchemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<CompanySchemaSelectType | null> {
-        const data = await this.selector(eq(companies.code, code))
+        const data = await this.selector({
+            where: eq(companies.code, code)
+        })
 
-        return data.length > 0
-            ? CompanySchemaSelect.parse(data[0])
-            : null
+        if (data.length === 0) {
+            return null
+        }
+
+        return CompanySchemaSelect.parse(data.at(0))
     }
 
     public async create (params: CompanySchemaCreateType): Promise<string> {
@@ -73,62 +101,7 @@ export class CompaniesRepository implements ICompanyRepository {
     }
 
     public async delete (code: string): Promise<boolean> {
-        const data = await this.db.update(companies)
-            .set({ deleted_at: sql`CURRENT_TIMESTAMP` })
-            .where(eq(companies.code, code))
-
-        return data[0].affectedRows > 0
-    }
-
-    private async selector (
-        where?: SQL,
-        limit?: number,
-        offset?: number
-    ): Promise<CompanySchemaSelectType[]> {
-        let query = this.db.select({
-            companies: {
-                code: companies.code,
-                name: companies.name
-            },
-            companies_seller: {
-                code: companies_seller.code,
-                name: companies_seller.name
-            },
-            companies_modality: {
-                code: companies_modality.code,
-                name: companies_modality.name
-            },
-            radios_count: sql<number>`(select count(${radios.id}) from ${radios} where ${radios.company_id} = ${companies.id})`
-        })
-        .from(companies)
-        .leftJoin(companies_modality, eq(companies_modality.id, companies.modality_id))
-        .leftJoin(companies_seller, eq(companies_seller.id, companies.seller_id))
-
-        if (where !== undefined) {
-            query = query.where(
-                and(
-                    where,
-                    isNull(companies.deleted_at)
-                )
-            )
-        }
-
-        if (limit !== undefined) {
-            query = query.limit(limit)
-        }
-
-        if (offset !== undefined) {
-            query = query.offset(offset)
-        }
-
-        const data = await query
-
-        return data.map((item) => ({
-            ...item.companies,
-            seller: item.companies_seller,
-            modality: item.companies_modality,
-            radios_count: item.radios_count
-        })) as CompanySchemaSelectType[]
+        return await this.softDelete(eq(companies.code, code))
     }
 
     private async findIdsByCodes (
@@ -159,26 +132,5 @@ export class CompaniesRepository implements ICompanyRepository {
             modality_id,
             seller_id
         }
-    }
-
-    private async paginate (where: SQL, query: PaginationSchemaType): Promise<CompanySchemaSelectPaginatedType> {
-        const data_count = await this.db.select({ count: sql<number>`count(${companies.id})` }).from(companies).where(and(
-            where,
-            isNull(companies.deleted_at)
-        ))
-
-        const offset = (query.page - 1) * query.per_page
-
-        const data = await this.selector(where, query.per_page, offset)
-
-        return CompanySchemaSelectPaginated.parse({
-            data,
-            pagination: {
-                total: data_count[0].count,
-                page: query.page,
-                per_page: query.per_page,
-                total_pages: Math.ceil(data_count[0].count / query.per_page)
-            }
-        })
     }
 }
