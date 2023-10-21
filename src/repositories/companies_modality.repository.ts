@@ -34,6 +34,12 @@ export class CompaniesModalityRepository extends RepositoryCore<CompanyModalityS
         return CompanyModalitySchemaSelect.parse(data)
     }
 
+    public async getId (code: string): Promise<number> {
+        return await super.getIdCore({
+            where: eq(companies_modality.code, code)
+        })
+    }
+
     public async create (params: CompanyModalitySchemaCreateType): Promise<string> {
         const code = await super.insertCore({
             params

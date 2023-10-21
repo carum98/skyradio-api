@@ -1,12 +1,10 @@
 import { CompaniesController } from '@controllers/companies.controller'
 import { DataSource } from '@/core/data-source.core'
 import { RouterCore } from '@/core/router.core'
-import { CompaniesRepository } from '@repositories/companies.repository'
 import { CompaniesService } from '@services/companies.service'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { CompanySchemaCreate, CompanySchemaUniqueIdentifier, CompanySchemaUpdate } from '@models/companies.model'
-import { RadiosRepository } from '@repositories/radios.repository'
 import { PaginationSchema } from '@/utils/pagination'
 
 export class CompaniesRouter extends RouterCore {
@@ -16,9 +14,7 @@ export class CompaniesRouter extends RouterCore {
             middlewares: [authMiddleware]
         })
 
-        const repository = datasource.create(CompaniesRepository)
-        const radiosRepository = datasource.create(RadiosRepository)
-        const service = new CompaniesService(repository, radiosRepository)
+        const service = new CompaniesService(datasource)
         const controller = new CompaniesController(service)
 
         this.get({

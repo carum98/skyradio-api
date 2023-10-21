@@ -34,9 +34,16 @@ export const CompanySchemaSelect = createSelectSchema(companies)
         radios_count: z.number().int()
     })
 
-export const CompanySchemaCreate = createInsertSchema(companies, {
+export const CompanySchemaCreateRaw = createInsertSchema(companies, {
     name: (schema) => schema.name.min(3).max(100)
 }).pick({
+    name: true,
+    group_id: true,
+    modality_id: true,
+    seller_id: true
+})
+
+export const CompanySchemaCreate = CompanySchemaCreateRaw.pick({
     name: true,
     group_id: true
 })
@@ -45,12 +52,14 @@ export const CompanySchemaCreate = createInsertSchema(companies, {
     seller_code: z.string().length(6)
 })
 .required()
-.partial({
-    seller_code: true
-})
+.partial({ seller_code: true })
 
-export const CompanySchemaUpdate = CompanySchemaCreate
-.pick({
+export const CompanySchemaUpdateRaw = CompanySchemaCreateRaw.omit({
+    group_id: true
+})
+.partial()
+
+export const CompanySchemaUpdate = CompanySchemaCreate.pick({
     id: true,
     name: true,
     modality_code: true,
@@ -64,7 +73,9 @@ export const CompanySchemaUniqueIdentifier = createSelectSchema(companies, {
 
 export const CompanySchemaSelectPaginated = ResponsePaginationSchema(CompanySchemaSelect)
 
+export type CompanySchemaCreateRawType = z.infer<typeof CompanySchemaCreateRaw>
 export type CompanySchemaCreateType = z.infer<typeof CompanySchemaCreate>
 export type CompanySchemaSelectType = z.infer<typeof CompanySchemaSelect>
+export type CompanySchemaUpdateRawType = z.infer<typeof CompanySchemaUpdateRaw>
 export type CompanySchemaUpdateType = z.infer<typeof CompanySchemaUpdate>
 export type CompanySchemaSelectPaginatedType = z.infer<typeof CompanySchemaSelectPaginated>

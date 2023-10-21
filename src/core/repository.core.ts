@@ -118,6 +118,18 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
         return total[0].count
     }
 
+    protected async getIdCore ({ where }: { where: Where }): Promise<number> {
+        const data = await this.db.select({ id: sql<number>`id` })
+            .from(this.table)
+            .where(and(where, isNull(this.deleted_column)))
+
+        if (data.length === 0) {
+            throw new NotFoundError(`${this.table_name} not found`)
+        }
+
+        return data[0].id
+    }
+
     private async query ({ where, offset, per_page }: SelectorParams): Promise<TSelect[]> {
         let query = this.select.where(and(where, isNull(this.deleted_column)))
 

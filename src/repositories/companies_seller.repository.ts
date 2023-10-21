@@ -35,6 +35,12 @@ export class CompaniesSellerRepository extends RepositoryCore<CompanySellerSchem
         return CompanySellerSchemaSelect.parse(data)
     }
 
+    public async getId (code: string): Promise<number> {
+        return await super.getIdCore({
+            where: eq(companies_seller.code, code)
+        })
+    }
+
     public async create (params: CompanySellerSchemaCreateType): Promise<string> {
         const code = await super.insertCore({
             params
