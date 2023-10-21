@@ -44,9 +44,20 @@ export const RadiosSchemaSelect = createSelectSchema(radios)
         company: CompanySchemaSelect.pick({ code: true, name: true }).nullable()
     })
 
-export const RadiosSchemaCreate = createInsertSchema(radios, {
+export const RadiosSchemaCreateRaw = createInsertSchema(radios, {
     name: (schema) => schema.name.min(3).max(100)
 }).pick({
+    name: true,
+    imei: true,
+    serial: true,
+    model_id: true,
+    group_id: true,
+    status_id: true,
+    sim_id: true,
+    company_id: true
+})
+
+export const RadiosSchemaCreate = RadiosSchemaCreateRaw.pick({
     name: true,
     imei: true,
     serial: true,
@@ -65,6 +76,10 @@ export const RadiosSchemaCreate = createInsertSchema(radios, {
     company_code: true
 })
 
+export const RadiosSchemaUpdateRaw = RadiosSchemaCreateRaw.omit({
+    group_id: true
+}).partial()
+
 export const RadiosSchemaUpdate = RadiosSchemaCreate
     .pick({
         name: true,
@@ -81,7 +96,9 @@ export const RadiosSchemaUniqueIdentifier = createSelectSchema(radios, {
 
 export const RadiosSchemaSelectPaginated = ResponsePaginationSchema(RadiosSchemaSelect)
 
+export type RadiosSchemaCreateRawType = z.infer<typeof RadiosSchemaCreateRaw>
 export type RadiosSchemaCreateType = z.infer<typeof RadiosSchemaCreate>
 export type RadiosSchemaSelectType = z.infer<typeof RadiosSchemaSelect>
+export type RadiosSchemaUpdateRawType = z.infer<typeof RadiosSchemaUpdateRaw>
 export type RadiosSchemaUpdateType = z.infer<typeof RadiosSchemaUpdate>
 export type RadiosSchemaSelectPaginatedType = z.infer<typeof RadiosSchemaSelectPaginated>

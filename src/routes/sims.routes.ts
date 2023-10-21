@@ -3,7 +3,6 @@ import { DataSource } from '@/core/data-source.core'
 import { RouterCore } from '@/core/router.core'
 import { SimsService } from '@services/sims.service'
 import { authMiddleware } from '@middlewares/auth.middleware'
-import { SimsRepository } from '@repositories/sims.repository'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { SimsShemaCreate, SimsShemaUniqueIdentifier, SimsShemaUpdate } from '@models/sims.model'
 import { PaginationSchema } from '@/utils/pagination'
@@ -17,8 +16,7 @@ export class SimsRouter extends RouterCore {
             ]
         })
 
-        const repository = datasource.create(SimsRepository)
-        const service = new SimsService(repository)
+        const service = new SimsService(datasource)
         const controller = new SimsController(service)
 
         this.get({

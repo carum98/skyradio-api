@@ -1,11 +1,10 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { ISimsProviderRepository } from './repositories'
-import { SimsProviderShemaCreateType, SimsProviderShemaSelect, SimsProviderShemaSelectPaginated, SimsProviderShemaSelectPaginatedType, SimsProviderShemaSelectType, SimsProviderShemaUpdateType, sims_provider } from '@/models/sims_provider.model'
+import { SimsProviderShemaCreateType, SimsProviderShemaSelectPaginatedType, SimsProviderShemaSelectType, SimsProviderShemaUpdateType, sims_provider } from '@/models/sims_provider.model'
 import { eq } from 'drizzle-orm'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { RepositoryCore } from '@/core/repository.core'
 
-export class SimsProviderRepository extends RepositoryCore<SimsProviderShemaSelectType, SimsProviderShemaCreateType, SimsProviderShemaUpdateType> implements ISimsProviderRepository {
+export class SimsProviderRepository extends RepositoryCore<SimsProviderShemaSelectType, SimsProviderShemaCreateType, SimsProviderShemaUpdateType> {
     constructor (public readonly db: MySql2Database) {
         const table = sims_provider
 
@@ -19,28 +18,28 @@ export class SimsProviderRepository extends RepositoryCore<SimsProviderShemaSele
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<SimsProviderShemaSelectPaginatedType> {
-        const data = await super.getAllCore({
+        return await super.getAllCore({
             query,
             where: eq(sims_provider.group_id, group_id)
         })
-
-        return SimsProviderShemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<SimsProviderShemaSelectType> {
-        const data = await super.getOneCore({
+        return await super.getOneCore({
             where: eq(sims_provider.code, code)
         })
+    }
 
-        return SimsProviderShemaSelect.parse(data)
+    public async getId (code: string): Promise<number> {
+        return await super.getIdCore({
+            where: eq(sims_provider.code, code)
+        })
     }
 
     public async create (params: SimsProviderShemaCreateType): Promise<string> {
-        const code = await super.insertCore({
+        return await super.insertCore({
             params
         })
-
-        return code
     }
 
     public async update (code: string, params: SimsProviderShemaUpdateType): Promise<string> {

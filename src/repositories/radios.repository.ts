@@ -1,18 +1,15 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { IRadioRepository } from './repositories'
-import { RadiosSchemaCreateType, RadiosSchemaSelect, RadiosSchemaSelectPaginated, RadiosSchemaSelectPaginatedType, RadiosSchemaSelectType, RadiosSchemaUpdateType, radios } from '@models/radios.model'
-import { and, eq, isNull } from 'drizzle-orm'
+import { RadiosSchemaCreateRawType, RadiosSchemaSelectPaginatedType, RadiosSchemaSelectType, RadiosSchemaUpdateRawType, radios } from '@models/radios.model'
+import { eq } from 'drizzle-orm'
 import { radios_model } from '@models/radios_model.model'
 import { radios_status } from '@models/radios_status.model'
 import { sims } from '@models/sims.model'
-import { generateCode } from '@utils/code'
 import { sims_provider } from '@models/sims_provider.model'
-import { NotFoundError } from '@/utils/errors'
 import { companies } from '@/models/companies.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { RepositoryCore } from '@/core/repository.core'
 
-export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, RadiosSchemaCreateType, RadiosSchemaUpdateType> implements IRadioRepository {
+export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, RadiosSchemaCreateRawType, RadiosSchemaUpdateRawType> {
     constructor (public readonly db: MySql2Database) {
         const table = radios
 
@@ -53,20 +50,16 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
-        const data = await super.getAllCore({
+        return await super.getAllCore({
             query,
             where: eq(radios.group_id, group_id)
         })
-
-        return RadiosSchemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<RadiosSchemaSelectType> {
-        const data = await super.getOneCore({
+        return await super.getOneCore({
             where: eq(radios.code, code)
         })
-
-        return RadiosSchemaSelect.parse(data)
     }
 
     public async getByCompany (company_code: string, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
@@ -74,120 +67,28 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
             .from(companies)
             .where(eq(companies.code, company_code))
 
-        const data = await super.getAllCore({
+        return await super.getAllCore({
             query,
             where: eq(radios.company_id, company_id[0].id)
         })
-
-        return RadiosSchemaSelectPaginated.parse(data)
     }
 
-    public async create (params: RadiosSchemaCreateType): Promise<string> {
-        const code = generateCode()
-
-        await this.db.transaction(async (trx) => {
-            const { model_id, status_id, sim_id, company_id } = await this.findIdsByCodes(
-                trx,
-                params.model_code,
-                params.status_code,
-                params.sim_code,
-                params.company_code
-            )
-
-            await trx.insert(radios).values({
-                ...params,
-                code,
-                model_id: model_id ?? 0,
-                status_id,
-                sim_id,
-                company_id
-            })
+    public async create (params: RadiosSchemaCreateRawType): Promise<string> {
+        return await super.insertCore({
+            params
         })
-
-        return code
     }
 
-    public async update (code: string, params: RadiosSchemaUpdateType): Promise<string> {
-        const data = await this.db.transaction(async (trx) => {
-            const { model_id, status_id, sim_id, company_id } = await this.findIdsByCodes(
-                trx,
-                params.model_code,
-                params.status_code,
-                params.sim_code,
-                params.company_code
-            )
-
-            return await trx.update(radios).set({
-                name: params.name,
-                model_id,
-                status_id,
-                sim_id,
-                company_id
-            })
-                .where(
-                    and(
-                        eq(radios.code, code),
-                        isNull(radios.deleted_at)
-                    )
-                )
+    public async update (code: string, params: RadiosSchemaUpdateRawType): Promise<string> {
+        const isUpdated = await super.updateCore({
+            params,
+            where: eq(companies.code, code)
         })
 
-        return data[0].affectedRows > 0 ? code : ''
+        return isUpdated ? code : ''
     }
 
     public async delete (code: string): Promise<boolean> {
         return await super.deleteCore(eq(radios.code, code))
-    }
-
-    private async findIdsByCodes (
-        trx: MySql2Database,
-        model_code?: string,
-        status_code?: string,
-        sim_code?: string,
-        company_code?: string
-    ): Promise<{ model_id?: number, status_id?: number, sim_id?: number, company_id?: number }> {
-        const model = model_code === undefined
-            ? null
-            : await trx.select({ id: radios_model.id }).from(radios_model).where(eq(radios_model.code, model_code))
-
-        if (model_code !== undefined && model?.length === 0) {
-            throw new NotFoundError(`Modality code ${model_code} not found`)
-        }
-
-        const status = status_code === undefined
-            ? null
-            : await trx.select({ id: radios_status.id }).from(radios_status).where(eq(radios_status.code, status_code))
-
-        if (status_code !== undefined && status?.length === 0) {
-            throw new NotFoundError(`Seller code ${status_code} not found`)
-        }
-
-        const sim = sim_code === undefined
-            ? null
-            : await trx.select({ id: sims.id }).from(sims).where(eq(sims.code, sim_code))
-
-        if (sim_code !== undefined && sim?.length === 0) {
-            throw new NotFoundError(`Seller code ${sim_code} not found`)
-        }
-
-        const company = company_code === undefined
-            ? null
-            : await trx.select({ id: companies.id }).from(companies).where(eq(companies.code, company_code))
-
-        if (company_code !== undefined && company?.length === 0) {
-            throw new NotFoundError(`Company code ${company_code} not found`)
-        }
-
-        const model_id = model?.at(0)?.id ?? undefined
-        const status_id = status?.at(0)?.id ?? undefined
-        const sim_id = sim?.at(0)?.id ?? undefined
-        const company_id = company?.at(0)?.id ?? undefined
-
-        return {
-            model_id,
-            status_id,
-            sim_id,
-            company_id
-        }
     }
 }

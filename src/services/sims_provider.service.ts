@@ -1,4 +1,4 @@
-import { SimsProviderShemaCreateType, SimsProviderShemaSelectPaginatedType, SimsProviderShemaSelectType, SimsProviderShemaUpdateType } from '@/models/sims_provider.model'
+import { SimsProviderShemaCreateType, SimsProviderShemaSelect, SimsProviderShemaSelectPaginated, SimsProviderShemaSelectPaginatedType, SimsProviderShemaSelectType, SimsProviderShemaUpdateType } from '@/models/sims_provider.model'
 import { SimsProviderRepository } from '@/repositories/sims_provider.repository'
 import { PaginationSchemaType } from '@/utils/pagination'
 
@@ -6,11 +6,15 @@ export class SimsProviderService {
     constructor (public readonly repository: SimsProviderRepository) {}
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<SimsProviderShemaSelectPaginatedType> {
-        return await this.repository.getAll(group_id, query)
+        const data = await this.repository.getAll(group_id, query)
+
+        return SimsProviderShemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<SimsProviderShemaSelectType> {
-        return await this.repository.get(code)
+        const data = await this.repository.get(code)
+
+        return SimsProviderShemaSelect.parse(data)
     }
 
     public async create (params: SimsProviderShemaCreateType): Promise<SimsProviderShemaSelectType> {

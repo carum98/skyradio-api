@@ -31,9 +31,17 @@ export const SimsShemaSelect = createSelectSchema(sims)
         provider: createSelectSchema(sims_provider).pick({ code: true, name: true })
     })
 
-export const SimsShemaCreate = createSelectSchema(sims, {
+export const SimsSchemaCreateRaw = createSelectSchema(sims, {
     number: (schema) => schema.number.min(3).max(12)
 }).pick({
+    number: true,
+    group_id: true,
+    serial: true,
+    provider_id: true
+})
+.partial({ serial: true })
+
+export const SimsShemaCreate = SimsSchemaCreateRaw.pick({
     number: true,
     group_id: true,
     serial: true
@@ -43,6 +51,11 @@ export const SimsShemaCreate = createSelectSchema(sims, {
 })
 .required()
 .partial({ serial: true })
+
+export const SimsSchemaUpdateRaw = SimsSchemaCreateRaw.omit({
+    group_id: true
+})
+.partial()
 
 export const SimsShemaUpdate = SimsShemaCreate
     .pick({ number: true, serial: true, provider_code: true })
@@ -55,6 +68,8 @@ export const SimsShemaUniqueIdentifier = createSelectSchema(sims, {
 export const SimsSchemaSelectPaginated = ResponsePaginationSchema(SimsShemaSelect)
 
 export type SimsShemaCreateType = z.infer<typeof SimsShemaCreate>
+export type SimsSchemaCreateRawType = z.infer<typeof SimsSchemaCreateRaw>
 export type SimsShemaSelectType = z.infer<typeof SimsShemaSelect>
 export type SimsShemaUpdateType = z.infer<typeof SimsShemaUpdate>
+export type SimsSchemaUpdateRawType = z.infer<typeof SimsSchemaUpdateRaw>
 export type SimsSchemaSelectPaginatedType = z.infer<typeof SimsSchemaSelectPaginated>

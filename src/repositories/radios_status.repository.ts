@@ -1,6 +1,6 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { IRadiosStatusRepository } from './repositories'
-import { RadiosStatusShemaCreateType, RadiosStatusShemaSelect, RadiosStatusShemaSelectPaginated, RadiosStatusShemaSelectPaginatedType, RadiosStatusShemaSelectType, RadiosStatusShemaUpdateType, radios_status } from '@models/radios_status.model'
+import { RadiosStatusShemaCreateType, RadiosStatusShemaSelectPaginatedType, RadiosStatusShemaSelectType, RadiosStatusShemaUpdateType, radios_status } from '@models/radios_status.model'
 import { eq } from 'drizzle-orm'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { RepositoryCore } from '@/core/repository.core'
@@ -19,28 +19,28 @@ export class RadiosStatusRepository extends RepositoryCore<RadiosStatusShemaSele
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<RadiosStatusShemaSelectPaginatedType> {
-        const data = await super.getAllCore({
+        return await super.getAllCore({
             query,
             where: eq(radios_status.group_id, group_id)
         })
-
-        return RadiosStatusShemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<RadiosStatusShemaSelectType> {
-        const data = await super.getOneCore({
+        return await super.getOneCore({
             where: eq(radios_status.code, code)
         })
+    }
 
-        return RadiosStatusShemaSelect.parse(data)
+    public async getId (code: string): Promise<number> {
+        return await super.getIdCore({
+            where: eq(radios_status.code, code)
+        })
     }
 
     public async create (params: RadiosStatusShemaCreateType): Promise<string> {
-        const code = await super.insertCore({
+        return await super.insertCore({
             params
         })
-
-        return code
     }
 
     public async update (code: string, params: RadiosStatusShemaUpdateType): Promise<string> {

@@ -1,16 +1,20 @@
 import { PaginationSchemaType } from '@/utils/pagination'
-import { RadiosModelShemaCreateType, RadiosModelShemaSelectPaginatedType, RadiosModelShemaSelectType, RadiosModelShemaUpdateType } from '@models/radios_model.model'
+import { RadiosModelShemaCreateType, RadiosModelShemaSelect, RadiosModelShemaSelectPaginated, RadiosModelShemaSelectPaginatedType, RadiosModelShemaSelectType, RadiosModelShemaUpdateType } from '@models/radios_model.model'
 import { RadiosModelRepository } from '@repositories/radios_model.repository'
 
 export class RadiosModelService {
     constructor (private readonly repository: RadiosModelRepository) { }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<RadiosModelShemaSelectPaginatedType> {
-        return await this.repository.getAll(group_id, query)
+        const data = await this.repository.getAll(group_id, query)
+
+        return RadiosModelShemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<RadiosModelShemaSelectType> {
-        return await this.repository.get(code)
+        const data = await this.repository.get(code)
+
+        return RadiosModelShemaSelect.parse(data)
     }
 
     public async create (params: RadiosModelShemaCreateType): Promise<RadiosModelShemaSelectType> {

@@ -2,7 +2,7 @@ import { CompanySchemaCreateType, CompanySchemaSelect, CompanySchemaSelectPagina
 import { CompaniesRepository } from '@repositories/companies.repository'
 import { RadiosRepository } from '@repositories/radios.repository'
 import { PaginationSchemaType } from '@/utils/pagination'
-import { RadiosSchemaSelectPaginatedType } from '@models/radios.model'
+import { RadiosSchemaSelectPaginated, RadiosSchemaSelectPaginatedType } from '@models/radios.model'
 import { CompaniesModalityRepository } from '@/repositories/companies_modality.repository'
 import { DataSource } from '@/core/data-source.core'
 import { CompaniesSellerRepository } from '@/repositories/companies_seller.repository'
@@ -61,7 +61,9 @@ export class CompaniesService {
     }
 
     public async getRadios (code: string, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
-        return await this.radios.getByCompany(code, query)
+        const data = await this.radios.getByCompany(code, query)
+
+        return RadiosSchemaSelectPaginated.parse(data)
     }
 
     private async findIdsByCodes ({ modality_code, seller_code }: { modality_code?: string, seller_code?: string }): Promise<{ modality_id?: number, seller_id?: number }> {

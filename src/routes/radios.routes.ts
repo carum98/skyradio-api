@@ -1,6 +1,5 @@
 import { DataSource } from '@/core/data-source.core'
 import { RouterCore } from '@/core/router.core'
-import { RadiosRepository } from '@repositories/radios.repository'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { RadiosService } from '@services/radios.service'
 import { RadiosController } from '@controllers/radios.controller'
@@ -15,8 +14,7 @@ export class RadiosRauter extends RouterCore {
             middlewares: [authMiddleware]
         })
 
-        const repository = datasource.create(RadiosRepository)
-        const service = new RadiosService(repository)
+        const service = new RadiosService(datasource)
         const controller = new RadiosController(service)
 
         this.get({
