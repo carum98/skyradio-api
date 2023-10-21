@@ -1,7 +1,7 @@
 import { generateCode } from '@/utils/code'
 import { PaginationSchemaType, ResponsePaginationSchemaType } from '@/utils/pagination'
 import { SQL, and, isNull, sql } from 'drizzle-orm'
-import { MySqlColumn, MySqlSelect, MySqlTable } from 'drizzle-orm/mysql-core'
+import { MySqlColumn, MySqlSelect, MySqlTable, getTableConfig } from 'drizzle-orm/mysql-core'
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { SelectMode } from 'drizzle-orm/query-builders/select.types'
 
@@ -11,7 +11,6 @@ interface RepositoryCoreParams {
     db: MySql2Database
     table: MySqlTable
     select: MySqlSelect<any, any, SelectMode, any>
-    deleted_column?: MySqlColumn
 }
 
 interface PaginateParams {
@@ -38,18 +37,22 @@ export class RepositoryCore<TSelect, TInsert, TUpdate> {
     protected readonly db: MySql2Database
     protected readonly table: MySqlTable
     protected readonly select: MySqlSelect<any, any, SelectMode, any>
-    protected readonly deleted_column?: SQL
+    protected readonly deleted_column: MySqlColumn
 
     constructor (data: RepositoryCoreParams) {
         this.db = data.db
         this.table = data.table
         this.select = data.select
 
-        this.deleted_column = isNull(data.deleted_column ?? sql`deleted_at`)
+        const { columns } = getTableConfig(this.table)
+
+        const deleted_column = columns.find((column) => column.name === 'deleted_at')
+
+        this.deleted_column = deleted_column as MySqlColumn
     }
 
     protected async selector ({ where, offset, per_page }: SelectorParams): Promise<TSelect[]> {
-        let query = this.select.where(and(where, this.deleted_column))
+        let query = this.select.where(and(where, isNull(this.deleted_column)))
 
         if (per_page !== undefined) {
             query = query.limit(per_page)
@@ -60,6 +63,41 @@ export class RepositoryCore<TSelect, TInsert, TUpdate> {
         }
 
         return await query as TSelect[]
+    }
+
+    protected async set ({ where, params }: UpdateParams<TUpdate>): Promise<boolean> {
+        const data = await this.db.update(this.table)
+            .set(params)
+            .where(and(where, isNull(this.deleted_column)))
+
+        return data[0].affectedRows > 0
+    }
+
+    protected async insert ({ params }: InsertParams<TInsert>): Promise<string> {
+        const code = generateCode()
+
+        await this.db.insert(this.table).values({
+            ...params,
+            code
+        })
+
+        return code
+    }
+
+    protected async softDelete (where: Where): Promise<boolean> {
+        const data = await this.db.update(this.table)
+            .set({ deleted_at: sql`CURRENT_TIMESTAMP` })
+            .where(and(where, isNull(this.deleted_column)))
+
+        return data[0].affectedRows > 0
+    }
+
+    protected async count (where: Where): Promise<number> {
+        const total = await this.db.select({ count: sql<number>`count(id)` })
+            .from(this.table)
+            .where(and(where, isNull(this.deleted_column)))
+
+        return total[0].count
     }
 
     protected async paginate ({ query, where }: PaginateParams): Promise<ResponsePaginationSchemaType<TSelect>> {
@@ -79,40 +117,5 @@ export class RepositoryCore<TSelect, TInsert, TUpdate> {
                 total_pages: Math.ceil(total / query.per_page)
             }
         }
-    }
-
-    protected async set ({ where, params }: UpdateParams<TUpdate>): Promise<boolean> {
-        const data = await this.db.update(this.table)
-            .set(params)
-            .where(and(where, this.deleted_column))
-
-        return data[0].affectedRows > 0
-    }
-
-    protected async insert ({ params }: InsertParams<TInsert>): Promise<string> {
-        const code = generateCode()
-
-        await this.db.insert(this.table).values({
-            ...params,
-            code
-        })
-
-        return code
-    }
-
-    protected async softDelete (where: Where): Promise<boolean> {
-        const data = await this.db.update(this.table)
-            .set({ deleted_at: sql`CURRENT_TIMESTAMP` })
-            .where(and(where, this.deleted_column))
-
-        return data[0].affectedRows > 0
-    }
-
-    protected async count (where: Where): Promise<number> {
-        const total = await this.db.select({ count: sql<number>`count(id)` })
-            .from(this.table)
-            .where(and(where, this.deleted_column))
-
-        return total[0].count
     }
 }

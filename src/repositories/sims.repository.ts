@@ -15,19 +15,15 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsShem
         const select = db.select({
             code: sims.code,
             number: sims.number,
-            provider_id: sims.provider_id,
-            provider_code: sims_provider.code,
-            provider_name: sims_provider.name
+            provider: {
+                code: sims_provider.code,
+                name: sims_provider.name
+            }
         })
         .from(table)
         .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
 
-        super({
-            db,
-            table,
-            select,
-            deleted_column: sims.deleted_at
-         })
+        super({ db, table, select })
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<SimsSchemaSelectPaginatedType> {
@@ -95,20 +91,6 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsShem
     public async delete (code: string): Promise<boolean> {
         return await this.softDelete(eq(sims.code, code))
     }
-
-    // private async selector (where: SQL | undefined): Promise<SimsShemaSelectType[]> {
-    //     const data = await this.db.select()
-    //         .from(sims)
-    //         .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
-    //         .where(where)
-
-    //     return data.map((item) => {
-    //         return {
-    //             ...item.sims,
-    //             provider: item.sims_provider
-    //         }
-    //     }) as SimsShemaSelectType[]
-    // }
 
     private async findIdsByCodes (
         trx: MySql2Database,
