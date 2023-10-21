@@ -82,7 +82,7 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
     public async update (code: string, params: RadiosSchemaUpdateRawType): Promise<string> {
         const isUpdated = await super.updateCore({
             params,
-            where: eq(companies.code, code)
+            where: eq(radios.code, code)
         })
 
         return isUpdated ? code : ''

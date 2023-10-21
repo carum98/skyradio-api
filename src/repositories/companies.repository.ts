@@ -44,6 +44,12 @@ export class CompaniesRepository extends RepositoryCore<CompanySchemaSelectType,
         })
     }
 
+    public async getId (code: string): Promise<number> {
+        return await super.getIdCore({
+            where: eq(companies.code, code)
+        })
+    }
+
     public async create (params: CompanySchemaCreateRawType): Promise<string> {
         return await super.insertCore({
             params
