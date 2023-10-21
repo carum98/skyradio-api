@@ -1,11 +1,10 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { eq } from 'drizzle-orm'
-import { ICompanyModalityRepository } from './repositories'
 import { CompanyModalitySchemaCreateType, CompanyModalitySchemaSelect, CompanyModalitySchemaSelectPaginated, CompanyModalitySchemaSelectPaginatedType, CompanyModalitySchemaSelectType, CompanyModalitySchemaUpdateType, companies_modality } from '@models/companies_modality.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { RepositoryCore } from '@/core/repository.core'
 
-export class CompaniesModalityRepository extends RepositoryCore<CompanyModalitySchemaSelectType, CompanyModalitySchemaCreateType, CompanyModalitySchemaUpdateType> implements ICompanyModalityRepository {
+export class CompaniesModalityRepository extends RepositoryCore<CompanyModalitySchemaSelectType, CompanyModalitySchemaCreateType, CompanyModalitySchemaUpdateType> {
     constructor (public readonly db: MySql2Database) {
         const table = companies_modality
 
@@ -27,16 +26,10 @@ export class CompaniesModalityRepository extends RepositoryCore<CompanyModalityS
         return CompanyModalitySchemaSelectPaginated.parse(data)
     }
 
-    public async get (code: string): Promise<CompanyModalitySchemaSelectType | null> {
-        const data = await this.selector({
-            where: eq(companies_modality.code, code)
-        })
+    public async get (code: string): Promise<CompanyModalitySchemaSelectType> {
+        const data = await this.getOne(eq(companies_modality.code, code))
 
-        if (data.length === 0) {
-            return null
-        }
-
-        return CompanyModalitySchemaSelect.parse(data.at(0))
+        return CompanyModalitySchemaSelect.parse(data)
     }
 
     public async create (params: CompanyModalitySchemaCreateType): Promise<string> {

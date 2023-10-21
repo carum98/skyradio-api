@@ -1,4 +1,3 @@
-import { NotFoundError } from '@/utils/errors'
 import { SimsProviderShemaCreateType, SimsProviderShemaSelectPaginatedType, SimsProviderShemaSelectType, SimsProviderShemaUpdateType } from '@/models/sims_provider.model'
 import { SimsProviderRepository } from '@/repositories/sims_provider.repository'
 import { PaginationSchemaType } from '@/utils/pagination'
@@ -11,13 +10,7 @@ export class SimsProviderService {
     }
 
     public async get (code: string): Promise<SimsProviderShemaSelectType> {
-        const provider = await this.repository.get(code)
-
-        if (provider === null) {
-            throw new NotFoundError('Provider not found')
-        }
-
-        return provider
+        return await this.repository.get(code)
     }
 
     public async create (params: SimsProviderShemaCreateType): Promise<SimsProviderShemaSelectType> {

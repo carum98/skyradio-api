@@ -35,16 +35,10 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsShem
         return SimsSchemaSelectPaginated.parse(data)
     }
 
-    public async get (code: string): Promise<SimsShemaSelectType | null> {
-        const data = await this.selector({
-            where: eq(sims.code, code)
-        })
+    public async get (code: string): Promise<SimsShemaSelectType> {
+        const data = await this.getOne(eq(sims.code, code))
 
-        if (data.length === 0) {
-            return null
-        }
-
-        return SimsShemaSelect.parse(data.at(0))
+        return SimsShemaSelect.parse(data)
     }
 
     public async create (params: SimsShemaCreateType): Promise<string> {

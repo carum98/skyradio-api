@@ -1,6 +1,5 @@
 import { CompanySchemaCreateType, CompanySchemaSelectPaginatedType, CompanySchemaSelectType, CompanySchemaUpdateType } from '@models/companies.model'
 import { CompaniesRepository } from '@repositories/companies.repository'
-import { NotFoundError } from '@/utils/errors'
 import { RadiosRepository } from '@repositories/radios.repository'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { RadiosSchemaSelectPaginatedType } from '@models/radios.model'
@@ -16,13 +15,7 @@ export class CompaniesService {
     }
 
     public async get (code: string): Promise<CompanySchemaSelectType> {
-        const company = await this.repository.get(code)
-
-        if (company === null) {
-            throw new NotFoundError('Company not found')
-        }
-
-        return company
+        return await this.repository.get(code)
     }
 
     public async create (params: CompanySchemaCreateType): Promise<CompanySchemaSelectType> {

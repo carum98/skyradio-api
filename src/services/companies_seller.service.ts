@@ -1,5 +1,4 @@
 import { CompanyModalitySchemaUpdateType } from '@/models/companies_modality.model'
-import { NotFoundError } from '@/utils/errors'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { CompanySellerSchemaCreateType, CompanySellerSchemaSelectPaginatedType, CompanySellerSchemaSelectType } from '@models/companies_seller.model'
 import { CompaniesSellerRepository } from '@repositories/companies_seller.repository'
@@ -12,13 +11,7 @@ export class CompaniesSellerService {
     }
 
     public async get (code: string): Promise<CompanySellerSchemaSelectType> {
-        const seller = await this.repository.get(code)
-
-        if (seller === null) {
-            throw new NotFoundError('Seller not found')
-        }
-
-        return seller
+        return await this.repository.get(code)
     }
 
     public async create (params: CompanySellerSchemaCreateType): Promise<CompanySellerSchemaSelectType> {

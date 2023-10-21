@@ -1,4 +1,5 @@
 import { generateCode } from '@/utils/code'
+import { NotFoundError } from '@/utils/errors'
 import { PaginationSchemaType, ResponsePaginationSchemaType } from '@/utils/pagination'
 import { SQL, and, isNull, sql } from 'drizzle-orm'
 import { MySqlColumn, MySqlSelect, MySqlTable, getTableConfig } from 'drizzle-orm/mysql-core'
@@ -37,6 +38,7 @@ export class RepositoryCore<TSelect, TInsert, TUpdate> {
     protected readonly db: MySql2Database
     protected readonly table: MySqlTable
     protected readonly select: MySqlSelect<any, any, SelectMode, any>
+    protected readonly table_name: string
     protected readonly deleted_column: MySqlColumn
 
     constructor (data: RepositoryCoreParams) {
@@ -44,14 +46,15 @@ export class RepositoryCore<TSelect, TInsert, TUpdate> {
         this.table = data.table
         this.select = data.select
 
-        const { columns } = getTableConfig(this.table)
+        const { columns, name } = getTableConfig(this.table)
 
         const deleted_column = columns.find((column) => column.name === 'deleted_at')
 
         this.deleted_column = deleted_column as MySqlColumn
+        this.table_name = name
     }
 
-    protected async selector ({ where, offset, per_page }: SelectorParams): Promise<TSelect[]> {
+    private async query ({ where, offset, per_page }: SelectorParams): Promise<TSelect[]> {
         let query = this.select.where(and(where, isNull(this.deleted_column)))
 
         if (per_page !== undefined) {
@@ -65,6 +68,16 @@ export class RepositoryCore<TSelect, TInsert, TUpdate> {
         const data = await query
 
         return this.parseResonse(data)
+    }
+
+    protected async getOne (where: Where): Promise<TSelect> {
+        const data = await this.query({ where, per_page: 1 })
+
+        if (data.length === 0) {
+            throw new NotFoundError(`${this.table_name} not found`)
+        }
+
+        return data.at(0) as TSelect
     }
 
     protected async set ({ where, params }: UpdateParams<TUpdate>): Promise<boolean> {
@@ -107,7 +120,7 @@ export class RepositoryCore<TSelect, TInsert, TUpdate> {
 
         const offset = (page - 1) * per_page
 
-        const data = await this.selector({ where, per_page, offset })
+        const data = await this.query({ where, per_page, offset })
         const total = await this.count(where)
 
         return {
@@ -122,6 +135,10 @@ export class RepositoryCore<TSelect, TInsert, TUpdate> {
     }
 
     private parseResonse (data: { [key: string]: any }): TSelect[] {
+        if (data.length === 0) {
+            return [] as unknown as TSelect[]
+        }
+
         const keys = Object.keys(data.at(0)).filter((key) => key.includes('__'))
 
         if (keys.length > 0) {

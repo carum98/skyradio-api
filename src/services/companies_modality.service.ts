@@ -1,4 +1,3 @@
-import { NotFoundError } from '@/utils/errors'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { CompanyModalitySchemaCreateType, CompanyModalitySchemaSelectPaginatedType, CompanyModalitySchemaSelectType, CompanyModalitySchemaUpdateType } from '@models/companies_modality.model'
 import { CompaniesModalityRepository } from '@repositories/companies_modality.repository'
@@ -11,13 +10,7 @@ export class CompaniesModalityService {
     }
 
     public async get (code: string): Promise<CompanyModalitySchemaSelectType> {
-        const company = await this.repository.get(code)
-
-        if (company === null) {
-            throw new NotFoundError('Company not found')
-        }
-
-        return company
+        return await this.repository.get(code)
     }
 
     public async create (params: CompanyModalitySchemaCreateType): Promise<CompanyModalitySchemaSelectType> {
@@ -27,9 +20,9 @@ export class CompaniesModalityService {
     }
 
     public async update (code: string, params: CompanyModalitySchemaUpdateType): Promise<CompanyModalitySchemaSelectType> {
-        const updateId = await this.repository.update(code, params)
+        const data = await this.repository.update(code, params)
 
-        return await this.get(updateId)
+        return await this.get(data)
     }
 
     public async delete (code: string): Promise<boolean> {

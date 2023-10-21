@@ -27,16 +27,10 @@ export class RadiosStatusRepository extends RepositoryCore<RadiosStatusShemaSele
         return RadiosStatusShemaSelectPaginated.parse(data)
     }
 
-    public async get (code: string): Promise<RadiosStatusShemaSelectType | null> {
-        const data = await this.selector({
-            where: eq(radios_status.code, code)
-        })
+    public async get (code: string): Promise<RadiosStatusShemaSelectType> {
+        const data = await this.getOne(eq(radios_status.code, code))
 
-        if (data.length === 0) {
-            return null
-        }
-
-        return RadiosStatusShemaSelect.parse(data.at(0))
+        return RadiosStatusShemaSelect.parse(data)
     }
 
     public async create (params: RadiosStatusShemaCreateType): Promise<string> {

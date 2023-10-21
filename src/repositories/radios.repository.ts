@@ -61,16 +61,10 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
         return RadiosSchemaSelectPaginated.parse(data)
     }
 
-    public async get (code: string): Promise<RadiosSchemaSelectType | null> {
-        const data = await this.selector({
-            where: eq(radios.code, code)
-        })
+    public async get (code: string): Promise<RadiosSchemaSelectType> {
+        const data = await this.getOne(eq(radios.code, code))
 
-        if (data.length === 0) {
-            return null
-        }
-
-        return RadiosSchemaSelect.parse(data.at(0))
+        return RadiosSchemaSelect.parse(data)
     }
 
     public async getByCompany (company_code: string, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {

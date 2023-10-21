@@ -43,16 +43,10 @@ export class CompaniesRepository extends RepositoryCore<CompanySchemaSelectType,
         return CompanySchemaSelectPaginated.parse(data)
     }
 
-    public async get (code: string): Promise<CompanySchemaSelectType | null> {
-        const data = await this.selector({
-            where: eq(companies.code, code)
-        })
+    public async get (code: string): Promise<CompanySchemaSelectType> {
+        const data = await this.getOne(eq(companies.code, code))
 
-        if (data.length === 0) {
-            return null
-        }
-
-        return CompanySchemaSelect.parse(data.at(0))
+        return CompanySchemaSelect.parse(data)
     }
 
     public async create (params: CompanySchemaCreateType): Promise<string> {

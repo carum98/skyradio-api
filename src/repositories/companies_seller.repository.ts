@@ -27,16 +27,10 @@ export class CompaniesSellerRepository extends RepositoryCore<CompanySellerSchem
         return CompanySellerSchemaSelectPaginated.parse(data)
     }
 
-    public async get (code: string): Promise<CompanySellerSchemaSelectType | null> {
-        const data = await this.selector({
-            where: eq(companies_seller.code, code)
-        })
+    public async get (code: string): Promise<CompanySellerSchemaSelectType> {
+        const data = await this.getOne(eq(companies_seller.code, code))
 
-        if (data.length === 0) {
-            return null
-        }
-
-        return CompanySellerSchemaSelect.parse(data.at(0))
+        return CompanySellerSchemaSelect.parse(data)
     }
 
     public async create (params: CompanySellerSchemaCreateType): Promise<string> {

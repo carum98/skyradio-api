@@ -1,4 +1,3 @@
-import { NotFoundError } from '@/utils/errors'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { SimsSchemaSelectPaginatedType, SimsShemaCreateType, SimsShemaSelectType, SimsShemaUpdateType } from '@models/sims.model'
 import { SimsRepository } from '@repositories/sims.repository'
@@ -11,13 +10,7 @@ export class SimsService {
     }
 
     public async get (code: string): Promise<SimsShemaSelectType> {
-        const sim = await this.repository.get(code)
-
-        if (sim === null) {
-            throw new NotFoundError('Sim not found')
-        }
-
-        return sim
+        return await this.repository.get(code)
     }
 
     public async create (params: SimsShemaCreateType): Promise<SimsShemaSelectType> {

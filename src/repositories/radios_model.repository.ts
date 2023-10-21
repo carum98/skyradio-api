@@ -26,16 +26,10 @@ export class RadiosModelRepository extends RepositoryCore<RadiosModelShemaSelect
         return RadiosModelShemaSelectPaginated.parse(data)
     }
 
-    public async get (code: string): Promise<RadiosModelShemaSelectType | null> {
-        const data = await this.selector({
-            where: eq(radios_model.code, code)
-        })
+    public async get (code: string): Promise<RadiosModelShemaSelectType> {
+        const data = await this.getOne(eq(radios_model.code, code))
 
-        if (data.length === 0) {
-            return null
-        }
-
-        return RadiosModelShemaSelect.parse(data.at(0))
+        return RadiosModelShemaSelect.parse(data)
     }
 
     public async create (params: RadiosModelShemaCreateType): Promise<string> {

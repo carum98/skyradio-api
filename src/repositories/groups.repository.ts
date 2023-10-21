@@ -27,16 +27,10 @@ export class GroupRepository extends RepositoryCore<GroupSchemaSelectType, Group
         return GroupSchemaSelectPaginated.parse(data)
     }
 
-    public async get (id: number): Promise<GroupSchemaSelectType | null> {
-        const data = await this.selector({
-            where: eq(groups.id, id)
-        })
+    public async get (id: number): Promise<GroupSchemaSelectType> {
+        const data = await this.getOne(eq(groups.id, id))
 
-        if (data.length === 0) {
-            return null
-        }
-
-        return GroupSchemaSelect.parse(data.at(0))
+        return GroupSchemaSelect.parse(data)
     }
 
     public async create (params: GroupSchemaCreateType): Promise<number> {

@@ -1,4 +1,3 @@
-import { NotFoundError } from '@/utils/errors'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { RadiosStatusShemaCreateType, RadiosStatusShemaSelectPaginatedType, RadiosStatusShemaSelectType, RadiosStatusShemaUpdateType } from '@models/radios_status.model'
 import { RadiosStatusRepository } from '@repositories/radios_status.repository'
@@ -11,13 +10,7 @@ export class RadiosStatusService {
     }
 
     public async get (code: string): Promise<RadiosStatusShemaSelectType> {
-        const status = await this.repository.get(code)
-
-        if (status === null) {
-            throw new NotFoundError('Status not found')
-        }
-
-        return status
+        return await this.repository.get(code)
     }
 
     public async create (params: RadiosStatusShemaCreateType): Promise<RadiosStatusShemaSelectType> {
