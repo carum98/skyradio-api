@@ -46,7 +46,7 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
         .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
         .leftJoin(companies, eq(radios.company_id, companies.id))
 
-        super({ db, table, select })
+        super({ db, table, select, search_columns: [radios.name, radios.imei, radios.serial] })
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {

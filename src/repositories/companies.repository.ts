@@ -28,7 +28,7 @@ export class CompaniesRepository extends RepositoryCore<CompanySchemaSelectType,
         .leftJoin(companies_modality, eq(companies_modality.id, companies.modality_id))
         .leftJoin(companies_seller, eq(companies_seller.id, companies.seller_id))
 
-        super({ db, table, select })
+        super({ db, table, select, search_columns: [companies.name] })
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<CompanySchemaSelectPaginatedType> {

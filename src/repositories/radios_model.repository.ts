@@ -14,7 +14,7 @@ export class RadiosModelRepository extends RepositoryCore<RadiosModelShemaSelect
         })
         .from(table)
 
-        super({ db, table, select })
+        super({ db, table, select, search_columns: [radios_model.name] })
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<RadiosModelShemaSelectPaginatedType> {

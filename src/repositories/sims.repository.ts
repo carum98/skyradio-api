@@ -20,7 +20,7 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsSche
         .from(table)
         .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
 
-        super({ db, table, select })
+        super({ db, table, select, search_columns: [sims.number] })
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<SimsSchemaSelectPaginatedType> {

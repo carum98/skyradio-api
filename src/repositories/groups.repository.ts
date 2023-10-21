@@ -1,11 +1,10 @@
 import { GroupSchemaCreateType, GroupSchemaSelect, GroupSchemaSelectPaginated, GroupSchemaSelectPaginatedType, GroupSchemaSelectType, GroupSchemaUpdateType, groups } from '@models/groups.model'
-import { IGroupRepository } from './repositories'
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { eq, isNull } from 'drizzle-orm'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { RepositoryCore } from '@/core/repository.core'
 
-export class GroupRepository extends RepositoryCore<GroupSchemaSelectType, GroupSchemaCreateType, GroupSchemaUpdateType> implements IGroupRepository {
+export class GroupRepository extends RepositoryCore<GroupSchemaSelectType, GroupSchemaCreateType, GroupSchemaUpdateType> {
     constructor (public readonly db: MySql2Database) {
         const table = groups
 
@@ -15,7 +14,7 @@ export class GroupRepository extends RepositoryCore<GroupSchemaSelectType, Group
         })
         .from(table)
 
-        super({ db, table, select })
+        super({ db, table, select, search_columns: [groups.name] })
     }
 
     public async getAll (query: PaginationSchemaType): Promise<GroupSchemaSelectPaginatedType> {

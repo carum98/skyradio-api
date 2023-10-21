@@ -1,11 +1,10 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { IRadiosStatusRepository } from './repositories'
 import { RadiosStatusShemaCreateType, RadiosStatusShemaSelectPaginatedType, RadiosStatusShemaSelectType, RadiosStatusShemaUpdateType, radios_status } from '@models/radios_status.model'
 import { eq } from 'drizzle-orm'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { RepositoryCore } from '@/core/repository.core'
 
-export class RadiosStatusRepository extends RepositoryCore<RadiosStatusShemaSelectType, RadiosStatusShemaCreateType, RadiosStatusShemaUpdateType> implements IRadiosStatusRepository {
+export class RadiosStatusRepository extends RepositoryCore<RadiosStatusShemaSelectType, RadiosStatusShemaCreateType, RadiosStatusShemaUpdateType> {
     constructor (public readonly db: MySql2Database) {
         const table = radios_status
 
@@ -15,7 +14,7 @@ export class RadiosStatusRepository extends RepositoryCore<RadiosStatusShemaSele
         })
         .from(table)
 
-        super({ db, table, select })
+        super({ db, table, select, search_columns: [radios_status.name] })
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<RadiosStatusShemaSelectPaginatedType> {

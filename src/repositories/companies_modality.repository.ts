@@ -14,7 +14,7 @@ export class CompaniesModalityRepository extends RepositoryCore<CompanyModalityS
         })
         .from(table)
 
-        super({ db, table, select })
+        super({ db, table, select, search_columns: [companies_modality.name] })
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<CompanyModalitySchemaSelectPaginatedType> {

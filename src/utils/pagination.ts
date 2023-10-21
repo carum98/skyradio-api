@@ -2,7 +2,8 @@ import { z } from 'zod'
 
 export const PaginationSchema = z.object({
     page: z.coerce.number().int().positive().default(1),
-    per_page: z.coerce.number().int().positive().default(10)
+    per_page: z.coerce.number().int().positive().default(10),
+    search: z.string().optional()
 })
 
 export interface ResponsePaginationSchemaType<T> {

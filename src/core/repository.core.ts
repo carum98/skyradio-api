@@ -1,7 +1,7 @@
 import { generateCode } from '@/utils/code'
 import { NotFoundError } from '@/utils/errors'
 import { PaginationSchemaType, ResponsePaginationSchemaType } from '@/utils/pagination'
-import { SQL, and, isNull, sql } from 'drizzle-orm'
+import { SQL, and, isNull, like, or, sql } from 'drizzle-orm'
 import { MySqlColumn, MySqlSelect, MySqlTable, getTableConfig } from 'drizzle-orm/mysql-core'
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { SelectMode } from 'drizzle-orm/query-builders/select.types'
@@ -12,6 +12,7 @@ interface RepositoryCoreParams {
     db: MySql2Database
     table: MySqlTable
     select: MySqlSelect<any, any, SelectMode, any>
+    search_columns?: MySqlColumn[]
 }
 
 interface PaginateParams {
@@ -39,12 +40,14 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
     protected readonly table: MySqlTable
     protected readonly select: MySqlSelect<any, any, SelectMode, any>
     protected readonly table_name: string
+    protected readonly search_columns?: MySqlColumn[]
     protected readonly deleted_column: MySqlColumn
 
     constructor (data: RepositoryCoreParams) {
         this.db = data.db
         this.table = data.table
         this.select = data.select
+        this.search_columns = data.search_columns
 
         const { columns, name } = getTableConfig(this.table)
 
@@ -55,9 +58,16 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
     }
 
     protected async getAllCore ({ query, where }: PaginateParams): Promise<ResponsePaginationSchemaType<TSelect>> {
-        const { page, per_page } = query
+        const { page, per_page, search } = query
 
         const offset = (page - 1) * per_page
+
+        if (search !== undefined && this.search_columns !== undefined) {
+            where = and(
+                where,
+                or(...this.search_columns.map((column) => like(column, `%${search}%`)))
+            )
+        }
 
         const data = await this.query({ where, per_page, offset })
         const total = await this.count(where)

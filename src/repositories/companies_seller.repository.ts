@@ -1,11 +1,10 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { eq } from 'drizzle-orm'
-import { ICompanySellerRepository } from './repositories'
 import { CompanySellerSchemaCreateType, CompanySellerSchemaSelect, CompanySellerSchemaSelectPaginated, CompanySellerSchemaSelectPaginatedType, CompanySellerSchemaSelectType, CompanySellerSchemaUpdateType, companies_seller } from '@models/companies_seller.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { RepositoryCore } from '@/core/repository.core'
 
-export class CompaniesSellerRepository extends RepositoryCore<CompanySellerSchemaSelectType, CompanySellerSchemaCreateType, CompanySellerSchemaUpdateType> implements ICompanySellerRepository {
+export class CompaniesSellerRepository extends RepositoryCore<CompanySellerSchemaSelectType, CompanySellerSchemaCreateType, CompanySellerSchemaUpdateType> {
     constructor (public readonly db: MySql2Database) {
         const table = companies_seller
 
@@ -15,7 +14,7 @@ export class CompaniesSellerRepository extends RepositoryCore<CompanySellerSchem
         })
         .from(table)
 
-        super({ db, table, select })
+        super({ db, table, select, search_columns: [companies_seller.name] })
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<CompanySellerSchemaSelectPaginatedType> {

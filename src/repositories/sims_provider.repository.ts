@@ -14,7 +14,7 @@ export class SimsProviderRepository extends RepositoryCore<SimsProviderShemaSele
         })
         .from(table)
 
-        super({ db, table, select })
+        super({ db, table, select, search_columns: [sims_provider.name] })
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<SimsProviderShemaSelectPaginatedType> {
