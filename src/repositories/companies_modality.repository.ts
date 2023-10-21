@@ -5,7 +5,7 @@ import { CompanyModalitySchemaCreateType, CompanyModalitySchemaSelect, CompanyMo
 import { PaginationSchemaType } from '@/utils/pagination'
 import { RepositoryCore } from '@/core/repository.core'
 
-export class CompaniesModalityRepository extends RepositoryCore<CompanyModalitySchemaSelectType> implements ICompanyModalityRepository {
+export class CompaniesModalityRepository extends RepositoryCore<CompanyModalitySchemaSelectType, CompanyModalitySchemaCreateType, CompanyModalitySchemaUpdateType> implements ICompanyModalityRepository {
     constructor (public readonly db: MySql2Database) {
         const table = companies_modality
 
@@ -40,7 +40,7 @@ export class CompaniesModalityRepository extends RepositoryCore<CompanyModalityS
     }
 
     public async create (params: CompanyModalitySchemaCreateType): Promise<string> {
-        const code = await this.insert<CompanyModalitySchemaCreateType>({
+        const code = await this.insert({
             params
         })
 
@@ -48,7 +48,7 @@ export class CompaniesModalityRepository extends RepositoryCore<CompanyModalityS
     }
 
     public async update (code: string, params: CompanyModalitySchemaUpdateType): Promise<string> {
-        const data = await this.set<CompanyModalitySchemaUpdateType>({
+        const data = await this.set({
             params,
             where: eq(companies_modality.code, code)
         })

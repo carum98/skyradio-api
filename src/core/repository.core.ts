@@ -1,15 +1,16 @@
 import { generateCode } from '@/utils/code'
 import { PaginationSchemaType, ResponsePaginationSchemaType } from '@/utils/pagination'
 import { SQL, and, isNull, sql } from 'drizzle-orm'
-import { MySqlTable } from 'drizzle-orm/mysql-core'
+import { MySqlSelect, MySqlTable } from 'drizzle-orm/mysql-core'
 import { MySql2Database } from 'drizzle-orm/mysql2'
+import { SelectMode } from 'drizzle-orm/query-builders/select.types'
 
 type Where = SQL<unknown> | undefined
 
 interface RepositoryCoreParams {
     db: MySql2Database
     table: MySqlTable
-    select: any
+    select: MySqlSelect<any, any, SelectMode, any>
 }
 
 interface PaginateParams {
@@ -23,19 +24,19 @@ interface SelectorParams {
     offset?: number
 }
 
-interface InsertParams<E> {
-    params: E
+interface InsertParams<TInsert> {
+    params: TInsert
 }
 
-interface UpdateParams<E> {
+interface UpdateParams<TUpdate> {
     where: Where
-    params: Partial<E>
+    params: Partial<TUpdate>
 }
 
-export class RepositoryCore<T> {
+export class RepositoryCore<TSelect, TInsert, TUpdate> {
     protected readonly db: MySql2Database
     protected readonly table: MySqlTable
-    protected readonly select: any
+    protected readonly select: MySqlSelect<any, any, SelectMode, any>
 
     constructor (data: RepositoryCoreParams) {
         this.db = data.db
@@ -43,7 +44,7 @@ export class RepositoryCore<T> {
         this.select = data.select
     }
 
-    protected async selector ({ where, offset, per_page }: SelectorParams): Promise<T[]> {
+    protected async selector ({ where, offset, per_page }: SelectorParams): Promise<TSelect[]> {
         let query = this.select.where(and(where, isNull(sql`deleted_at`)))
 
         if (per_page !== undefined) {
@@ -54,10 +55,10 @@ export class RepositoryCore<T> {
             query = query.offset(offset)
         }
 
-        return await query as T[]
+        return await query as TSelect[]
     }
 
-    protected async paginate ({ query, where }: PaginateParams): Promise<ResponsePaginationSchemaType<T>> {
+    protected async paginate ({ query, where }: PaginateParams): Promise<ResponsePaginationSchemaType<TSelect>> {
         const { page, per_page } = query
 
         const offset = (page - 1) * per_page
@@ -76,7 +77,7 @@ export class RepositoryCore<T> {
         }
     }
 
-    protected async set<E> ({ where, params }: UpdateParams<E>): Promise<boolean> {
+    protected async set ({ where, params }: UpdateParams<TUpdate>): Promise<boolean> {
         const data = await this.db.update(this.table)
             .set(params)
             .where(and(where, isNull(sql`deleted_at`)))
@@ -84,7 +85,7 @@ export class RepositoryCore<T> {
         return data[0].affectedRows > 0
     }
 
-    protected async insert<E> ({ params }: InsertParams<E>): Promise<string> {
+    protected async insert ({ params }: InsertParams<TInsert>): Promise<string> {
         const code = generateCode()
 
         await this.db.insert(this.table).values({
