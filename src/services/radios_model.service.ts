@@ -1,12 +1,13 @@
 import { NotFoundError } from '@/utils/errors'
-import { RadiosModelShemaCreateType, RadiosModelShemaSelectType, RadiosModelShemaUpdateType } from '@models/radios_model.model'
+import { PaginationSchemaType } from '@/utils/pagination'
+import { RadiosModelShemaCreateType, RadiosModelShemaSelectPaginatedType, RadiosModelShemaSelectType, RadiosModelShemaUpdateType } from '@models/radios_model.model'
 import { RadiosModelRepository } from '@repositories/radios_model.repository'
 
 export class RadiosModelService {
     constructor (private readonly repository: RadiosModelRepository) { }
 
-    public async getAll (group_id: number): Promise<RadiosModelShemaSelectType[]> {
-        return await this.repository.getAll(group_id)
+    public async getAll (group_id: number, query: PaginationSchemaType): Promise<RadiosModelShemaSelectPaginatedType> {
+        return await this.repository.getAll(group_id, query)
     }
 
     public async get (code: string): Promise<RadiosModelShemaSelectType> {

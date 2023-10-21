@@ -1,66 +1,62 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { and, eq, isNull, sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { ICompanySellerRepository } from './repositories'
-import { CompanySellerSchemaCreateType, CompanySellerSchemaSelect, CompanySellerSchemaSelectType, CompanySellerSchemaUpdateType, companies_seller } from '@models/companies_seller.model'
-import { generateCode } from '@/utils/code'
+import { CompanySellerSchemaCreateType, CompanySellerSchemaSelect, CompanySellerSchemaSelectPaginated, CompanySellerSchemaSelectPaginatedType, CompanySellerSchemaSelectType, CompanySellerSchemaUpdateType, companies_seller } from '@models/companies_seller.model'
+import { PaginationSchemaType } from '@/utils/pagination'
+import { RepositoryCore } from '@/core/repository.core'
 
-export class CompaniesSellerRepository implements ICompanySellerRepository {
-    constructor (public readonly db: MySql2Database) {}
+export class CompaniesSellerRepository extends RepositoryCore<CompanySellerSchemaSelectType, CompanySellerSchemaCreateType, CompanySellerSchemaUpdateType> implements ICompanySellerRepository {
+    constructor (public readonly db: MySql2Database) {
+        const table = companies_seller
 
-    public async getAll (group_id: number): Promise<CompanySellerSchemaSelectType[]> {
-        const data = await this.db.select().from(companies_seller)
-            .where(
-                and(
-                    eq(companies_seller.group_id, group_id),
-                    isNull(companies_seller.deleted_at)
-                )
-            )
+        const select = db.select({
+            code: companies_seller.code,
+            name: companies_seller.name
+        })
+        .from(table)
 
-        return CompanySellerSchemaSelect.array().parse(data)
+        super({ db, table, select })
+    }
+
+    public async getAll (group_id: number, query: PaginationSchemaType): Promise<CompanySellerSchemaSelectPaginatedType> {
+        const data = await this.paginate({
+            query,
+            where: eq(companies_seller.group_id, group_id)
+        })
+
+        return CompanySellerSchemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<CompanySellerSchemaSelectType | null> {
-        const data = await this.db.select().from(companies_seller)
-            .where(
-                and(
-                    eq(companies_seller.code, code),
-                    isNull(companies_seller.deleted_at)
-                )
-            )
+        const data = await this.selector({
+            where: eq(companies_seller.code, code)
+        })
 
-        return data.length > 0
-            ? CompanySellerSchemaSelect.parse(data.at(0))
-            : null
+        if (data.length === 0) {
+            return null
+        }
+
+        return CompanySellerSchemaSelect.parse(data.at(0))
     }
 
     public async create (params: CompanySellerSchemaCreateType): Promise<string> {
-        const code = generateCode()
-
-        await this.db.insert(companies_seller).values({
-            ...params,
-            code
+        const code = await this.insert({
+            params
         })
 
         return code
     }
 
     public async update (code: string, params: CompanySellerSchemaUpdateType): Promise<string> {
-        const data = await this.db.update(companies_seller).set(params)
-            .where(
-                and(
-                    eq(companies_seller.code, code),
-                    isNull(companies_seller.deleted_at)
-                )
-            )
+        const data = await this.set({
+            params,
+            where: eq(companies_seller.code, code)
+        })
 
-        return data[0].affectedRows > 0 ? code : ''
+        return data ? code : ''
     }
 
     public async delete (code: string): Promise<boolean> {
-        const data = await this.db.update(companies_seller)
-            .set({ deleted_at: sql`CURRENT_TIMESTAMP` })
-            .where(eq(companies_seller.code, code))
-
-        return data[0].affectedRows > 0
+        return await this.softDelete(eq(companies_seller.code, code))
     }
 }

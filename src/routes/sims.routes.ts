@@ -6,6 +6,7 @@ import { authMiddleware } from '@middlewares/auth.middleware'
 import { SimsRepository } from '@repositories/sims.repository'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { SimsShemaCreate, SimsShemaUniqueIdentifier, SimsShemaUpdate } from '@models/sims.model'
+import { PaginationSchema } from '@/utils/pagination'
 
 export class SimsRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -22,7 +23,12 @@ export class SimsRouter extends RouterCore {
 
         this.get({
             name: '/',
-            handler: controller.getAll
+            handler: controller.getAll,
+            middlewares: [
+                requestMiddleware({
+                    query: PaginationSchema
+                })
+            ]
         })
 
         this.post({

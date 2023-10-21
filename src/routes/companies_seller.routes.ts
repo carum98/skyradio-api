@@ -1,6 +1,7 @@
 import { CompaniesSellerController } from '@/controllers/companies_seller'
 import { DataSource } from '@/core/data-source.core'
 import { RouterCore } from '@/core/router.core'
+import { PaginationSchema } from '@/utils/pagination'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { rolesMiddleware } from '@middlewares/roles.middleware'
@@ -21,7 +22,12 @@ export class CompaniesSellerRouter extends RouterCore {
 
         this.get({
             name: '/',
-            handler: controller.getAll
+            handler: controller.getAll,
+            middlewares: [
+                requestMiddleware({
+                    query: PaginationSchema
+                })
+            ]
         })
 
         this.post({

@@ -3,6 +3,7 @@ import { datetime, index, int, mysqlTable, primaryKey, varchar } from 'drizzle-o
 import { groups } from './groups.model'
 import { createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
+import { ResponsePaginationSchema } from '@/utils/pagination'
 
 export const sims_provider = mysqlTable('sims_provider', {
     id: int('id').autoincrement().notNull(),
@@ -35,6 +36,9 @@ export const SimsProviderShemaUniqueIdentifier = createSelectSchema(sims_provide
     code: (schema) => schema.code.length(6)
 }).pick({ code: true }).required()
 
+export const SimsProviderShemaSelectPaginated = ResponsePaginationSchema(SimsProviderShemaSelect)
+
 export type SimsProviderShemaCreateType = z.infer<typeof SimsProviderShemaCreate>
 export type SimsProviderShemaSelectType = z.infer<typeof SimsProviderShemaSelect>
 export type SimsProviderShemaUpdateType = z.infer<typeof SimsProviderShemaUpdate>
+export type SimsProviderShemaSelectPaginatedType = z.infer<typeof SimsProviderShemaSelectPaginated>

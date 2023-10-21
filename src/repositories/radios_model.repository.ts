@@ -1,70 +1,61 @@
-import { generateCode } from '@/utils/code'
-import { RadiosModelShemaCreateType, RadiosModelShemaSelect, RadiosModelShemaSelectType, RadiosModelShemaUpdateType, radios_model } from '@models/radios_model.model'
-import { eq, and, isNull, sql } from 'drizzle-orm'
+import { RepositoryCore } from '@/core/repository.core'
+import { PaginationSchemaType } from '@/utils/pagination'
+import { RadiosModelShemaCreateType, RadiosModelShemaSelect, RadiosModelShemaSelectPaginated, RadiosModelShemaSelectPaginatedType, RadiosModelShemaSelectType, RadiosModelShemaUpdateType, radios_model } from '@models/radios_model.model'
+import { eq } from 'drizzle-orm'
 import { MySql2Database } from 'drizzle-orm/mysql2'
 
-export class RadiosModelRepository {
-    constructor (public readonly db: MySql2Database) { }
+export class RadiosModelRepository extends RepositoryCore<RadiosModelShemaSelectType, RadiosModelShemaCreateType, RadiosModelShemaUpdateType> {
+    constructor (public readonly db: MySql2Database) {
+        const table = radios_model
 
-    public async getAll (group_id: number): Promise<RadiosModelShemaSelectType[]> {
-        const data = await this.db.select().from(radios_model)
-            .where(
-                and(
-                    eq(radios_model.group_id, group_id),
-                    isNull(radios_model.deleted_at)
-                )
-            )
+        const select = db.select({
+            code: radios_model.code,
+            name: radios_model.name
+        })
+        .from(table)
 
-        return RadiosModelShemaSelect.array().parse(data)
+        super({ db, table, select })
+    }
+
+    public async getAll (group_id: number, query: PaginationSchemaType): Promise<RadiosModelShemaSelectPaginatedType> {
+        const data = await this.paginate({
+            query,
+            where: eq(radios_model.group_id, group_id)
+        })
+
+        return RadiosModelShemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<RadiosModelShemaSelectType | null> {
-        const data = await this.db.select().from(radios_model)
-            .where(
-                and(
-                    eq(radios_model.code, code),
-                    isNull(radios_model.deleted_at)
-                )
-            )
+        const data = await this.selector({
+            where: eq(radios_model.code, code)
+        })
 
-        return data.length > 0
-            ? RadiosModelShemaSelect.parse(data.at(0))
-            : null
+        if (data.length === 0) {
+            return null
+        }
+
+        return RadiosModelShemaSelect.parse(data.at(0))
     }
 
     public async create (params: RadiosModelShemaCreateType): Promise<string> {
-        const code = generateCode()
-
-        await this.db.insert(radios_model).values({
-            ...params,
-            code
+        const code = await this.insert({
+            params
         })
 
         return code
     }
 
     public async update (code: string, params: RadiosModelShemaUpdateType): Promise<string> {
-        const data = await this.db.update(radios_model).set(params)
-            .where(
-                and(
-                    eq(radios_model.code, code),
-                    isNull(radios_model.deleted_at)
-                )
-            )
+        const data = await this.set({
+            params,
+            where: eq(radios_model.code, code)
+        })
 
-        return data[0].affectedRows > 0 ? code : ''
+        return data ? code : ''
     }
 
     public async delete (code: string): Promise<boolean> {
-        const data = await this.db.update(radios_model)
-            .set({ deleted_at: sql`CURRENT_TIMESTAMP` })
-            .where(
-                and(
-                    eq(radios_model.code, code),
-                    isNull(radios_model.deleted_at)
-                )
-            )
-
-        return data[0].affectedRows > 0
+        return await this.softDelete(eq(radios_model.code, code))
     }
 }

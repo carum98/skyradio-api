@@ -4,6 +4,7 @@ import { groups } from './groups.model'
 import { sims_provider } from './sims_provider.model'
 import { createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
+import { ResponsePaginationSchema } from '@/utils/pagination'
 
 export const sims = mysqlTable('sims', {
     id: int('id').autoincrement().notNull(),
@@ -51,6 +52,9 @@ export const SimsShemaUniqueIdentifier = createSelectSchema(sims, {
     code: (schema) => schema.code.length(6)
 }).pick({ code: true }).required()
 
+export const SimsSchemaSelectPaginated = ResponsePaginationSchema(SimsShemaSelect)
+
 export type SimsShemaCreateType = z.infer<typeof SimsShemaCreate>
 export type SimsShemaSelectType = z.infer<typeof SimsShemaSelect>
 export type SimsShemaUpdateType = z.infer<typeof SimsShemaUpdate>
+export type SimsSchemaSelectPaginatedType = z.infer<typeof SimsSchemaSelectPaginated>

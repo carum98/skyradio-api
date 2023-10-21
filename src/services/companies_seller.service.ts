@@ -1,13 +1,14 @@
 import { CompanyModalitySchemaUpdateType } from '@/models/companies_modality.model'
 import { NotFoundError } from '@/utils/errors'
-import { CompanySellerSchemaCreateType, CompanySellerSchemaSelectType } from '@models/companies_seller.model'
+import { PaginationSchemaType } from '@/utils/pagination'
+import { CompanySellerSchemaCreateType, CompanySellerSchemaSelectPaginatedType, CompanySellerSchemaSelectType } from '@models/companies_seller.model'
 import { CompaniesSellerRepository } from '@repositories/companies_seller.repository'
 
 export class CompaniesSellerService {
     constructor (public readonly repository: CompaniesSellerRepository) {}
 
-    public async getAll (group_id: number): Promise<CompanySellerSchemaSelectType[]> {
-        return await this.repository.getAll(group_id)
+    public async getAll (group_id: number, query: PaginationSchemaType): Promise<CompanySellerSchemaSelectPaginatedType> {
+        return await this.repository.getAll(group_id, query)
     }
 
     public async get (code: string): Promise<CompanySellerSchemaSelectType> {

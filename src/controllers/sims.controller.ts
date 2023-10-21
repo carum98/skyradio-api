@@ -1,14 +1,16 @@
 import { Request, Response } from 'express'
 import { SimsService } from '@/services/sims.service'
 import { SimsShemaCreateType, SimsShemaUpdateType } from '@/models/sims.model'
+import { PaginationSchemaType } from '@/utils/pagination'
 
 export class SimsController {
     constructor (private readonly service: SimsService) {}
 
     public getAll = async (req: Request, res: Response): Promise<void> => {
         const { group_id } = req.body
+        const query = req.query as unknown as PaginationSchemaType
 
-        const data = await this.service.getAll(parseInt(group_id))
+        const data = await this.service.getAll(parseInt(group_id), query)
 
         res.json(data)
     }

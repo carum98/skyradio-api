@@ -44,7 +44,7 @@ export interface ICompanyModalityRepository extends IRepository {
 }
 
 export interface ICompanySellerRepository extends IRepository {
-    getAll: (group_id: number) => Promise<CompanySellerSchemaSelectType[]>
+    getAll: (group_id: number, query: PaginationSchemaType) => Promise<CompanySellerSchemaSelectPaginatedType>
     get: (code: string) => Promise<CompanySellerSchemaSelectType | null>
     create: (params: CompanySellerSchemaCreateType) => Promise<string>
     update: (code: string, params: CompanySellerSchemaUpdateType) => Promise<string>
@@ -52,7 +52,7 @@ export interface ICompanySellerRepository extends IRepository {
 }
 
 export interface IGroupRepository extends IRepository {
-    getAll: () => Promise<GroupSchemaSelectType[]>
+    getAll: (query: PaginationSchemaType) => Promise<GroupSchemaSelectPaginatedType>
     get: (id: number) => Promise<GroupSchemaSelectType | null>
     create: (params: GroupSchemaCreateType) => Promise<number>
     update: (id: number, params: GroupSchemaUpdateType) => Promise<number>
@@ -60,7 +60,7 @@ export interface IGroupRepository extends IRepository {
 }
 
 export interface ISimsRepository extends IRepository {
-    getAll: (group_id: number) => Promise<SimsShemaSelectType[]>
+    getAll: (group_id: number, query: PaginationSchemaType) => Promise<SimsSchemaSelectPaginatedType>
     get: (code: string) => Promise<SimsShemaSelectType | null>
     create: (params: SimsShemaCreateType) => Promise<string>
     update: (code: string, params: SimsShemaUpdateType) => Promise<string>
@@ -68,7 +68,7 @@ export interface ISimsRepository extends IRepository {
 }
 
 export interface ISimsProviderRepository extends IRepository {
-    getAll: (group_id: number) => Promise<SimsProviderShemaSelectType[]>
+    getAll: (group_id: number, query: PaginationSchemaType) => Promise<SimsProviderShemaSelectPaginatedType>
     get: (code: string) => Promise<SimsProviderShemaSelectType | null>
     create: (params: SimsProviderShemaCreateType) => Promise<string>
     update: (code: string, params: SimsProviderShemaUpdateType) => Promise<string>
@@ -85,7 +85,7 @@ export interface IRadioRepository extends IRepository {
 }
 
 export interface IRadiosModelRepository extends IRepository {
-    getAll: (group_id: number) => Promise<RadiosModelShemaSelectType[]>
+    getAll: (group_id: number, query: PaginationSchemaType) => Promise<RadiosModelShemaSelectPaginated>
     get: (code: string) => Promise<RadiosModelShemaSelectType | null>
     create: (params: RadiosModelShemaCreateType) => Promise<string>
     update: (code: string, params: RadiosModelShemaUpdateType) => Promise<string>
@@ -93,7 +93,7 @@ export interface IRadiosModelRepository extends IRepository {
 }
 
 export interface IRadiosStatusRepository extends IRepository {
-    getAll: (group_id: number) => Promise<RadiosStatusShemaSelectType[]>
+    getAll: (group_id: number, query: PaginationSchemaType) => Promise<RadiosStatusShemaSelectPaginatedType>
     get: (code: string) => Promise<RadiosStatusShemaSelectType | null>
     create: (params: RadiosStatusShemaCreateType) => Promise<string>
     update: (code: string, params: RadiosStatusShemaUpdateType) => Promise<string>

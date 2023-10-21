@@ -3,6 +3,7 @@ import { datetime, index, int, mysqlTable, primaryKey, varchar } from 'drizzle-o
 import { groups } from './groups.model'
 import { createSelectSchema, createInsertSchema } from 'drizzle-zod'
 import { z } from 'zod'
+import { ResponsePaginationSchema } from '@/utils/pagination'
 
 export const radios_model = mysqlTable('radios_model', {
     id: int('id').autoincrement().notNull(),
@@ -38,6 +39,9 @@ export const RadiosModelShemaUniqueIdentifier = createSelectSchema(radios_model,
     code: (schema) => schema.code.length(6)
 }).pick({ code: true }).required()
 
+export const RadiosModelShemaSelectPaginated = ResponsePaginationSchema(RadiosModelShemaSelect)
+
 export type RadiosModelShemaCreateType = z.infer<typeof RadiosModelShemaCreate>
 export type RadiosModelShemaSelectType = z.infer<typeof RadiosModelShemaSelect>
 export type RadiosModelShemaUpdateType = z.infer<typeof RadiosModelShemaUpdate>
+export type RadiosModelShemaSelectPaginatedType = z.infer<typeof RadiosModelShemaSelectPaginated>

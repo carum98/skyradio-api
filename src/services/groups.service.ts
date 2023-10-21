@@ -1,12 +1,13 @@
-import { GroupSchemaCreateType, GroupSchemaSelectType, GroupSchemaUpdateType } from '@models/groups.model'
+import { GroupSchemaCreateType, GroupSchemaSelectPaginatedType, GroupSchemaSelectType, GroupSchemaUpdateType } from '@models/groups.model'
 import { GroupRepository } from '@/repositories/groups.repository'
 import { NotFoundError } from '@/utils/errors'
+import { PaginationSchemaType } from '@/utils/pagination'
 
 export class GroupsService {
     constructor (private readonly repository: GroupRepository) {}
 
-    public async getAll (): Promise<GroupSchemaSelectType[]> {
-        return await this.repository.getAll()
+    public async getAll (query: PaginationSchemaType): Promise<GroupSchemaSelectPaginatedType> {
+        return await this.repository.getAll(query)
     }
 
     public async get (id: number): Promise<GroupSchemaSelectType> {

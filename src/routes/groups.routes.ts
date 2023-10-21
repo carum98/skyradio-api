@@ -7,6 +7,7 @@ import { GroupsService } from '@services/groups.service'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { GroupSchemaCreate, GroupSchemaUniqueIdentifier, GroupSchemaUpdate } from '@models/groups.model'
 import { rolesMiddleware } from '@middlewares/roles.middleware'
+import { PaginationSchema } from '@/utils/pagination'
 
 export class GroupsRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -24,7 +25,12 @@ export class GroupsRouter extends RouterCore {
 
         this.get({
             name: '/',
-            handler: controller.getAll
+            handler: controller.getAll,
+            middlewares: [
+                requestMiddleware({
+                    query: PaginationSchema
+                })
+            ]
         })
 
         this.post({

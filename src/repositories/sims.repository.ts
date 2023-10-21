@@ -1,32 +1,54 @@
-import { SimsShemaCreateType, SimsShemaSelect, SimsShemaSelectType, SimsShemaUpdateType, sims } from '@/models/sims.model'
+import { SimsSchemaSelectPaginated, SimsSchemaSelectPaginatedType, SimsShemaCreateType, SimsShemaSelect, SimsShemaSelectType, SimsShemaUpdateType, sims } from '@/models/sims.model'
 import { ISimsRepository } from './repositories'
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { SQL, and, eq, isNull, sql } from 'drizzle-orm'
+import { and, eq, isNull } from 'drizzle-orm'
 import { sims_provider } from '@/models/sims_provider.model'
 import { generateCode } from '@/utils/code'
 import { NotFoundError } from '@/utils/errors'
+import { PaginationSchemaType } from '@/utils/pagination'
+import { RepositoryCore } from '@/core/repository.core'
 
-export class SimsRepository implements ISimsRepository {
-    constructor (public readonly db: MySql2Database) {}
+export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsShemaCreateType, SimsShemaUpdateType> implements ISimsRepository {
+    constructor (public readonly db: MySql2Database) {
+        const table = sims
 
-    public async getAll (group_id: number): Promise<SimsShemaSelectType[]> {
-        const data = await this.selector(and(
-            eq(sims.group_id, group_id),
-            isNull(sims.deleted_at)
-        ))
+        const select = db.select({
+            code: sims.code,
+            number: sims.number,
+            provider_id: sims.provider_id,
+            provider_code: sims_provider.code,
+            provider_name: sims_provider.name
+        })
+        .from(table)
+        .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
 
-        return SimsShemaSelect.array().parse(data)
+        super({
+            db,
+            table,
+            select,
+            deleted_column: sims.deleted_at
+         })
+    }
+
+    public async getAll (group_id: number, query: PaginationSchemaType): Promise<SimsSchemaSelectPaginatedType> {
+        const data = await this.paginate({
+            query,
+            where: eq(sims.group_id, group_id)
+        })
+
+        return SimsSchemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<SimsShemaSelectType | null> {
-        const data = await this.selector(and(
-            eq(sims.code, code),
-            isNull(sims.deleted_at)
-        ))
+        const data = await this.selector({
+            where: eq(sims.code, code)
+        })
 
-        return data.length > 0
-            ? SimsShemaSelect.parse(data[0])
-            : null
+        if (data.length === 0) {
+            return null
+        }
+
+        return SimsShemaSelect.parse(data.at(0))
     }
 
     public async create (params: SimsShemaCreateType): Promise<string> {
@@ -71,26 +93,22 @@ export class SimsRepository implements ISimsRepository {
     }
 
     public async delete (code: string): Promise<boolean> {
-        const data = await this.db.update(sims)
-            .set({ deleted_at: sql`CURRENT_TIMESTAMP` })
-            .where(eq(sims.code, code))
-
-        return data[0].affectedRows > 0
+        return await this.softDelete(eq(sims.code, code))
     }
 
-    private async selector (where: SQL | undefined): Promise<SimsShemaSelectType[]> {
-        const data = await this.db.select()
-            .from(sims)
-            .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
-            .where(where)
+    // private async selector (where: SQL | undefined): Promise<SimsShemaSelectType[]> {
+    //     const data = await this.db.select()
+    //         .from(sims)
+    //         .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
+    //         .where(where)
 
-        return data.map((item) => {
-            return {
-                ...item.sims,
-                provider: item.sims_provider
-            }
-        }) as SimsShemaSelectType[]
-    }
+    //     return data.map((item) => {
+    //         return {
+    //             ...item.sims,
+    //             provider: item.sims_provider
+    //         }
+    //     }) as SimsShemaSelectType[]
+    // }
 
     private async findIdsByCodes (
         trx: MySql2Database,

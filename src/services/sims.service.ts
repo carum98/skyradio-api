@@ -1,12 +1,13 @@
 import { NotFoundError } from '@/utils/errors'
-import { SimsShemaCreateType, SimsShemaSelectType, SimsShemaUpdateType } from '@models/sims.model'
+import { PaginationSchemaType } from '@/utils/pagination'
+import { SimsSchemaSelectPaginatedType, SimsShemaCreateType, SimsShemaSelectType, SimsShemaUpdateType } from '@models/sims.model'
 import { SimsRepository } from '@repositories/sims.repository'
 
 export class SimsService {
     constructor (public readonly repository: SimsRepository) {}
 
-    public async getAll (group_id: number): Promise<SimsShemaSelectType[]> {
-        return await this.repository.getAll(group_id)
+    public async getAll (group_id: number, query: PaginationSchemaType): Promise<SimsSchemaSelectPaginatedType> {
+        return await this.repository.getAll(group_id, query)
     }
 
     public async get (code: string): Promise<SimsShemaSelectType> {

@@ -1,11 +1,15 @@
 import { Request, Response } from 'express'
 import { GroupsService } from '@/services/groups.service'
+import { PaginationSchemaType } from '@/utils/pagination'
 
 export class GroupsController {
     constructor (private readonly service: GroupsService) {}
 
-    public getAll = async (_req: Request, res: Response): Promise<void> => {
-        const data = await this.service.getAll()
+    public getAll = async (req: Request, res: Response): Promise<void> => {
+        const query = req.query as unknown as PaginationSchemaType
+
+        const data = await this.service.getAll(query)
+
         res.json(data)
     }
 

@@ -7,6 +7,7 @@ import { RadiosStatusService } from '@services/radios_status.service'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { RadiosStatusShemaCreate, RadiosStatusShemaUniqueIdentifier, RadiosStatusShemaUpdate } from '@models/radios_status.model'
+import { PaginationSchema } from '@/utils/pagination'
 
 export class RadiosStatusRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -21,7 +22,12 @@ export class RadiosStatusRouter extends RouterCore {
 
         this.get({
             name: '/',
-            handler: controller.getAll
+            handler: controller.getAll,
+            middlewares: [
+                requestMiddleware({
+                    query: PaginationSchema
+                })
+            ]
         })
 
         this.post({

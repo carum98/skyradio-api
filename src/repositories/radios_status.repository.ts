@@ -1,71 +1,62 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { IRadiosStatusRepository } from './repositories'
-import { RadiosStatusShemaCreateType, RadiosStatusShemaSelect, RadiosStatusShemaSelectType, RadiosStatusShemaUpdateType, radios_status } from '@models/radios_status.model'
-import { eq, and, isNull, sql } from 'drizzle-orm'
-import { generateCode } from '@/utils/code'
+import { RadiosStatusShemaCreateType, RadiosStatusShemaSelect, RadiosStatusShemaSelectPaginated, RadiosStatusShemaSelectPaginatedType, RadiosStatusShemaSelectType, RadiosStatusShemaUpdateType, radios_status } from '@models/radios_status.model'
+import { eq } from 'drizzle-orm'
+import { PaginationSchemaType } from '@/utils/pagination'
+import { RepositoryCore } from '@/core/repository.core'
 
-export class RadiosStatusRepository implements IRadiosStatusRepository {
-    constructor (public readonly db: MySql2Database) {}
+export class RadiosStatusRepository extends RepositoryCore<RadiosStatusShemaSelectType, RadiosStatusShemaCreateType, RadiosStatusShemaUpdateType> implements IRadiosStatusRepository {
+    constructor (public readonly db: MySql2Database) {
+        const table = radios_status
 
-    public async getAll (group_id: number): Promise<RadiosStatusShemaSelectType[]> {
-        const data = await this.db.select().from(radios_status)
-            .where(
-                and(
-                    eq(radios_status.group_id, group_id),
-                    isNull(radios_status.deleted_at)
-                )
-            )
+        const select = db.select({
+            code: radios_status.code,
+            name: radios_status.name
+        })
+        .from(table)
 
-        return RadiosStatusShemaSelect.array().parse(data)
+        super({ db, table, select })
+    }
+
+    public async getAll (group_id: number, query: PaginationSchemaType): Promise<RadiosStatusShemaSelectPaginatedType> {
+        const data = await this.paginate({
+            query,
+            where: eq(radios_status.group_id, group_id)
+        })
+
+        return RadiosStatusShemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<RadiosStatusShemaSelectType | null> {
-        const data = await this.db.select().from(radios_status)
-            .where(
-                and(
-                    eq(radios_status.code, code),
-                    isNull(radios_status.deleted_at)
-                )
-            )
+        const data = await this.selector({
+            where: eq(radios_status.code, code)
+        })
 
-        return data.length > 0
-            ? RadiosStatusShemaSelect.parse(data.at(0))
-            : null
+        if (data.length === 0) {
+            return null
+        }
+
+        return RadiosStatusShemaSelect.parse(data.at(0))
     }
 
     public async create (params: RadiosStatusShemaCreateType): Promise<string> {
-        const code = generateCode()
-
-        await this.db.insert(radios_status).values({
-            ...params,
-            code
+        const code = await this.insert({
+            params
         })
 
         return code
     }
 
     public async update (code: string, params: RadiosStatusShemaUpdateType): Promise<string> {
-        const data = await this.db.update(radios_status).set(params)
-            .where(
-                and(
-                    eq(radios_status.code, code),
-                    isNull(radios_status.deleted_at)
-                )
-            )
+        const data = await this.set({
+            params,
+            where: eq(radios_status.code, code)
+        })
 
-        return data[0].affectedRows > 0 ? code : ''
+        return data ? code : ''
     }
 
     public async delete (code: string): Promise<boolean> {
-        const data = await this.db.update(radios_status)
-            .set({ deleted_at: sql`CURRENT_TIMESTAMP` })
-            .where(
-                and(
-                    eq(radios_status.code, code),
-                    isNull(radios_status.deleted_at)
-                )
-            )
-
-        return data[0].affectedRows > 0
+        return await this.softDelete(eq(radios_status.code, code))
     }
 }
