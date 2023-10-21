@@ -70,7 +70,7 @@ export class RepositoryCore<TSelect, TInsert, TUpdate> {
         return this.parseResonse(data)
     }
 
-    protected async getOne (where: Where): Promise<TSelect> {
+    protected async getOne ({ where }: { where: Where }): Promise<TSelect> {
         const data = await this.query({ where, per_page: 1 })
 
         if (data.length === 0) {

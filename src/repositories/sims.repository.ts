@@ -36,7 +36,9 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsShem
     }
 
     public async get (code: string): Promise<SimsShemaSelectType> {
-        const data = await this.getOne(eq(sims.code, code))
+        const data = await this.getOne({
+            where: eq(sims.code, code)
+        })
 
         return SimsShemaSelect.parse(data)
     }

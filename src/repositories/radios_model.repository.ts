@@ -27,7 +27,9 @@ export class RadiosModelRepository extends RepositoryCore<RadiosModelShemaSelect
     }
 
     public async get (code: string): Promise<RadiosModelShemaSelectType> {
-        const data = await this.getOne(eq(radios_model.code, code))
+        const data = await this.getOne({
+            where: eq(radios_model.code, code)
+        })
 
         return RadiosModelShemaSelect.parse(data)
     }

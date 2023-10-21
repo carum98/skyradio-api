@@ -28,7 +28,9 @@ export class GroupRepository extends RepositoryCore<GroupSchemaSelectType, Group
     }
 
     public async get (id: number): Promise<GroupSchemaSelectType> {
-        const data = await this.getOne(eq(groups.id, id))
+        const data = await this.getOne({
+            where: eq(groups.id, id)
+        })
 
         return GroupSchemaSelect.parse(data)
     }

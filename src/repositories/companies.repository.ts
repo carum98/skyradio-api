@@ -44,7 +44,9 @@ export class CompaniesRepository extends RepositoryCore<CompanySchemaSelectType,
     }
 
     public async get (code: string): Promise<CompanySchemaSelectType> {
-        const data = await this.getOne(eq(companies.code, code))
+        const data = await this.getOne({
+            where: eq(companies.code, code)
+        })
 
         return CompanySchemaSelect.parse(data)
     }
