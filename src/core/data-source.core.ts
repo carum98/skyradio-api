@@ -1,7 +1,7 @@
 import DatabaseConfig from '@config/database.config'
-import { IRepository } from '@/repositories/repositories'
 import mysql from 'mysql2/promise'
 import { MySql2Database, drizzle } from 'drizzle-orm/mysql2'
+import { IRepository } from './repository.core'
 
 export class DataSource {
     private readonly _db: MySql2Database
