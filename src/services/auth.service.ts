@@ -3,7 +3,6 @@ import { generate } from '@/utils/jwt'
 import { AuthRepository } from '@repositories/auth.repository'
 import { comparePassword } from '@/utils/hashed-password'
 import { AuthTokenContentSchemaType, AuthTokenResponseSchema, AuthTokenResponseSchemaType } from '@/core/auth.shemas'
-import { UserSchemaSelectType } from '@/models/users.model'
 
 export class AuthService {
     constructor (private readonly repository: AuthRepository) { }
@@ -21,7 +20,7 @@ export class AuthService {
             throw new UnauthorizedError('Invalid password')
         }
 
-        return await this.generateToken(user)
+        return await this.generateToken(user.id)
     }
 
     public async refreshToken (refresh_token: string, tokenContent: AuthTokenContentSchemaType): Promise<AuthTokenResponseSchemaType> {
@@ -31,15 +30,15 @@ export class AuthService {
             throw new UnauthorizedError('Token not found')
         }
 
-        const user = await this.repository.getUserById(tokenContent.user_id)
-
-        return await this.generateToken(user)
+        return await this.generateToken(tokenContent.user_id)
     }
 
-    private async generateToken (user: UserSchemaSelectType): Promise<AuthTokenResponseSchemaType> {
+    private async generateToken (user_id: number): Promise<AuthTokenResponseSchemaType> {
+        const user = await this.repository.getUserById(user_id)
+
         const response = await generate({
             user_id: user.id,
-            group_id: user.group_id,
+            group_id: user.group.id,
             role: user.role
         })
 

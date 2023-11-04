@@ -1,6 +1,6 @@
 import { mysqlTable, primaryKey, int, varchar, datetime, unique, index, mysqlEnum } from 'drizzle-orm/mysql-core'
 import { sql } from 'drizzle-orm'
-import { groups } from './groups.model'
+import { GroupSchemaSelect, groups } from './groups.model'
 
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
@@ -35,10 +35,14 @@ export const UserSchema = createSelectSchema(users, {
 })
 
 export const UserSchemaSelect = UserSchema.omit({
+	group_id: true,
 	password: true,
 	deleted_at: true,
 	created_at: true,
 	updated_at: true
+})
+.extend({
+	group: GroupSchemaSelect
 })
 
 export const UserSchemaCreate = createInsertSchema(users, {

@@ -1,6 +1,7 @@
 import { IRepository } from '@/core/repository.core'
+import { groups } from '@/models/groups.model'
 import { refresh_tokens } from '@models/refresh-token.model'
-import { UserSchema, UserSchemaType, users } from '@models/users.model'
+import { UserSchema, UserSchemaType, UserSchemaSelectType, users, UserSchemaSelect } from '@models/users.model'
 import { and, eq } from 'drizzle-orm'
 import { MySql2Database } from 'drizzle-orm/mysql2'
 
@@ -37,10 +38,14 @@ export class AuthRepository implements IRepository {
         return data.length > 0
     }
 
-    public async getUserById (id: number): Promise<UserSchemaType> {
+    public async getUserById (id: number): Promise<UserSchemaSelectType> {
         const data = await this.db.select().from(users)
+            .leftJoin(groups, eq(groups.id, users.group_id))
             .where(eq(users.id, id))
 
-        return UserSchema.parse(data[0])
+        return UserSchemaSelect.parse({
+            ...data[0].users,
+            group: data[0].groups
+        })
     }
 }
