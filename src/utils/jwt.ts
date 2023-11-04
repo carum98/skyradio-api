@@ -2,7 +2,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 import config from '@config/jwt.config'
 import { AuthTokenContentSchemaType, AuthTokenResponseSchemaType } from '@/core/auth.shemas'
 
-export async function generate (payload: AuthTokenContentSchemaType): Promise<AuthTokenResponseSchemaType> {
+export async function generate (payload: AuthTokenContentSchemaType): Promise<Omit<AuthTokenResponseSchemaType, 'user'>> {
     const token = jwt.sign(payload, config.token.secret, {
         expiresIn: config.token.expiresIn
     })

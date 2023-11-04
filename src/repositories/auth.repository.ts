@@ -36,4 +36,11 @@ export class AuthRepository implements IRepository {
 
         return data.length > 0
     }
+
+    public async getUserById (id: number): Promise<UserSchemaType> {
+        const data = await this.db.select().from(users)
+            .where(eq(users.id, id))
+
+        return UserSchema.parse(data[0])
+    }
 }

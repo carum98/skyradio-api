@@ -3,7 +3,7 @@ import { generate } from '@/utils/jwt'
 import { AuthRepository } from '@repositories/auth.repository'
 import { comparePassword } from '@/utils/hashed-password'
 import { AuthTokenContentSchemaType, AuthTokenResponseSchema, AuthTokenResponseSchemaType } from '@/core/auth.shemas'
-import { UserRolesType } from '@/models/users.model'
+import { UserSchemaSelectType } from '@/models/users.model'
 
 export class AuthService {
     constructor (private readonly repository: AuthRepository) { }
@@ -21,7 +21,7 @@ export class AuthService {
             throw new UnauthorizedError('Invalid password')
         }
 
-        return await this.generateToken(user.id, user.group_id, user.role)
+        return await this.generateToken(user)
     }
 
     public async refreshToken (refresh_token: string, tokenContent: AuthTokenContentSchemaType): Promise<AuthTokenResponseSchemaType> {
@@ -31,22 +31,23 @@ export class AuthService {
             throw new UnauthorizedError('Token not found')
         }
 
-        return await this.generateToken(
-            tokenContent.user_id,
-            tokenContent.group_id,
-            tokenContent.role
-        )
+        const user = await this.repository.getUserById(tokenContent.user_id)
+
+        return await this.generateToken(user)
     }
 
-    private async generateToken (user_id: number, group_id: number, role: UserRolesType): Promise<AuthTokenResponseSchemaType> {
+    private async generateToken (user: UserSchemaSelectType): Promise<AuthTokenResponseSchemaType> {
         const response = await generate({
-            user_id,
-            group_id,
-            role
+            user_id: user.id,
+            group_id: user.group_id,
+            role: user.role
         })
 
-        await this.repository.refreshToken(user_id, response.refreshToken)
+        await this.repository.refreshToken(user.id, response.refreshToken)
 
-        return AuthTokenResponseSchema.parse(response)
+        return AuthTokenResponseSchema.parse({
+            ...response,
+            user
+        })
     }
 }
