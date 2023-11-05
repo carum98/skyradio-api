@@ -26,7 +26,7 @@ export const sims = mysqlTable('sims', {
 })
 
 export const SimsShemaSelect = createSelectSchema(sims)
-    .pick({ code: true, number: true })
+    .pick({ code: true, number: true, serial: true })
     .extend({
         provider: createSelectSchema(sims_provider).pick({ code: true, name: true })
     })

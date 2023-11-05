@@ -12,6 +12,7 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsSche
         const select = db.select({
             code: sims.code,
             number: sims.number,
+            serial: sims.serial,
             provider: {
                 code: sims_provider.code,
                 name: sims_provider.name
