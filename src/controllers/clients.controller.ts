@@ -1,10 +1,10 @@
 import { Request, Response } from 'express'
-import { CompaniesService } from '@services/companies.service'
-import { CompanySchemaCreateType, CompanySchemaUpdateType } from '@models/companies.model'
+import { ClientsService } from '@services/clients.service'
+import { ClientsSchemaCreateType, ClientsSchemaUpdateType } from '@models/clients.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 
-export class CompaniesController {
-    constructor (private readonly service: CompaniesService) {}
+export class ClientsController {
+    constructor (private readonly service: ClientsService) {}
 
     public getAll = async (req: Request, res: Response): Promise<void> => {
         const { group_id } = req.body
@@ -24,7 +24,7 @@ export class CompaniesController {
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        const params = req.body as CompanySchemaCreateType
+        const params = req.body as ClientsSchemaCreateType
 
         const data = await this.service.create(params)
 
@@ -33,7 +33,7 @@ export class CompaniesController {
 
     public update = async (req: Request, res: Response): Promise<void> => {
         const { code } = req.params
-        const params = req.body as CompanySchemaUpdateType
+        const params = req.body as ClientsSchemaUpdateType
 
         const data = await this.service.update(code, params)
 

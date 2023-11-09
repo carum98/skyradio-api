@@ -3,11 +3,11 @@ import { groups } from './groups.model'
 import { sql } from 'drizzle-orm'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
-import { CompanyModalitySchemaSelect, companies_modality } from './companies_modality.model'
-import { CompanySellerSchemaSelect, companies_seller } from './companies_seller.model'
+import { ClientsModalitySchemaSelect, companies_modality } from './clients_modality.model'
+import { ClientsSellerSchemaSelect, companies_seller } from './clients_seller.model'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 
-export const companies = mysqlTable('companies', {
+export const clients = mysqlTable('clients', {
     id: int('id').autoincrement().notNull(),
     code: varchar('code', { length: 6 }).notNull(),
     name: varchar('name', { length: 255 }).notNull(),
@@ -26,15 +26,15 @@ export const companies = mysqlTable('companies', {
     }
 })
 
-export const CompanySchemaSelect = createSelectSchema(companies)
+export const ClientsSchemaSelect = createSelectSchema(clients)
     .pick({ code: true, name: true })
     .extend({
-        modality: CompanyModalitySchemaSelect.pick({ code: true, name: true }),
-        seller: CompanySellerSchemaSelect.pick({ code: true, name: true }).nullable(),
+        modality: ClientsModalitySchemaSelect.pick({ code: true, name: true }),
+        seller: ClientsSellerSchemaSelect.pick({ code: true, name: true }).nullable(),
         radios_count: z.number().int()
     })
 
-export const CompanySchemaCreateRaw = createInsertSchema(companies, {
+export const ClientsSchemaCreateRaw = createInsertSchema(clients, {
     name: (schema) => schema.name.min(3).max(100)
 }).pick({
     name: true,
@@ -43,7 +43,7 @@ export const CompanySchemaCreateRaw = createInsertSchema(companies, {
     seller_id: true
 })
 
-export const CompanySchemaCreate = CompanySchemaCreateRaw.pick({
+export const ClientsSchemaCreate = ClientsSchemaCreateRaw.pick({
     name: true,
     group_id: true
 })
@@ -54,12 +54,12 @@ export const CompanySchemaCreate = CompanySchemaCreateRaw.pick({
 .required()
 .partial({ seller_code: true })
 
-export const CompanySchemaUpdateRaw = CompanySchemaCreateRaw.omit({
+export const ClientsSchemaUpdateRaw = ClientsSchemaCreateRaw.omit({
     group_id: true
 })
 .partial()
 
-export const CompanySchemaUpdate = CompanySchemaCreate.pick({
+export const ClientsSchemaUpdate = ClientsSchemaCreate.pick({
     id: true,
     name: true,
     modality_code: true,
@@ -67,15 +67,15 @@ export const CompanySchemaUpdate = CompanySchemaCreate.pick({
 })
 .partial()
 
-export const CompanySchemaUniqueIdentifier = createSelectSchema(companies, {
+export const ClientsSchemaUniqueIdentifier = createSelectSchema(clients, {
     code: (schema) => schema.code.length(6)
 }).pick({ code: true }).required()
 
-export const CompanySchemaSelectPaginated = ResponsePaginationSchema(CompanySchemaSelect)
+export const ClientsSchemaSelectPaginated = ResponsePaginationSchema(ClientsSchemaSelect)
 
-export type CompanySchemaCreateRawType = z.infer<typeof CompanySchemaCreateRaw>
-export type CompanySchemaCreateType = z.infer<typeof CompanySchemaCreate>
-export type CompanySchemaSelectType = z.infer<typeof CompanySchemaSelect>
-export type CompanySchemaUpdateRawType = z.infer<typeof CompanySchemaUpdateRaw>
-export type CompanySchemaUpdateType = z.infer<typeof CompanySchemaUpdate>
-export type CompanySchemaSelectPaginatedType = z.infer<typeof CompanySchemaSelectPaginated>
+export type ClientsSchemaCreateRawType = z.infer<typeof ClientsSchemaCreateRaw>
+export type ClientsSchemaCreateType = z.infer<typeof ClientsSchemaCreate>
+export type ClientsSchemaSelectType = z.infer<typeof ClientsSchemaSelect>
+export type ClientsSchemaUpdateRawType = z.infer<typeof ClientsSchemaUpdateRaw>
+export type ClientsSchemaUpdateType = z.infer<typeof ClientsSchemaUpdate>
+export type ClientsSchemaSelectPaginatedType = z.infer<typeof ClientsSchemaSelectPaginated>

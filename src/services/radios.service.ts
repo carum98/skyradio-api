@@ -1,5 +1,5 @@
 import { DataSource } from '@/core/data-source.core'
-import { CompaniesRepository } from '@/repositories/companies.repository'
+import { ClientsRepository } from '@/repositories/clients.repository'
 import { RadiosModelRepository } from '@/repositories/radios_model.repository'
 import { SimsRepository } from '@/repositories/sims.repository'
 import { PaginationSchemaType } from '@/utils/pagination'
@@ -10,14 +10,14 @@ export class RadiosService {
     private readonly radios: RadiosRepository
     private readonly model: RadiosModelRepository
     private readonly status: RadiosModelRepository
-    private readonly company: CompaniesRepository
+    private readonly client: ClientsRepository
     private readonly sim: SimsRepository
 
     constructor (datasource: DataSource) {
         this.radios = datasource.create(RadiosRepository)
         this.model = datasource.create(RadiosModelRepository)
         this.status = datasource.create(RadiosModelRepository)
-        this.company = datasource.create(CompaniesRepository)
+        this.client = datasource.create(ClientsRepository)
         this.sim = datasource.create(SimsRepository)
     }
 
@@ -34,7 +34,7 @@ export class RadiosService {
     }
 
     public async create (params: RadiosSchemaCreateType): Promise<RadiosSchemaSelectType> {
-        const { model_id = 0, status_id, company_id, sim_id } = await this.findIdsByCodes(params)
+        const { model_id = 0, status_id, client_id, sim_id } = await this.findIdsByCodes(params)
 
         const code = await this.radios.create({
             name: params.name,
@@ -43,7 +43,7 @@ export class RadiosService {
             group_id: params.group_id,
             model_id,
             status_id,
-            company_id,
+            client_id,
             sim_id
         })
 
@@ -51,13 +51,13 @@ export class RadiosService {
     }
 
     public async update (code: string, params: RadiosSchemaUpdateType): Promise<RadiosSchemaSelectType> {
-        const { model_id, status_id, company_id, sim_id } = await this.findIdsByCodes(params)
+        const { model_id, status_id, client_id, sim_id } = await this.findIdsByCodes(params)
 
         const updateCode = await this.radios.update(code, {
             name: params.name,
             model_id,
             status_id,
-            company_id,
+            client_id,
             sim_id
         })
 
@@ -68,7 +68,7 @@ export class RadiosService {
         return await this.radios.delete(code)
     }
 
-    private async findIdsByCodes ({ model_code, status_code, company_code, sim_code }: { model_code?: string, status_code?: string, company_code?: string, sim_code?: string }): Promise<{ model_id?: number, status_id?: number, company_id?: number, sim_id?: number }> {
+    private async findIdsByCodes ({ model_code, status_code, client_code, sim_code }: { model_code?: string, status_code?: string, client_code?: string, sim_code?: string }): Promise<{ model_id?: number, status_id?: number, client_id?: number, sim_id?: number }> {
         const model_id = model_code !== undefined
             ? await this.model.getId(model_code)
             : undefined
@@ -77,8 +77,8 @@ export class RadiosService {
             ? await this.status.getId(status_code)
             : undefined
 
-        const company_id = company_code !== undefined
-            ? await this.company.getId(company_code)
+        const client_id = client_code !== undefined
+            ? await this.client.getId(client_code)
             : undefined
 
         const sim_id = sim_code !== undefined
@@ -88,7 +88,7 @@ export class RadiosService {
         return {
             model_id,
             status_id,
-            company_id,
+            client_id,
             sim_id
         }
     }

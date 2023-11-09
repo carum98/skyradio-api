@@ -1,10 +1,10 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { eq } from 'drizzle-orm'
-import { CompanySellerSchemaCreateType, CompanySellerSchemaSelect, CompanySellerSchemaSelectPaginated, CompanySellerSchemaSelectPaginatedType, CompanySellerSchemaSelectType, CompanySellerSchemaUpdateType, companies_seller } from '@models/companies_seller.model'
+import { ClientsSellerSchemaCreateType, ClientsSellerSchemaSelect, ClientsSellerSchemaSelectPaginated, ClientsSellerSchemaSelectPaginatedType, ClientsSellerSchemaSelectType, ClientsSellerSchemaUpdateType, companies_seller } from '@models/clients_seller.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { IRepository, RepositoryCore } from '@/core/repository.core'
 
-export class CompaniesSellerRepository extends RepositoryCore<CompanySellerSchemaSelectType, CompanySellerSchemaCreateType, CompanySellerSchemaUpdateType> implements IRepository {
+export class ClientsSellerRepository extends RepositoryCore<ClientsSellerSchemaSelectType, ClientsSellerSchemaCreateType, ClientsSellerSchemaUpdateType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
         const table = companies_seller
 
@@ -17,21 +17,21 @@ export class CompaniesSellerRepository extends RepositoryCore<CompanySellerSchem
         super({ db, table, select, search_columns: [companies_seller.name] })
     }
 
-    public async getAll (group_id: number, query: PaginationSchemaType): Promise<CompanySellerSchemaSelectPaginatedType> {
+    public async getAll (group_id: number, query: PaginationSchemaType): Promise<ClientsSellerSchemaSelectPaginatedType> {
         const data = await super.getAllCore({
             query,
             where: eq(companies_seller.group_id, group_id)
         })
 
-        return CompanySellerSchemaSelectPaginated.parse(data)
+        return ClientsSellerSchemaSelectPaginated.parse(data)
     }
 
-    public async get (code: string): Promise<CompanySellerSchemaSelectType> {
+    public async get (code: string): Promise<ClientsSellerSchemaSelectType> {
         const data = await super.getOneCore({
             where: eq(companies_seller.code, code)
         })
 
-        return CompanySellerSchemaSelect.parse(data)
+        return ClientsSellerSchemaSelect.parse(data)
     }
 
     public async getId (code: string): Promise<number> {
@@ -40,7 +40,7 @@ export class CompaniesSellerRepository extends RepositoryCore<CompanySellerSchem
         })
     }
 
-    public async create (params: CompanySellerSchemaCreateType): Promise<string> {
+    public async create (params: ClientsSellerSchemaCreateType): Promise<string> {
         const code = await super.insertCore({
             params
         })
@@ -48,7 +48,7 @@ export class CompaniesSellerRepository extends RepositoryCore<CompanySellerSchem
         return code
     }
 
-    public async update (code: string, params: CompanySellerSchemaUpdateType): Promise<string> {
+    public async update (code: string, params: ClientsSellerSchemaUpdateType): Promise<string> {
         const data = await super.updateCore({
             params,
             where: eq(companies_seller.code, code)

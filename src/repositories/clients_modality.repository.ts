@@ -1,10 +1,10 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { eq } from 'drizzle-orm'
-import { CompanyModalitySchemaCreateType, CompanyModalitySchemaSelect, CompanyModalitySchemaSelectPaginated, CompanyModalitySchemaSelectPaginatedType, CompanyModalitySchemaSelectType, CompanyModalitySchemaUpdateType, companies_modality } from '@models/companies_modality.model'
+import { ClientsModalitySchemaCreateType, ClientsModalitySchemaSelect, ClientsModalitySchemaSelectPaginated, ClientsModalitySchemaSelectPaginatedType, ClientsModalitySchemaSelectType, ClientsModalitySchemaUpdateType, companies_modality } from '@/models/clients_modality.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { IRepository, RepositoryCore } from '@/core/repository.core'
 
-export class CompaniesModalityRepository extends RepositoryCore<CompanyModalitySchemaSelectType, CompanyModalitySchemaCreateType, CompanyModalitySchemaUpdateType> implements IRepository {
+export class ClientsModalityRepository extends RepositoryCore<ClientsModalitySchemaSelectType, ClientsModalitySchemaCreateType, ClientsModalitySchemaUpdateType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
         const table = companies_modality
 
@@ -17,21 +17,21 @@ export class CompaniesModalityRepository extends RepositoryCore<CompanyModalityS
         super({ db, table, select, search_columns: [companies_modality.name] })
     }
 
-    public async getAll (group_id: number, query: PaginationSchemaType): Promise<CompanyModalitySchemaSelectPaginatedType> {
+    public async getAll (group_id: number, query: PaginationSchemaType): Promise<ClientsModalitySchemaSelectPaginatedType> {
         const data = await super.getAllCore({
             query,
             where: eq(companies_modality.group_id, group_id)
         })
 
-        return CompanyModalitySchemaSelectPaginated.parse(data)
+        return ClientsModalitySchemaSelectPaginated.parse(data)
     }
 
-    public async get (code: string): Promise<CompanyModalitySchemaSelectType> {
+    public async get (code: string): Promise<ClientsModalitySchemaSelectType> {
         const data = await super.getOneCore({
             where: eq(companies_modality.code, code)
         })
 
-        return CompanyModalitySchemaSelect.parse(data)
+        return ClientsModalitySchemaSelect.parse(data)
     }
 
     public async getId (code: string): Promise<number> {
@@ -40,7 +40,7 @@ export class CompaniesModalityRepository extends RepositoryCore<CompanyModalityS
         })
     }
 
-    public async create (params: CompanyModalitySchemaCreateType): Promise<string> {
+    public async create (params: ClientsModalitySchemaCreateType): Promise<string> {
         const code = await super.insertCore({
             params
         })
@@ -48,7 +48,7 @@ export class CompaniesModalityRepository extends RepositoryCore<CompanyModalityS
         return code
     }
 
-    public async update (code: string, params: CompanyModalitySchemaUpdateType): Promise<string> {
+    public async update (code: string, params: ClientsModalitySchemaUpdateType): Promise<string> {
         const data = await super.updateCore({
             params,
             where: eq(companies_modality.code, code)

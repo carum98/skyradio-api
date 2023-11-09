@@ -1,9 +1,9 @@
 import { Request, Response } from 'express'
-import { CompaniesModalityService } from '@services/companies_modality.service'
+import { ClientsSellerService } from '@services/clients_seller.service'
 import { PaginationSchemaType } from '@/utils/pagination'
 
-export class CompaniesModalityController {
-    constructor (private readonly service: CompaniesModalityService) {}
+export class ClientsSellerController {
+    constructor (private readonly service: ClientsSellerService) {}
 
     public getAll = async (req: Request, res: Response): Promise<void> => {
         const { group_id } = req.body

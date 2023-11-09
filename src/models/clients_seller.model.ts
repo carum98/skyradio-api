@@ -21,24 +21,24 @@ export const companies_seller = mysqlTable('companies_seller', {
     }
 })
 
-export const CompanySellerSchemaSelect = createSelectSchema(companies_seller)
+export const ClientsSellerSchemaSelect = createSelectSchema(companies_seller)
     .pick({ code: true, name: true })
 
-export const CompanySellerSchemaCreate = createSelectSchema(companies_seller, {
+export const ClientsSellerSchemaCreate = createSelectSchema(companies_seller, {
     name: (schema) => schema.name.min(3).max(100)
 }).pick({ name: true, group_id: true }).required()
 
-export const CompanySellerSchemaUpdate = CompanySellerSchemaCreate
+export const ClientsSellerSchemaUpdate = ClientsSellerSchemaCreate
     .pick({ name: true })
     .partial()
 
-export const CompanySellerSchemaUniqueIdentifier = createSelectSchema(companies_seller, {
+export const ClientsSellerSchemaUniqueIdentifier = createSelectSchema(companies_seller, {
     code: (schema) => schema.code.length(6)
 }).pick({ code: true }).required()
 
-export const CompanySellerSchemaSelectPaginated = ResponsePaginationSchema(CompanySellerSchemaSelect)
+export const ClientsSellerSchemaSelectPaginated = ResponsePaginationSchema(ClientsSellerSchemaSelect)
 
-export type CompanySellerSchemaCreateType = z.infer<typeof CompanySellerSchemaCreate>
-export type CompanySellerSchemaSelectType = z.infer<typeof CompanySellerSchemaSelect>
-export type CompanySellerSchemaUpdateType = z.infer<typeof CompanySellerSchemaUpdate>
-export type CompanySellerSchemaSelectPaginatedType = z.infer<typeof CompanySellerSchemaSelectPaginated>
+export type ClientsSellerSchemaCreateType = z.infer<typeof ClientsSellerSchemaCreate>
+export type ClientsSellerSchemaSelectType = z.infer<typeof ClientsSellerSchemaSelect>
+export type ClientsSellerSchemaUpdateType = z.infer<typeof ClientsSellerSchemaUpdate>
+export type ClientsSellerSchemaSelectPaginatedType = z.infer<typeof ClientsSellerSchemaSelectPaginated>

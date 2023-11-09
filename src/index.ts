@@ -2,10 +2,10 @@ import { Server } from '@/server'
 
 import { UserRouter } from '@routes/users.routes'
 import { AuthRouter } from '@routes/auth.routes'
-import { CompaniesRouter } from '@routes/companies.routes'
+import { ClientsRouter } from '@/routes/clients.routes'
 import { GroupsRouter } from '@routes/groups.routes'
-import { CompaniesModalityRouter } from '@routes/companies_modality.routes'
-import { CompaniesSellerRouter } from '@routes/companies_seller.routes'
+import { CompaniesModalityRouter } from '@routes/clients_modality.routes'
+import { ClientsSellerRouter } from '@routes/clients_seller.routes'
 import { SimsProviderRouter } from '@routes/sims_provider.routes'
 import { SimsRouter } from '@routes/sims.routes'
 import { RadiosModelRouter } from '@routes/radios_model.routes'
@@ -23,10 +23,10 @@ const server = new Server()
 server.routes([
     new AuthRouter(datasource),
     new UserRouter(datasource),
-    new CompaniesRouter(datasource),
+    new ClientsRouter(datasource),
     new GroupsRouter(datasource),
     new CompaniesModalityRouter(datasource),
-    new CompaniesSellerRouter(datasource),
+    new ClientsSellerRouter(datasource),
     new SimsProviderRouter(datasource),
     new SimsRouter(datasource),
     new RadiosModelRouter(datasource),

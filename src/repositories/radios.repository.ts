@@ -5,7 +5,7 @@ import { radios_model } from '@models/radios_model.model'
 import { radios_status } from '@models/radios_status.model'
 import { sims } from '@models/sims.model'
 import { sims_provider } from '@models/sims_provider.model'
-import { companies } from '@/models/companies.model'
+import { clients } from '@/models/clients.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { IRepository, RepositoryCore } from '@/core/repository.core'
 
@@ -34,9 +34,9 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
                 code: sims_provider.code,
                 name: sims_provider.name
             },
-            company: {
-                code: companies.code,
-                name: companies.name
+            client: {
+                code: clients.code,
+                name: clients.name
             }
         })
         .from(table)
@@ -44,7 +44,7 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
         .leftJoin(radios_status, eq(radios.status_id, radios_status.id))
         .leftJoin(sims, eq(radios.sim_id, sims.id))
         .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
-        .leftJoin(companies, eq(radios.company_id, companies.id))
+        .leftJoin(clients, eq(radios.client_id, clients.id))
 
         super({ db, table, select, search_columns: [radios.name, radios.imei, radios.serial] })
     }
@@ -62,14 +62,14 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
         })
     }
 
-    public async getByCompany (company_code: string, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
-        const company_id = await this.db.select({ id: companies.id })
-            .from(companies)
-            .where(eq(companies.code, company_code))
+    public async getByClient (client_code: string, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
+        const client_id = await this.db.select({ id: clients.id })
+            .from(clients)
+            .where(eq(clients.code, client_code))
 
         return await super.getAllCore({
             query,
-            where: eq(radios.company_id, company_id[0].id)
+            where: eq(radios.client_id, client_id[0].id)
         })
     }
 

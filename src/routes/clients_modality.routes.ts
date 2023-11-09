@@ -1,24 +1,24 @@
-import { CompaniesSellerController } from '@/controllers/companies_seller'
+import { ClientsModalityController } from '@controllers/clients_modality'
 import { DataSource } from '@/core/data-source.core'
 import { RouterCore } from '@/core/router.core'
-import { PaginationSchema } from '@/utils/pagination'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
-import { rolesMiddleware } from '@middlewares/roles.middleware'
-import { CompanySellerSchemaCreate, CompanySellerSchemaUniqueIdentifier, CompanySellerSchemaUpdate } from '@models/companies_seller.model'
-import { CompaniesSellerRepository } from '@repositories/companies_seller.repository'
-import { CompaniesSellerService } from '@services/companies_seller.service'
+import { ClientsModalitySchemaCreate, ClientsModalitySchemaUniqueIdentifier, ClientsModalitySchemaUpdate } from '@/models/clients_modality.model'
+import { ClientsModalityRepository } from '@/repositories/clients_modality.repository'
+import { ClientsModalityService } from '@/services/clients_modality.service'
+import { rolesMiddleware } from '@/middlewares/roles.middleware'
+import { PaginationSchema } from '@/utils/pagination'
 
-export class CompaniesSellerRouter extends RouterCore {
+export class CompaniesModalityRouter extends RouterCore {
     constructor (datasource: DataSource) {
         super({
-            path: '/companies-seller',
+            path: '/clients-modality',
             middlewares: [authMiddleware]
         })
 
-        const repository = datasource.create(CompaniesSellerRepository)
-        const service = new CompaniesSellerService(repository)
-        const controller = new CompaniesSellerController(service)
+        const repository = datasource.create(ClientsModalityRepository)
+        const service = new ClientsModalityService(repository)
+        const controller = new ClientsModalityController(service)
 
         this.get({
             name: '/',
@@ -36,7 +36,7 @@ export class CompaniesSellerRouter extends RouterCore {
             middlewares: [
                 rolesMiddleware(['admin']),
                 requestMiddleware({
-                    body: CompanySellerSchemaCreate
+                    body: ClientsModalitySchemaCreate
                 })
             ]
         })
@@ -46,7 +46,7 @@ export class CompaniesSellerRouter extends RouterCore {
             handler: controller.get,
             middlewares: [
                 requestMiddleware({
-                    params: CompanySellerSchemaUniqueIdentifier
+                    params: ClientsModalitySchemaUniqueIdentifier
                 })
             ]
         })
@@ -57,8 +57,8 @@ export class CompaniesSellerRouter extends RouterCore {
             middlewares: [
                 rolesMiddleware(['admin']),
                 requestMiddleware({
-                    params: CompanySellerSchemaUniqueIdentifier,
-                    body: CompanySellerSchemaUpdate
+                    params: ClientsModalitySchemaUniqueIdentifier,
+                    body: ClientsModalitySchemaUpdate
                 })
             ]
         })
@@ -69,7 +69,7 @@ export class CompaniesSellerRouter extends RouterCore {
             middlewares: [
                 rolesMiddleware(['admin']),
                 requestMiddleware({
-                    params: CompanySellerSchemaUniqueIdentifier
+                    params: ClientsModalitySchemaUniqueIdentifier
                 })
             ]
         })

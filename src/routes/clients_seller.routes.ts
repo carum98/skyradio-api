@@ -1,21 +1,24 @@
-import { CompaniesController } from '@controllers/companies.controller'
+import { ClientsSellerController } from '@/controllers/clients_seller'
 import { DataSource } from '@/core/data-source.core'
 import { RouterCore } from '@/core/router.core'
-import { CompaniesService } from '@services/companies.service'
+import { PaginationSchema } from '@/utils/pagination'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
-import { CompanySchemaCreate, CompanySchemaUniqueIdentifier, CompanySchemaUpdate } from '@models/companies.model'
-import { PaginationSchema } from '@/utils/pagination'
+import { rolesMiddleware } from '@middlewares/roles.middleware'
+import { ClientsSellerSchemaCreate, ClientsSellerSchemaUniqueIdentifier, ClientsSellerSchemaUpdate } from '@models/clients_seller.model'
+import { ClientsSellerRepository } from '@repositories/clients_seller.repository'
+import { ClientsSellerService } from '@services/clients_seller.service'
 
-export class CompaniesRouter extends RouterCore {
+export class ClientsSellerRouter extends RouterCore {
     constructor (datasource: DataSource) {
         super({
-            path: '/companies',
+            path: '/clients-seller',
             middlewares: [authMiddleware]
         })
 
-        const service = new CompaniesService(datasource)
-        const controller = new CompaniesController(service)
+        const repository = datasource.create(ClientsSellerRepository)
+        const service = new ClientsSellerService(repository)
+        const controller = new ClientsSellerController(service)
 
         this.get({
             name: '/',
@@ -31,8 +34,9 @@ export class CompaniesRouter extends RouterCore {
             name: '/',
             handler: controller.create,
             middlewares: [
+                rolesMiddleware(['admin']),
                 requestMiddleware({
-                    body: CompanySchemaCreate
+                    body: ClientsSellerSchemaCreate
                 })
             ]
         })
@@ -42,7 +46,7 @@ export class CompaniesRouter extends RouterCore {
             handler: controller.get,
             middlewares: [
                 requestMiddleware({
-                    params: CompanySchemaUniqueIdentifier
+                    params: ClientsSellerSchemaUniqueIdentifier
                 })
             ]
         })
@@ -51,9 +55,10 @@ export class CompaniesRouter extends RouterCore {
             name: '/:code',
             handler: controller.update,
             middlewares: [
+                rolesMiddleware(['admin']),
                 requestMiddleware({
-                    params: CompanySchemaUniqueIdentifier,
-                    body: CompanySchemaUpdate
+                    params: ClientsSellerSchemaUniqueIdentifier,
+                    body: ClientsSellerSchemaUpdate
                 })
             ]
         })
@@ -62,19 +67,9 @@ export class CompaniesRouter extends RouterCore {
             name: '/:code',
             handler: controller.delete,
             middlewares: [
+                rolesMiddleware(['admin']),
                 requestMiddleware({
-                    params: CompanySchemaUniqueIdentifier
-                })
-            ]
-        })
-
-        this.get({
-            name: '/:code/radios',
-            handler: controller.getRadios,
-            middlewares: [
-                requestMiddleware({
-                    query: PaginationSchema,
-                    params: CompanySchemaUniqueIdentifier
+                    params: ClientsSellerSchemaUniqueIdentifier
                 })
             ]
         })

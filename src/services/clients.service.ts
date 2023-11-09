@@ -1,38 +1,38 @@
-import { CompanySchemaCreateType, CompanySchemaSelect, CompanySchemaSelectPaginated, CompanySchemaSelectPaginatedType, CompanySchemaSelectType, CompanySchemaUpdateType } from '@models/companies.model'
-import { CompaniesRepository } from '@repositories/companies.repository'
+import { ClientsSchemaCreateType, ClientsSchemaSelect, ClientsSchemaSelectPaginated, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateType } from '@models/clients.model'
+import { ClientsRepository } from '@/repositories/clients.repository'
 import { RadiosRepository } from '@repositories/radios.repository'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { RadiosSchemaSelectPaginated, RadiosSchemaSelectPaginatedType } from '@models/radios.model'
-import { CompaniesModalityRepository } from '@/repositories/companies_modality.repository'
+import { ClientsModalityRepository } from '@/repositories/clients_modality.repository'
 import { DataSource } from '@/core/data-source.core'
-import { CompaniesSellerRepository } from '@/repositories/companies_seller.repository'
+import { ClientsSellerRepository } from '@/repositories/clients_seller.repository'
 
-export class CompaniesService {
+export class ClientsService {
     private readonly radios: RadiosRepository
-    private readonly companies: CompaniesRepository
-    private readonly modality: CompaniesModalityRepository
-    private readonly seller: CompaniesSellerRepository
+    private readonly companies: ClientsRepository
+    private readonly modality: ClientsModalityRepository
+    private readonly seller: ClientsSellerRepository
 
     constructor (datasource: DataSource) {
         this.radios = datasource.create(RadiosRepository)
-        this.companies = datasource.create(CompaniesRepository)
-        this.modality = datasource.create(CompaniesModalityRepository)
-        this.seller = datasource.create(CompaniesSellerRepository)
+        this.companies = datasource.create(ClientsRepository)
+        this.modality = datasource.create(ClientsModalityRepository)
+        this.seller = datasource.create(ClientsSellerRepository)
     }
 
-    public async getAll (group_id: number, query: PaginationSchemaType): Promise<CompanySchemaSelectPaginatedType> {
+    public async getAll (group_id: number, query: PaginationSchemaType): Promise<ClientsSchemaSelectPaginatedType> {
         const data = await this.companies.getAll(group_id, query)
 
-        return CompanySchemaSelectPaginated.parse(data)
+        return ClientsSchemaSelectPaginated.parse(data)
     }
 
-    public async get (code: string): Promise<CompanySchemaSelectType> {
+    public async get (code: string): Promise<ClientsSchemaSelectType> {
         const data = await this.companies.get(code)
 
-        return CompanySchemaSelect.parse(data)
+        return ClientsSchemaSelect.parse(data)
     }
 
-    public async create (params: CompanySchemaCreateType): Promise<CompanySchemaSelectType> {
+    public async create (params: ClientsSchemaCreateType): Promise<ClientsSchemaSelectType> {
         const { modality_id = 0, seller_id } = await this.findIdsByCodes(params)
 
         const code = await this.companies.create({
@@ -44,7 +44,7 @@ export class CompaniesService {
         return await this.get(code)
     }
 
-    public async update (code: string, params: CompanySchemaUpdateType): Promise<CompanySchemaSelectType> {
+    public async update (code: string, params: ClientsSchemaUpdateType): Promise<ClientsSchemaSelectType> {
         const { modality_id, seller_id } = await this.findIdsByCodes(params)
 
         const updateId = await this.companies.update(code, {
@@ -61,7 +61,7 @@ export class CompaniesService {
     }
 
     public async getRadios (code: string, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
-        const data = await this.radios.getByCompany(code, query)
+        const data = await this.radios.getByClient(code, query)
 
         return RadiosSchemaSelectPaginated.parse(data)
     }

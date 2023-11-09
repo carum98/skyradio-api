@@ -1,24 +1,21 @@
-import { CompaniesModalityController } from '@controllers/companies_modality'
+import { ClientsController } from '@/controllers/clients.controller'
 import { DataSource } from '@/core/data-source.core'
 import { RouterCore } from '@/core/router.core'
+import { ClientsService } from '@services/clients.service'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
-import { CompanyModalitySchemaCreate, CompanyModalitySchemaUniqueIdentifier, CompanyModalitySchemaUpdate } from '@models/companies_modality.model'
-import { CompaniesModalityRepository } from '@repositories/companies_modality.repository'
-import { CompaniesModalityService } from '@services/companies_modality.service'
-import { rolesMiddleware } from '@/middlewares/roles.middleware'
+import { ClientsSchemaCreate, ClientsSchemaUniqueIdentifier, ClientsSchemaUpdate } from '@models/clients.model'
 import { PaginationSchema } from '@/utils/pagination'
 
-export class CompaniesModalityRouter extends RouterCore {
+export class ClientsRouter extends RouterCore {
     constructor (datasource: DataSource) {
         super({
-            path: '/companies-modality',
+            path: '/clients',
             middlewares: [authMiddleware]
         })
 
-        const repository = datasource.create(CompaniesModalityRepository)
-        const service = new CompaniesModalityService(repository)
-        const controller = new CompaniesModalityController(service)
+        const service = new ClientsService(datasource)
+        const controller = new ClientsController(service)
 
         this.get({
             name: '/',
@@ -34,9 +31,8 @@ export class CompaniesModalityRouter extends RouterCore {
             name: '/',
             handler: controller.create,
             middlewares: [
-                rolesMiddleware(['admin']),
                 requestMiddleware({
-                    body: CompanyModalitySchemaCreate
+                    body: ClientsSchemaCreate
                 })
             ]
         })
@@ -46,7 +42,7 @@ export class CompaniesModalityRouter extends RouterCore {
             handler: controller.get,
             middlewares: [
                 requestMiddleware({
-                    params: CompanyModalitySchemaUniqueIdentifier
+                    params: ClientsSchemaUniqueIdentifier
                 })
             ]
         })
@@ -55,10 +51,9 @@ export class CompaniesModalityRouter extends RouterCore {
             name: '/:code',
             handler: controller.update,
             middlewares: [
-                rolesMiddleware(['admin']),
                 requestMiddleware({
-                    params: CompanyModalitySchemaUniqueIdentifier,
-                    body: CompanyModalitySchemaUpdate
+                    params: ClientsSchemaUniqueIdentifier,
+                    body: ClientsSchemaUpdate
                 })
             ]
         })
@@ -67,9 +62,19 @@ export class CompaniesModalityRouter extends RouterCore {
             name: '/:code',
             handler: controller.delete,
             middlewares: [
-                rolesMiddleware(['admin']),
                 requestMiddleware({
-                    params: CompanyModalitySchemaUniqueIdentifier
+                    params: ClientsSchemaUniqueIdentifier
+                })
+            ]
+        })
+
+        this.get({
+            name: '/:code/radios',
+            handler: controller.getRadios,
+            middlewares: [
+                requestMiddleware({
+                    query: PaginationSchema,
+                    params: ClientsSchemaUniqueIdentifier
                 })
             ]
         })
