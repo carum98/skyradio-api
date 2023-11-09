@@ -5,7 +5,7 @@ import { createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 
-export const companies_seller = mysqlTable('companies_seller', {
+export const sellers = mysqlTable('companies_seller', {
     id: int('id').autoincrement().notNull(),
     code: varchar('code', { length: 6 }).notNull(),
     name: varchar('name', { length: 255 }).notNull(),
@@ -21,24 +21,24 @@ export const companies_seller = mysqlTable('companies_seller', {
     }
 })
 
-export const ClientsSellerSchemaSelect = createSelectSchema(companies_seller)
+export const SellersSchemaSelect = createSelectSchema(sellers)
     .pick({ code: true, name: true })
 
-export const ClientsSellerSchemaCreate = createSelectSchema(companies_seller, {
+export const SellersSchemaCreate = createSelectSchema(sellers, {
     name: (schema) => schema.name.min(3).max(100)
 }).pick({ name: true, group_id: true }).required()
 
-export const ClientsSellerSchemaUpdate = ClientsSellerSchemaCreate
+export const SellersSchemaUpdate = SellersSchemaCreate
     .pick({ name: true })
     .partial()
 
-export const ClientsSellerSchemaUniqueIdentifier = createSelectSchema(companies_seller, {
+export const SellersSchemaUniqueIdentifier = createSelectSchema(sellers, {
     code: (schema) => schema.code.length(6)
 }).pick({ code: true }).required()
 
-export const ClientsSellerSchemaSelectPaginated = ResponsePaginationSchema(ClientsSellerSchemaSelect)
+export const SellersSchemaSelectPaginated = ResponsePaginationSchema(SellersSchemaSelect)
 
-export type ClientsSellerSchemaCreateType = z.infer<typeof ClientsSellerSchemaCreate>
-export type ClientsSellerSchemaSelectType = z.infer<typeof ClientsSellerSchemaSelect>
-export type ClientsSellerSchemaUpdateType = z.infer<typeof ClientsSellerSchemaUpdate>
-export type ClientsSellerSchemaSelectPaginatedType = z.infer<typeof ClientsSellerSchemaSelectPaginated>
+export type SellersSchemaCreateType = z.infer<typeof SellersSchemaCreate>
+export type SellersSchemaSelectType = z.infer<typeof SellersSchemaSelect>
+export type SellersSchemaUpdateType = z.infer<typeof SellersSchemaUpdate>
+export type SellersSchemaSelectPaginatedType = z.infer<typeof SellersSchemaSelectPaginated>

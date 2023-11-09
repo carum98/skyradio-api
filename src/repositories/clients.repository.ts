@@ -2,8 +2,8 @@ import { MySql2Database } from 'drizzle-orm/mysql2'
 import { eq, sql } from 'drizzle-orm'
 import { ClientsSchemaCreateRawType, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateRawType, clients } from '@models/clients.model'
 import { companies_modality } from '@/models/clients_modality.model'
-import { companies_seller } from '@/models/clients_seller.model'
-import { radios } from '@/models/radios.model'
+import { sellers } from '@models/sellers.model'
+import { radios } from '@models/radios.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { IRepository, RepositoryCore } from '@/core/repository.core'
 
@@ -11,7 +11,7 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
     constructor (public readonly db: MySql2Database) {
         const table = clients
 
-        const select = db.select({
+    const select = db.select({
             code: clients.code,
             name: clients.name,
             modality: {
@@ -19,14 +19,14 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
                 name: companies_modality.name
             },
             seller: {
-                code: companies_seller.code,
-                name: companies_seller.name
+                code: sellers.code,
+                name: sellers.name
             },
             radios_count: sql<number>`(select count(${radios.id}) from ${radios} where ${radios.client_id} = ${clients.id})`
         })
         .from(table)
         .leftJoin(companies_modality, eq(companies_modality.id, clients.modality_id))
-        .leftJoin(companies_seller, eq(companies_seller.id, clients.seller_id))
+        .leftJoin(sellers, eq(sellers.id, clients.seller_id))
 
         super({ db, table, select, search_columns: [clients.name] })
     }

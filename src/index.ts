@@ -5,7 +5,7 @@ import { AuthRouter } from '@routes/auth.routes'
 import { ClientsRouter } from '@/routes/clients.routes'
 import { GroupsRouter } from '@routes/groups.routes'
 import { CompaniesModalityRouter } from '@routes/clients_modality.routes'
-import { ClientsSellerRouter } from '@routes/clients_seller.routes'
+import { SellersRouter } from '@routes/sellers.routes'
 import { SimsProviderRouter } from '@routes/sims_provider.routes'
 import { SimsRouter } from '@routes/sims.routes'
 import { RadiosModelRouter } from '@routes/radios_model.routes'
@@ -26,7 +26,7 @@ server.routes([
     new ClientsRouter(datasource),
     new GroupsRouter(datasource),
     new CompaniesModalityRouter(datasource),
-    new ClientsSellerRouter(datasource),
+    new SellersRouter(datasource),
     new SimsProviderRouter(datasource),
     new SimsRouter(datasource),
     new RadiosModelRouter(datasource),

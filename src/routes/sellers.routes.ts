@@ -1,24 +1,24 @@
-import { ClientsSellerController } from '@/controllers/clients_seller'
+import { SellersController } from '@/controllers/sellers'
 import { DataSource } from '@/core/data-source.core'
 import { RouterCore } from '@/core/router.core'
 import { PaginationSchema } from '@/utils/pagination'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { rolesMiddleware } from '@middlewares/roles.middleware'
-import { ClientsSellerSchemaCreate, ClientsSellerSchemaUniqueIdentifier, ClientsSellerSchemaUpdate } from '@models/clients_seller.model'
-import { ClientsSellerRepository } from '@repositories/clients_seller.repository'
-import { ClientsSellerService } from '@services/clients_seller.service'
+import { SellersSchemaCreate, SellersSchemaUniqueIdentifier, SellersSchemaUpdate } from '@models/sellers.model'
+import { SellersRepository } from '@/repositories/sellers.repository'
+import { SellersService } from '@/services/sellers.service'
 
-export class ClientsSellerRouter extends RouterCore {
+export class SellersRouter extends RouterCore {
     constructor (datasource: DataSource) {
         super({
-            path: '/clients-seller',
+            path: '/sellers',
             middlewares: [authMiddleware]
         })
 
-        const repository = datasource.create(ClientsSellerRepository)
-        const service = new ClientsSellerService(repository)
-        const controller = new ClientsSellerController(service)
+        const repository = datasource.create(SellersRepository)
+        const service = new SellersService(repository)
+        const controller = new SellersController(service)
 
         this.get({
             name: '/',
@@ -36,7 +36,7 @@ export class ClientsSellerRouter extends RouterCore {
             middlewares: [
                 rolesMiddleware(['admin']),
                 requestMiddleware({
-                    body: ClientsSellerSchemaCreate
+                    body: SellersSchemaCreate
                 })
             ]
         })
@@ -46,7 +46,7 @@ export class ClientsSellerRouter extends RouterCore {
             handler: controller.get,
             middlewares: [
                 requestMiddleware({
-                    params: ClientsSellerSchemaUniqueIdentifier
+                    params: SellersSchemaUniqueIdentifier
                 })
             ]
         })
@@ -57,8 +57,8 @@ export class ClientsSellerRouter extends RouterCore {
             middlewares: [
                 rolesMiddleware(['admin']),
                 requestMiddleware({
-                    params: ClientsSellerSchemaUniqueIdentifier,
-                    body: ClientsSellerSchemaUpdate
+                    params: SellersSchemaUniqueIdentifier,
+                    body: SellersSchemaUpdate
                 })
             ]
         })
@@ -69,7 +69,7 @@ export class ClientsSellerRouter extends RouterCore {
             middlewares: [
                 rolesMiddleware(['admin']),
                 requestMiddleware({
-                    params: ClientsSellerSchemaUniqueIdentifier
+                    params: SellersSchemaUniqueIdentifier
                 })
             ]
         })

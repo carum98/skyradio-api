@@ -4,7 +4,7 @@ import { sql } from 'drizzle-orm'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 import { ClientsModalitySchemaSelect, companies_modality } from './clients_modality.model'
-import { ClientsSellerSchemaSelect, companies_seller } from './clients_seller.model'
+import { SellersSchemaSelect, sellers } from './sellers.model'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 
 export const clients = mysqlTable('clients', {
@@ -13,7 +13,7 @@ export const clients = mysqlTable('clients', {
     name: varchar('name', { length: 255 }).notNull(),
 	group_id: int('group_id').notNull().references(() => groups.id),
     modality_id: int('modality_id').notNull().references(() => companies_modality.id),
-    seller_id: int('seller_id').references(() => companies_seller.id),
+    seller_id: int('seller_id').references(() => sellers.id),
 	created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updated_at: datetime('updated_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
 	deleted_at: datetime('deleted_at', { mode: 'string' })
@@ -30,7 +30,7 @@ export const ClientsSchemaSelect = createSelectSchema(clients)
     .pick({ code: true, name: true })
     .extend({
         modality: ClientsModalitySchemaSelect.pick({ code: true, name: true }),
-        seller: ClientsSellerSchemaSelect.pick({ code: true, name: true }).nullable(),
+        seller: SellersSchemaSelect.pick({ code: true, name: true }).nullable(),
         radios_count: z.number().int()
     })
 

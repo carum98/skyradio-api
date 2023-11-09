@@ -5,19 +5,19 @@ import { PaginationSchemaType } from '@/utils/pagination'
 import { RadiosSchemaSelectPaginated, RadiosSchemaSelectPaginatedType } from '@models/radios.model'
 import { ClientsModalityRepository } from '@/repositories/clients_modality.repository'
 import { DataSource } from '@/core/data-source.core'
-import { ClientsSellerRepository } from '@/repositories/clients_seller.repository'
+import { SellersRepository } from '@/repositories/sellers.repository'
 
 export class ClientsService {
     private readonly radios: RadiosRepository
     private readonly companies: ClientsRepository
     private readonly modality: ClientsModalityRepository
-    private readonly seller: ClientsSellerRepository
+    private readonly seller: SellersRepository
 
     constructor (datasource: DataSource) {
         this.radios = datasource.create(RadiosRepository)
         this.companies = datasource.create(ClientsRepository)
         this.modality = datasource.create(ClientsModalityRepository)
-        this.seller = datasource.create(ClientsSellerRepository)
+        this.seller = datasource.create(SellersRepository)
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<ClientsSchemaSelectPaginatedType> {
