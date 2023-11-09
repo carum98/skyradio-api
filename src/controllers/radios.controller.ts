@@ -51,4 +51,12 @@ export class RadiosController {
             res.status(400).json()
         }
     }
+
+    public getClients = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+
+        const data = await this.service.getClients(code)
+
+        res.json(data)
+    }
 }

@@ -9,7 +9,7 @@ import { IRepository, RepositoryCore } from '@/core/repository.core'
 
 export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, ClientsSchemaCreateRawType, ClientsSchemaUpdateRawType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
-        const table = clients
+    const table = clients
 
     const select = db.select({
             code: clients.code,

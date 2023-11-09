@@ -1,7 +1,9 @@
 import { DataSource } from '@/core/data-source.core'
+import { ClientsSchemaSelect, ClientsSchemaSelectType } from '@models/clients.model'
 import { ClientsRepository } from '@/repositories/clients.repository'
 import { RadiosModelRepository } from '@/repositories/radios_model.repository'
 import { SimsRepository } from '@/repositories/sims.repository'
+import { NotFoundError } from '@/utils/errors'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { RadiosSchemaCreateType, RadiosSchemaSelect, RadiosSchemaSelectPaginated, RadiosSchemaSelectPaginatedType, RadiosSchemaSelectType, RadiosSchemaUpdateType } from '@models/radios.model'
 import { RadiosRepository } from '@repositories/radios.repository'
@@ -91,5 +93,17 @@ export class RadiosService {
             client_id,
             sim_id
         }
+    }
+
+    public async getClients (code: string): Promise<ClientsSchemaSelectType> {
+        const radio = await this.radios.get(code)
+
+        if (radio.client === null) {
+            throw new NotFoundError('Radio without client')
+        }
+
+        const data = await this.client.get(radio.client.code)
+
+        return ClientsSchemaSelect.parse(data)
     }
 }

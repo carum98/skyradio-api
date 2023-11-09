@@ -67,5 +67,10 @@ export class RadiosRauter extends RouterCore {
                 })
             ]
         })
+
+        this.get({
+            name: '/:code/clients',
+            handler: controller.getClients
+        })
     }
 }
