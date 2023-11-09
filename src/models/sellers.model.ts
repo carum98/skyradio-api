@@ -5,7 +5,7 @@ import { createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 
-export const sellers = mysqlTable('companies_seller', {
+export const sellers = mysqlTable('sellers', {
     id: int('id').autoincrement().notNull(),
     code: varchar('code', { length: 6 }).notNull(),
     name: varchar('name', { length: 255 }).notNull(),
@@ -15,8 +15,8 @@ export const sellers = mysqlTable('companies_seller', {
     deleted_at: datetime('deleted_at', { mode: 'string' })
 }, (table) => {
     return {
-        companies_seller_id: primaryKey(table.id),
-        companies_seller_code: index('companies_seller_code').on(table.code),
+        sellers_id: primaryKey(table.id),
+        sellers_code: index('sellers_code').on(table.code),
 		group_id: index('group_id').on(table.group_id)
     }
 })
