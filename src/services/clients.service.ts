@@ -69,19 +69,19 @@ export class ClientsService {
     public async addRadios (code: string, params: ClientsRadiosSchemaType): Promise<boolean> {
         const { company_id = 0 } = await this.findIdsByCodes({ company_code: code })
 
-        return await this.radios.addCompany(company_id, params.radios_codes)
+        return await this.radios.addClient(company_id, params.radios_codes)
     }
 
     public async swapRadios (code: string, params: ClientRadiosSwapSchemaType): Promise<boolean> {
         const { company_id = 0 } = await this.findIdsByCodes({ company_code: code })
 
-        return await this.radios.swapCompany(company_id, params.radio_code_from, params.radio_code_to)
+        return await this.radios.swapClient(company_id, params.radio_code_from, params.radio_code_to)
     }
 
     public async removeRadios (code: string, params: ClientsRadiosSchemaType): Promise<boolean> {
         const { company_id = 0 } = await this.findIdsByCodes({ company_code: code })
 
-        return await this.radios.removeCompany(company_id, params.radios_codes)
+        return await this.radios.removeClient(company_id, params.radios_codes)
     }
 
     private async findIdsByCodes ({ modality_code, seller_code, company_code }: { modality_code?: string, seller_code?: string, company_code?: string }): Promise<{ modality_id?: number, seller_id?: number, company_id?: number }> {

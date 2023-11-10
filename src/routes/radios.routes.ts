@@ -4,7 +4,7 @@ import { authMiddleware } from '@middlewares/auth.middleware'
 import { RadiosService } from '@services/radios.service'
 import { RadiosController } from '@controllers/radios.controller'
 import { requestMiddleware } from '@middlewares/request.middleware'
-import { RadiosSchemaCreate, RadiosSchemaUniqueIdentifier, RadiosSchemaUpdate } from '@models/radios.model'
+import { RadiosCompanySchema, RadiosSchemaCreate, RadiosSchemaUniqueIdentifier, RadiosSchemaUpdate } from '@models/radios.model'
 import { PaginationSchema } from '@/utils/pagination'
 
 export class RadiosRauter extends RouterCore {
@@ -70,7 +70,33 @@ export class RadiosRauter extends RouterCore {
 
         this.get({
             name: '/:code/clients',
-            handler: controller.getClients
+            handler: controller.getClients,
+            middlewares: [
+                requestMiddleware({
+                    params: RadiosSchemaUniqueIdentifier
+                })
+            ]
+        })
+
+        this.post({
+            name: '/:code/clients',
+            handler: controller.addClient,
+            middlewares: [
+                requestMiddleware({
+                    params: RadiosSchemaUniqueIdentifier,
+                    body: RadiosCompanySchema
+                })
+            ]
+        })
+
+        this.delete({
+            name: '/:code/clients',
+            handler: controller.removeClient,
+            middlewares: [
+                requestMiddleware({
+                    params: RadiosSchemaUniqueIdentifier
+                })
+            ]
         })
     }
 }

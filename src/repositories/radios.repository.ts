@@ -92,42 +92,34 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
         return await super.deleteCore(eq(radios.code, code))
     }
 
-    public async addCompany (company_id: number, radios_codes: string[]): Promise<boolean> {
+    public async addClient (client_id: number, radios_codes: string[]): Promise<boolean> {
         const data = await this.db.update(radios)
-            .set({
-                client_id: company_id
-            })
+            .set({ client_id })
             .where(inArray(radios.code, radios_codes))
 
         return data[0].affectedRows > 0
     }
 
-    public async swapCompany (company_id: number, radio_code_from: string, radio_code_to: string): Promise<boolean> {
+    public async swapClient (client_id: number, radio_code_from: string, radio_code_to: string): Promise<boolean> {
         const response = await Promise.all([
             this.db.update(radios)
-                .set({
-                    client_id: null
-                })
+                .set({ client_id: null })
                 .where(eq(radios.code, radio_code_from)),
             this.db.update(radios)
-                .set({
-                    client_id: company_id
-                })
+                .set({ client_id })
                 .where(eq(radios.code, radio_code_to))
         ])
 
         return response[0][0].affectedRows > 0 && response[1][0].affectedRows > 0
     }
 
-    public async removeCompany (company_id: number, radios_codes: string[]): Promise<boolean> {
+    public async removeClient (client_id: number, radios_codes: string[]): Promise<boolean> {
         const data = await this.db.update(radios)
-            .set({
-                client_id: null
-            })
+            .set({ client_id: null })
             .where(
                 and(
                     inArray(radios.code, radios_codes),
-                    eq(radios.client_id, company_id)
+                    eq(radios.client_id, client_id)
                 )
             )
 

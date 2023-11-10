@@ -5,7 +5,7 @@ import { RadiosModelRepository } from '@/repositories/radios_model.repository'
 import { SimsRepository } from '@/repositories/sims.repository'
 import { NotFoundError } from '@/utils/errors'
 import { PaginationSchemaType } from '@/utils/pagination'
-import { RadiosSchemaCreateType, RadiosSchemaSelect, RadiosSchemaSelectPaginated, RadiosSchemaSelectPaginatedType, RadiosSchemaSelectType, RadiosSchemaUpdateType } from '@models/radios.model'
+import { RadiosCompanySchemaType, RadiosSchemaCreateType, RadiosSchemaSelect, RadiosSchemaSelectPaginated, RadiosSchemaSelectPaginatedType, RadiosSchemaSelectType, RadiosSchemaUpdateType } from '@models/radios.model'
 import { RadiosRepository } from '@repositories/radios.repository'
 
 export class RadiosService {
@@ -70,6 +70,31 @@ export class RadiosService {
         return await this.radios.delete(code)
     }
 
+    public async getClients (code: string): Promise<ClientsSchemaSelectType> {
+        const radio = await this.radios.get(code)
+
+        if (radio.client === null) {
+            throw new NotFoundError('Radio without client')
+        }
+
+        const data = await this.client.get(radio.client.code)
+
+        return ClientsSchemaSelect.parse(data)
+    }
+
+    public async addClient (code: string, params: RadiosCompanySchemaType): Promise<boolean> {
+        const { client_id = 0 } = await this.findIdsByCodes({ client_code: params.company_code })
+
+        return await this.radios.addClient(client_id, [code])
+    }
+
+    public async removeClient (code: string): Promise<boolean> {
+        const client = await this.getClients(code)
+        const { client_id = 0 } = await this.findIdsByCodes({ client_code: client.code })
+
+        return await this.radios.removeClient(client_id, [code])
+    }
+
     private async findIdsByCodes ({ model_code, status_code, client_code, sim_code }: { model_code?: string, status_code?: string, client_code?: string, sim_code?: string }): Promise<{ model_id?: number, status_id?: number, client_id?: number, sim_id?: number }> {
         const model_id = model_code !== undefined
             ? await this.model.getId(model_code)
@@ -93,17 +118,5 @@ export class RadiosService {
             client_id,
             sim_id
         }
-    }
-
-    public async getClients (code: string): Promise<ClientsSchemaSelectType> {
-        const radio = await this.radios.get(code)
-
-        if (radio.client === null) {
-            throw new NotFoundError('Radio without client')
-        }
-
-        const data = await this.client.get(radio.client.code)
-
-        return ClientsSchemaSelect.parse(data)
     }
 }

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { RadiosService } from '@services/radios.service'
-import { RadiosSchemaCreateType, RadiosSchemaUpdateType } from '@/models/radios.model'
+import { RadiosCompanySchemaType, RadiosSchemaCreateType, RadiosSchemaUpdateType } from '@/models/radios.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 
 export class RadiosController {
@@ -58,5 +58,30 @@ export class RadiosController {
         const data = await this.service.getClients(code)
 
         res.json(data)
+    }
+
+    public addClient = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+        const params = req.body as RadiosCompanySchemaType
+
+        const data = await this.service.addClient(code, params)
+
+        if (data) {
+            res.status(204).json()
+        } else {
+            res.status(400).json()
+        }
+    }
+
+    public removeClient = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+
+        const data = await this.service.removeClient(code)
+
+        if (data) {
+            res.status(204).json()
+        } else {
+            res.status(400).json()
+        }
     }
 }
