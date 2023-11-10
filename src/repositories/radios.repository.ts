@@ -1,6 +1,6 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { RadiosSchemaCreateRawType, RadiosSchemaSelectPaginatedType, RadiosSchemaSelectType, RadiosSchemaUpdateRawType, radios } from '@models/radios.model'
-import { eq } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 import { radios_model } from '@models/radios_model.model'
 import { radios_status } from '@models/radios_status.model'
 import { sims } from '@models/sims.model'
@@ -90,5 +90,33 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
 
     public async delete (code: string): Promise<boolean> {
         return await super.deleteCore(eq(radios.code, code))
+    }
+
+    public async addCompany (company_code: string, radios_codes: string[]): Promise<boolean> {
+        const company_id = await this.db.select({ id: clients.id })
+            .from(clients)
+            .where(eq(clients.code, company_code)).limit(1)
+
+        const data = await this.db.update(radios)
+            .set({
+                client_id: company_id[0].id
+            })
+            .where(inArray(radios.code, radios_codes))
+
+        return data[0].affectedRows > 0
+    }
+
+    public async removeCompany (company_code: string, radios_codes: string[]): Promise<boolean> {
+        const company_id = await this.db.select({ id: clients.id })
+            .from(clients)
+            .where(eq(clients.code, company_code)).limit(1)
+
+        const data = await this.db.update(radios)
+            .set({
+                client_id: null
+            })
+            .where(and(inArray(radios.code, radios_codes), eq(radios.client_id, company_id[0].id)))
+
+        return data[0].affectedRows > 0
     }
 }

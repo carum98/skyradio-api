@@ -1,4 +1,4 @@
-import { ClientsSchemaCreateType, ClientsSchemaSelect, ClientsSchemaSelectPaginated, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateType } from '@models/clients.model'
+import { ClientsSchemaCreateType, ClientsSchemaSelect, ClientsSchemaSelectPaginated, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateType, ClientsRadiosSchemaType } from '@models/clients.model'
 import { ClientsRepository } from '@/repositories/clients.repository'
 import { RadiosRepository } from '@repositories/radios.repository'
 import { PaginationSchemaType } from '@/utils/pagination'
@@ -64,6 +64,14 @@ export class ClientsService {
         const data = await this.radios.getByClient(code, query)
 
         return RadiosSchemaSelectPaginated.parse(data)
+    }
+
+    public async addRadios (code: string, params: ClientsRadiosSchemaType): Promise<boolean> {
+        return await this.radios.addCompany(code, params.radios_codes)
+    }
+
+    public async removeRadios (code: string, params: ClientsRadiosSchemaType): Promise<boolean> {
+        return await this.radios.removeCompany(code, params.radios_codes)
     }
 
     private async findIdsByCodes ({ modality_code, seller_code }: { modality_code?: string, seller_code?: string }): Promise<{ modality_id?: number, seller_id?: number }> {
