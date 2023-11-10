@@ -1,4 +1,4 @@
-import { ClientsSchemaCreateType, ClientsSchemaSelect, ClientsSchemaSelectPaginated, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateType, ClientsRadiosSchemaType } from '@models/clients.model'
+import { ClientsSchemaCreateType, ClientsSchemaSelect, ClientsSchemaSelectPaginated, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateType, ClientsRadiosSchemaType, ClientRadiosSwapSchemaType } from '@models/clients.model'
 import { ClientsRepository } from '@/repositories/clients.repository'
 import { RadiosRepository } from '@repositories/radios.repository'
 import { PaginationSchemaType } from '@/utils/pagination'
@@ -67,14 +67,24 @@ export class ClientsService {
     }
 
     public async addRadios (code: string, params: ClientsRadiosSchemaType): Promise<boolean> {
-        return await this.radios.addCompany(code, params.radios_codes)
+        const { company_id = 0 } = await this.findIdsByCodes({ company_code: code })
+
+        return await this.radios.addCompany(company_id, params.radios_codes)
+    }
+
+    public async swapRadios (code: string, params: ClientRadiosSwapSchemaType): Promise<boolean> {
+        const { company_id = 0 } = await this.findIdsByCodes({ company_code: code })
+
+        return await this.radios.swapCompany(company_id, params.radio_code_from, params.radio_code_to)
     }
 
     public async removeRadios (code: string, params: ClientsRadiosSchemaType): Promise<boolean> {
-        return await this.radios.removeCompany(code, params.radios_codes)
+        const { company_id = 0 } = await this.findIdsByCodes({ company_code: code })
+
+        return await this.radios.removeCompany(company_id, params.radios_codes)
     }
 
-    private async findIdsByCodes ({ modality_code, seller_code }: { modality_code?: string, seller_code?: string }): Promise<{ modality_id?: number, seller_id?: number }> {
+    private async findIdsByCodes ({ modality_code, seller_code, company_code }: { modality_code?: string, seller_code?: string, company_code?: string }): Promise<{ modality_id?: number, seller_id?: number, company_id?: number }> {
         const modality_id = modality_code !== undefined
             ? await this.modality.getId(modality_code)
             : undefined
@@ -83,6 +93,10 @@ export class ClientsService {
             ? await this.seller.getId(seller_code)
             : undefined
 
-        return { modality_id, seller_id }
+        const company_id = company_code !== undefined
+            ? await this.companies.getId(company_code)
+            : undefined
+
+        return { modality_id, seller_id, company_id }
     }
 }

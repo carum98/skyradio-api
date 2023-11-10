@@ -4,7 +4,7 @@ import { RouterCore } from '@/core/router.core'
 import { ClientsService } from '@services/clients.service'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
-import { ClientsRadiosSchema, ClientsSchemaCreate, ClientsSchemaUniqueIdentifier, ClientsSchemaUpdate } from '@models/clients.model'
+import { ClientRadiosSwapSchema, ClientsRadiosSchema, ClientsSchemaCreate, ClientsSchemaUniqueIdentifier, ClientsSchemaUpdate } from '@models/clients.model'
 import { PaginationSchema } from '@/utils/pagination'
 
 export class ClientsRouter extends RouterCore {
@@ -86,6 +86,17 @@ export class ClientsRouter extends RouterCore {
                 requestMiddleware({
                     params: ClientsSchemaUniqueIdentifier,
                     body: ClientsRadiosSchema
+                })
+            ]
+        })
+
+        this.put({
+            name: '/:code/radios',
+            handler: controller.swapRadios,
+            middlewares: [
+                requestMiddleware({
+                    params: ClientsSchemaUniqueIdentifier,
+                    body: ClientRadiosSwapSchema
                 })
             ]
         })

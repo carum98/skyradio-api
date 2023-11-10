@@ -71,6 +71,11 @@ export const ClientsRadiosSchema = z.object({
     radios_codes: z.array(z.string().length(6))
 })
 
+export const ClientRadiosSwapSchema = z.object({
+    radio_code_from: z.string().length(6),
+    radio_code_to: z.string().length(6)
+})
+
 export const ClientsSchemaUniqueIdentifier = createSelectSchema(clients, {
     code: (schema) => schema.code.length(6)
 }).pick({ code: true }).required()
@@ -84,3 +89,4 @@ export type ClientsSchemaUpdateRawType = z.infer<typeof ClientsSchemaUpdateRaw>
 export type ClientsSchemaUpdateType = z.infer<typeof ClientsSchemaUpdate>
 export type ClientsSchemaSelectPaginatedType = z.infer<typeof ClientsSchemaSelectPaginated>
 export type ClientsRadiosSchemaType = z.infer<typeof ClientsRadiosSchema>
+export type ClientRadiosSwapSchemaType = z.infer<typeof ClientRadiosSwapSchema>

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { ClientsService } from '@services/clients.service'
-import { ClientsSchemaCreateType, ClientsSchemaUpdateType, ClientsRadiosSchemaType } from '@models/clients.model'
+import { ClientsSchemaCreateType, ClientsSchemaUpdateType, ClientsRadiosSchemaType, ClientRadiosSwapSchemaType } from '@models/clients.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 
 export class ClientsController {
@@ -66,6 +66,19 @@ export class ClientsController {
         const params = req.body as ClientsRadiosSchemaType
 
         const data = await this.service.addRadios(code, params)
+
+        if (data) {
+            res.status(204).json()
+        } else {
+            res.status(400).json()
+        }
+    }
+
+    public swapRadios = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+        const params = req.body as ClientRadiosSwapSchemaType
+
+        const data = await this.service.swapRadios(code, params)
 
         if (data) {
             res.status(204).json()
