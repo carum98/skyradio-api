@@ -83,7 +83,7 @@ export class RadiosService {
     }
 
     public async addClient (code: string, params: RadiosCompanySchemaType): Promise<boolean> {
-        const { client_id = 0 } = await this.findIdsByCodes({ client_code: params.company_code })
+        const { client_id = 0 } = await this.findIdsByCodes({ client_code: params.client_code })
 
         return await this.radios.addClient(client_id, [code])
     }

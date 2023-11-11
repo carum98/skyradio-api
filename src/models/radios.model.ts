@@ -95,7 +95,7 @@ export const RadiosSchemaUniqueIdentifier = createSelectSchema(radios, {
 }).pick({ code: true }).required()
 
 export const RadiosCompanySchema = z.object({
-    company_code: z.string().length(6)
+    client_code: z.string().length(6)
 })
 
 export const RadiosSchemaSelectPaginated = ResponsePaginationSchema(RadiosSchemaSelect)

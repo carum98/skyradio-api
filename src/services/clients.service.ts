@@ -67,24 +67,24 @@ export class ClientsService {
     }
 
     public async addRadios (code: string, params: ClientsRadiosSchemaType): Promise<boolean> {
-        const { company_id = 0 } = await this.findIdsByCodes({ company_code: code })
+        const { company_id = 0 } = await this.findIdsByCodes({ client_code: code })
 
         return await this.radios.addClient(company_id, params.radios_codes)
     }
 
     public async swapRadios (code: string, params: ClientRadiosSwapSchemaType): Promise<boolean> {
-        const { company_id = 0 } = await this.findIdsByCodes({ company_code: code })
+        const { company_id = 0 } = await this.findIdsByCodes({ client_code: code })
 
         return await this.radios.swapClient(company_id, params.radio_code_from, params.radio_code_to)
     }
 
     public async removeRadios (code: string, params: ClientsRadiosSchemaType): Promise<boolean> {
-        const { company_id = 0 } = await this.findIdsByCodes({ company_code: code })
+        const { company_id = 0 } = await this.findIdsByCodes({ client_code: code })
 
         return await this.radios.removeClient(company_id, params.radios_codes)
     }
 
-    private async findIdsByCodes ({ modality_code, seller_code, company_code }: { modality_code?: string, seller_code?: string, company_code?: string }): Promise<{ modality_id?: number, seller_id?: number, company_id?: number }> {
+    private async findIdsByCodes ({ modality_code, seller_code, client_code }: { modality_code?: string, seller_code?: string, client_code?: string }): Promise<{ modality_id?: number, seller_id?: number, company_id?: number }> {
         const modality_id = modality_code !== undefined
             ? await this.modality.getId(modality_code)
             : undefined
@@ -93,8 +93,8 @@ export class ClientsService {
             ? await this.seller.getId(seller_code)
             : undefined
 
-        const company_id = company_code !== undefined
-            ? await this.companies.getId(company_code)
+        const company_id = client_code !== undefined
+            ? await this.companies.getId(client_code)
             : undefined
 
         return { modality_id, seller_id, company_id }
