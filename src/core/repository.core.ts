@@ -4,7 +4,6 @@ import { PaginationSchemaType, ResponsePaginationSchemaType } from '@/utils/pagi
 import { SQL, and, isNull, like, or, sql } from 'drizzle-orm'
 import { MySqlColumn, MySqlSelect, MySqlTable, getTableConfig } from 'drizzle-orm/mysql-core'
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { SelectMode } from 'drizzle-orm/query-builders/select.types'
 
 export interface IRepository {
     db: MySql2Database
@@ -15,7 +14,7 @@ type Where = SQL<unknown> | undefined
 interface RepositoryCoreParams {
     db: MySql2Database
     table: MySqlTable
-    select: MySqlSelect<any, any, SelectMode, any>
+    select: any
     search_columns?: MySqlColumn[]
 }
 
@@ -42,7 +41,7 @@ interface UpdateParams<TUpdate> {
 export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
     protected readonly db: MySql2Database
     protected readonly table: MySqlTable
-    protected readonly select: MySqlSelect<any, any, SelectMode, any>
+    protected readonly select: MySqlSelect
     protected readonly table_name: string
     protected readonly search_columns?: MySqlColumn[]
     protected readonly deleted_column: MySqlColumn
