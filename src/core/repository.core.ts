@@ -164,6 +164,12 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
             }
         }
 
+        // Clear limit and offset from query instance
+        const config = (query as any).config
+
+        delete config.limit
+        delete config.offset
+
         return data as unknown as TSelect[]
     }
 
