@@ -35,7 +35,7 @@ export const SimsShemaSelect = createSelectSchema(sims)
             name: z.string(),
             imei: z.string(),
             client: ClientsSchemaSelect.pick({ code: true, name: true }).nullable()
-        }).nullable(),
+        }).nullable()
     })
 
 export const SimsSchemaCreateRaw = createSelectSchema(sims, {

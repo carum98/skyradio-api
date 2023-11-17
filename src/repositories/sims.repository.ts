@@ -25,9 +25,9 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsSche
                 imei: radios.imei
             },
             radio__client: {
-                code: radios.code,
-                name: radios.name
-            },
+                code: clients.code,
+                name: clients.name
+            }
         })
         .from(table)
         .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
