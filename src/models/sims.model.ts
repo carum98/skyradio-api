@@ -5,6 +5,7 @@ import { sims_provider } from './sims_provider.model'
 import { createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 import { ResponsePaginationSchema } from '@/utils/pagination'
+import { ClientsSchemaSelect } from './clients.model'
 
 export const sims = mysqlTable('sims', {
     id: int('id').autoincrement().notNull(),
@@ -28,7 +29,13 @@ export const sims = mysqlTable('sims', {
 export const SimsShemaSelect = createSelectSchema(sims)
     .pick({ code: true, number: true, serial: true })
     .extend({
-        provider: createSelectSchema(sims_provider).pick({ code: true, name: true })
+        provider: createSelectSchema(sims_provider).pick({ code: true, name: true }),
+        radio: z.object({
+            code: z.string(),
+            name: z.string(),
+            imei: z.string(),
+            client: ClientsSchemaSelect.pick({ code: true, name: true }).nullable()
+        }).nullable(),
     })
 
 export const SimsSchemaCreateRaw = createSelectSchema(sims, {
