@@ -51,4 +51,12 @@ export class SimsController {
             res.status(400).json()
         }
     }
+
+    public getRadio = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+
+        const data = await this.service.getRadio(code)
+
+        res.json(data)
+    }
 }

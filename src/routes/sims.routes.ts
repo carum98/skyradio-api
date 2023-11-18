@@ -69,5 +69,15 @@ export class SimsRouter extends RouterCore {
                 })
             ]
         })
+
+        this.get({
+            name: '/:code/radios',
+            handler: controller.getRadio,
+            middlewares: [
+                requestMiddleware({
+                    params: SimsShemaUniqueIdentifier
+                })
+            ]
+        })
     }
 }

@@ -1,15 +1,20 @@
 import { DataSource } from '@/core/data-source.core'
-import { SimsProviderRepository } from '@/repositories/sims_provider.repository'
+import { RadiosSchemaSelect, RadiosSchemaSelectType } from '@models/radios.model'
+import { RadiosRepository } from '@repositories/radios.repository'
+import { SimsProviderRepository } from '@repositories/sims_provider.repository'
+import { NotFoundError } from '@/utils/errors'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { SimsSchemaSelectPaginated, SimsSchemaSelectPaginatedType, SimsShemaCreateType, SimsShemaSelect, SimsShemaSelectType, SimsShemaUpdateType } from '@models/sims.model'
 import { SimsRepository } from '@repositories/sims.repository'
 
 export class SimsService {
     private readonly sims: SimsRepository
+    private readonly radios: RadiosRepository
     private readonly provider: SimsProviderRepository
 
     constructor (datasource: DataSource) {
         this.sims = datasource.create(SimsRepository)
+        this.radios = datasource.create(RadiosRepository)
         this.provider = datasource.create(SimsProviderRepository)
     }
 
@@ -52,6 +57,18 @@ export class SimsService {
 
     public async delete (code: string): Promise<boolean> {
         return await this.sims.delete(code)
+    }
+
+    public async getRadio (code: string): Promise<RadiosSchemaSelectType> {
+        const sim = await this.sims.get(code)
+
+        if (sim.radio === null) {
+            throw new NotFoundError('Sim without radio')
+        }
+
+        const data = await this.radios.get(sim.radio.code)
+
+        return RadiosSchemaSelect.parse(data)
     }
 
     private async findIdsByCodes ({ provider_code }: { provider_code?: string }): Promise<{ provider_id?: number }> {
