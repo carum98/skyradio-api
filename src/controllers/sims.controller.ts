@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { SimsService } from '@/services/sims.service'
-import { SimsShemaCreateType, SimsShemaUpdateType } from '@/models/sims.model'
+import { SimsShemaCreateType, SimsShemaUpdateType, SimsRadioSchemaType } from '@/models/sims.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 
 export class SimsController {
@@ -58,5 +58,30 @@ export class SimsController {
         const data = await this.service.getRadio(code)
 
         res.json(data)
+    }
+
+    public addRadio = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+        const params = req.body as SimsRadioSchemaType
+
+        const data = await this.service.addRadio(code, params)
+
+        if (data) {
+            res.status(204).json()
+        } else {
+            res.status(400).json()
+        }
+    }
+
+    public removeRadio = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+
+        const data = await this.service.removeRadio(code)
+
+        if (data) {
+            res.status(204).json()
+        } else {
+            res.status(400).json()
+        }
     }
 }

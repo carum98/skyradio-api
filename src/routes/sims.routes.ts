@@ -4,7 +4,7 @@ import { RouterCore } from '@/core/router.core'
 import { SimsService } from '@services/sims.service'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
-import { SimsShemaCreate, SimsShemaUniqueIdentifier, SimsShemaUpdate } from '@models/sims.model'
+import { SimsRadioSchema, SimsShemaCreate, SimsShemaUniqueIdentifier, SimsShemaUpdate } from '@models/sims.model'
 import { PaginationSchema } from '@/utils/pagination'
 
 export class SimsRouter extends RouterCore {
@@ -73,6 +73,27 @@ export class SimsRouter extends RouterCore {
         this.get({
             name: '/:code/radios',
             handler: controller.getRadio,
+            middlewares: [
+                requestMiddleware({
+                    params: SimsShemaUniqueIdentifier
+                })
+            ]
+        })
+
+        this.post({
+            name: '/:code/radios',
+            handler: controller.addRadio,
+            middlewares: [
+                requestMiddleware({
+                    params: SimsShemaUniqueIdentifier,
+                    body: SimsRadioSchema
+                })
+            ]
+        })
+
+        this.delete({
+            name: '/:code/radios',
+            handler: controller.removeRadio,
             middlewares: [
                 requestMiddleware({
                     params: SimsShemaUniqueIdentifier

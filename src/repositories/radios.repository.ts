@@ -62,6 +62,12 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
         })
     }
 
+    public async getId (code: string): Promise<number> {
+        return await super.getIdCore({
+            where: eq(radios.code, code)
+        })
+    }
+
     public async getByClient (client_code: string, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
         const client_id = await this.db.select({ id: clients.id })
             .from(clients)
@@ -100,6 +106,14 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
         return data[0].affectedRows > 0
     }
 
+    public async addSim (sim_id: number, radio_code: string): Promise<boolean> {
+        const data = await this.db.update(radios)
+            .set({ sim_id })
+            .where(eq(radios.code, radio_code))
+
+        return data[0].affectedRows > 0
+    }
+
     public async swapClient (client_id: number, radio_code_from: string, radio_code_to: string): Promise<boolean> {
         const response = await Promise.all([
             this.db.update(radios)
@@ -122,6 +136,14 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
                     eq(radios.client_id, client_id)
                 )
             )
+
+        return data[0].affectedRows > 0
+    }
+
+    public async removeSim (radio_code: string): Promise<boolean> {
+        const data = await this.db.update(radios)
+            .set({ sim_id: null })
+            .where(eq(radios.code, radio_code))
 
         return data[0].affectedRows > 0
     }

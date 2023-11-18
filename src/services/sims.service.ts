@@ -4,7 +4,7 @@ import { RadiosRepository } from '@repositories/radios.repository'
 import { SimsProviderRepository } from '@repositories/sims_provider.repository'
 import { NotFoundError } from '@/utils/errors'
 import { PaginationSchemaType } from '@/utils/pagination'
-import { SimsSchemaSelectPaginated, SimsSchemaSelectPaginatedType, SimsShemaCreateType, SimsShemaSelect, SimsShemaSelectType, SimsShemaUpdateType } from '@models/sims.model'
+import { SimsRadioSchemaType, SimsSchemaSelectPaginated, SimsSchemaSelectPaginatedType, SimsShemaCreateType, SimsShemaSelect, SimsShemaSelectType, SimsShemaUpdateType } from '@models/sims.model'
 import { SimsRepository } from '@repositories/sims.repository'
 
 export class SimsService {
@@ -71,13 +71,35 @@ export class SimsService {
         return RadiosSchemaSelect.parse(data)
     }
 
-    private async findIdsByCodes ({ provider_code }: { provider_code?: string }): Promise<{ provider_id?: number }> {
+    public async addRadio (sim_code: string, params: SimsRadioSchemaType): Promise<boolean> {
+        const { sim_id = 0 } = await this.findIdsByCodes({ sim_code })
+
+        return await this.radios.addSim(sim_id, params.radio_code)
+    }
+
+    public async removeRadio (sim_code: string): Promise<boolean> {
+        const radio = await this.getRadio(sim_code)
+
+        return await this.radios.removeSim(radio.code)
+    }
+
+    private async findIdsByCodes ({ provider_code, radio_code, sim_code }: { provider_code?: string, radio_code?: string, sim_code?: string }): Promise<{ provider_id?: number, radio_id?: number, sim_id?: number }> {
         const provider_id = provider_code !== undefined
             ? await this.provider.getId(provider_code)
             : undefined
 
+        const radio_id = radio_code !== undefined
+            ? await this.radios.getId(radio_code)
+            : undefined
+
+        const sim_id = sim_code !== undefined
+            ? await this.sims.getId(sim_code)
+            : undefined
+
         return {
-            provider_id
+            provider_id,
+            radio_id,
+            sim_id
         }
     }
 }

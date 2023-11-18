@@ -74,9 +74,15 @@ export const SimsShemaUniqueIdentifier = createSelectSchema(sims, {
 
 export const SimsSchemaSelectPaginated = ResponsePaginationSchema(SimsShemaSelect)
 
+export const SimsRadioSchema = z.object({
+    radio_code: z.string().length(6)
+})
+
 export type SimsShemaCreateType = z.infer<typeof SimsShemaCreate>
 export type SimsSchemaCreateRawType = z.infer<typeof SimsSchemaCreateRaw>
 export type SimsShemaSelectType = z.infer<typeof SimsShemaSelect>
 export type SimsShemaUpdateType = z.infer<typeof SimsShemaUpdate>
 export type SimsSchemaUpdateRawType = z.infer<typeof SimsSchemaUpdateRaw>
 export type SimsSchemaSelectPaginatedType = z.infer<typeof SimsSchemaSelectPaginated>
+export type SimsShemaUniqueIdentifierType = z.infer<typeof SimsShemaUniqueIdentifier>
+export type SimsRadioSchemaType = z.infer<typeof SimsRadioSchema>
