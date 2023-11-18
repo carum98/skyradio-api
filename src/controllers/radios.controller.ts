@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { RadiosService } from '@services/radios.service'
-import { RadiosCompanySchemaType, RadiosSchemaCreateType, RadiosSchemaUpdateType } from '@/models/radios.model'
+import { RadiosCompanySchemaType, RadiosSchemaCreateType, RadiosSchemaUpdateType, RadiosSimsSchemaType } from '@/models/radios.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 
 export class RadiosController {
@@ -77,6 +77,52 @@ export class RadiosController {
         const { code } = req.params
 
         const data = await this.service.removeClient(code)
+
+        if (data) {
+            res.status(204).json()
+        } else {
+            res.status(400).json()
+        }
+    }
+
+    public getSim = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+
+        const data = await this.service.getSim(code)
+
+        res.json(data)
+    }
+
+    public addSim = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+        const params = req.body as RadiosSimsSchemaType
+
+        const data = await this.service.addSim(code, params)
+
+        if (data) {
+            res.status(204).json()
+        } else {
+            res.status(400).json()
+        }
+    }
+
+    public removeSim = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+
+        const data = await this.service.removeSim(code)
+
+        if (data) {
+            res.status(204).json()
+        } else {
+            res.status(400).json()
+        }
+    }
+
+    public swapSim = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+        const params = req.body as RadiosSimsSchemaType
+
+        const data = await this.service.swapSim(code, params)
 
         if (data) {
             res.status(204).json()

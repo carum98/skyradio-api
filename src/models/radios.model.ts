@@ -98,6 +98,10 @@ export const RadiosCompanySchema = z.object({
     client_code: z.string().length(6)
 })
 
+export const RadiosSimsSchema = z.object({
+    sim_code: z.string().length(6)
+})
+
 export const RadiosSchemaSelectPaginated = ResponsePaginationSchema(RadiosSchemaSelect)
 
 export type RadiosSchemaCreateRawType = z.infer<typeof RadiosSchemaCreateRaw>
@@ -107,3 +111,4 @@ export type RadiosSchemaUpdateRawType = z.infer<typeof RadiosSchemaUpdateRaw>
 export type RadiosSchemaUpdateType = z.infer<typeof RadiosSchemaUpdate>
 export type RadiosSchemaSelectPaginatedType = z.infer<typeof RadiosSchemaSelectPaginated>
 export type RadiosCompanySchemaType = z.infer<typeof RadiosCompanySchema>
+export type RadiosSimsSchemaType = z.infer<typeof RadiosSimsSchema>

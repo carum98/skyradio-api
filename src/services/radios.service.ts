@@ -5,8 +5,9 @@ import { RadiosModelRepository } from '@/repositories/radios_model.repository'
 import { SimsRepository } from '@/repositories/sims.repository'
 import { NotFoundError } from '@/utils/errors'
 import { PaginationSchemaType } from '@/utils/pagination'
-import { RadiosCompanySchemaType, RadiosSchemaCreateType, RadiosSchemaSelect, RadiosSchemaSelectPaginated, RadiosSchemaSelectPaginatedType, RadiosSchemaSelectType, RadiosSchemaUpdateType } from '@models/radios.model'
+import { RadiosCompanySchemaType, RadiosSchemaCreateType, RadiosSchemaSelect, RadiosSchemaSelectPaginated, RadiosSchemaSelectPaginatedType, RadiosSchemaSelectType, RadiosSchemaUpdateType, RadiosSimsSchemaType } from '@models/radios.model'
 import { RadiosRepository } from '@repositories/radios.repository'
+import { SimsShemaSelect, SimsShemaSelectType } from '@/models/sims.model'
 
 export class RadiosService {
     private readonly radios: RadiosRepository
@@ -93,6 +94,34 @@ export class RadiosService {
         const { client_id = 0 } = await this.findIdsByCodes({ client_code: client.code })
 
         return await this.radios.removeClient(client_id, [code])
+    }
+
+    public async getSim (code: string): Promise<SimsShemaSelectType> {
+        const radio = await this.radios.get(code)
+
+        if (radio.sim === null) {
+            throw new NotFoundError('Radio without sim')
+        }
+
+        const data = await this.sim.get(radio.sim.code)
+
+        return SimsShemaSelect.parse(data)
+    }
+
+    public async addSim (code: string, params: RadiosSimsSchemaType): Promise<boolean> {
+        const { sim_id = 0 } = await this.findIdsByCodes({ sim_code: params.sim_code })
+
+        return await this.radios.addSim(sim_id, code)
+    }
+
+    public async removeSim (code: string): Promise<boolean> {
+        return await this.radios.removeSim(code)
+    }
+
+    public async swapSim (code: string, params: RadiosSimsSchemaType): Promise<boolean> {
+        const { sim_id = 0 } = await this.findIdsByCodes({ sim_code: params.sim_code })
+
+        return await this.radios.swapSim(code, sim_id)
     }
 
     private async findIdsByCodes ({ model_code, status_code, client_code, sim_code }: { model_code?: string, status_code?: string, client_code?: string, sim_code?: string }): Promise<{ model_id?: number, status_id?: number, client_id?: number, sim_id?: number }> {

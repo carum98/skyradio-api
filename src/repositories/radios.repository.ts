@@ -147,4 +147,12 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
 
         return data[0].affectedRows > 0
     }
+
+    public async swapSim (radio_code: string, sim_id: number): Promise<boolean> {
+        const data = await this.db.update(radios)
+            .set({ sim_id })
+            .where(eq(radios.code, radio_code))
+
+        return data[0].affectedRows > 0
+    }
 }

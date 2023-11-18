@@ -4,7 +4,7 @@ import { authMiddleware } from '@middlewares/auth.middleware'
 import { RadiosService } from '@services/radios.service'
 import { RadiosController } from '@controllers/radios.controller'
 import { requestMiddleware } from '@middlewares/request.middleware'
-import { RadiosCompanySchema, RadiosSchemaCreate, RadiosSchemaUniqueIdentifier, RadiosSchemaUpdate } from '@models/radios.model'
+import { RadiosCompanySchema, RadiosSchemaCreate, RadiosSchemaUniqueIdentifier, RadiosSchemaUpdate, RadiosSimsSchema } from '@models/radios.model'
 import { PaginationSchema } from '@/utils/pagination'
 
 export class RadiosRauter extends RouterCore {
@@ -92,6 +92,48 @@ export class RadiosRauter extends RouterCore {
         this.delete({
             name: '/:code/clients',
             handler: controller.removeClient,
+            middlewares: [
+                requestMiddleware({
+                    params: RadiosSchemaUniqueIdentifier
+                })
+            ]
+        })
+
+        this.get({
+            name: '/:code/sims',
+            handler: controller.getSim,
+            middlewares: [
+                requestMiddleware({
+                    params: RadiosSchemaUniqueIdentifier
+                })
+            ]
+        })
+
+        this.post({
+            name: '/:code/sims',
+            handler: controller.addSim,
+            middlewares: [
+                requestMiddleware({
+                    params: RadiosSchemaUniqueIdentifier,
+                    body: RadiosSimsSchema
+                })
+            ]
+        })
+
+        this.put({
+            name: '/:code/sims',
+            handler: controller.swapSim,
+            middlewares: [
+                requestMiddleware({
+                    params: RadiosSchemaUniqueIdentifier,
+                    body: RadiosSimsSchema
+                })
+            ]
+        })
+
+        this.delete({
+            name: '/:code/sims',
+            handler: controller.removeSim,
             middlewares: [
                 requestMiddleware({
                     params: RadiosSchemaUniqueIdentifier
