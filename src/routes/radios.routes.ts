@@ -6,6 +6,7 @@ import { RadiosController } from '@controllers/radios.controller'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { RadiosCompanySchema, RadiosSchemaCreate, RadiosSchemaUniqueIdentifier, RadiosSchemaUpdate, RadiosSimsSchema } from '@models/radios.model'
 import { PaginationSchema } from '@/utils/pagination'
+import { LogsService } from '@/services/logs.service'
 
 export class RadiosRauter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -15,7 +16,8 @@ export class RadiosRauter extends RouterCore {
         })
 
         const service = new RadiosService(datasource)
-        const controller = new RadiosController(service)
+        const logs = new LogsService(datasource)
+        const controller = new RadiosController(service, logs)
 
         this.get({
             name: '/',

@@ -2,9 +2,14 @@ import { Request, Response } from 'express'
 import { RadiosService } from '@services/radios.service'
 import { RadiosCompanySchemaType, RadiosSchemaCreateType, RadiosSchemaUpdateType, RadiosSimsSchemaType } from '@/models/radios.model'
 import { PaginationSchemaType } from '@/utils/pagination'
+import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
+import { LogsService } from '@/services/logs.service'
 
 export class RadiosController {
-    constructor (private readonly service: RadiosService) {}
+    constructor (
+        private readonly service: RadiosService,
+        private readonly logs: LogsService
+    ) {}
 
     public getAll = async (req: Request, res: Response): Promise<void> => {
         const { group_id } = req.body
@@ -24,9 +29,14 @@ export class RadiosController {
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        const params = req.body as RadiosSchemaCreateType
+        const params = req.body as RadiosSchemaCreateType & SessionUserInfoSchemaType
 
         const data = await this.service.create(params)
+
+        await this.logs.createRadio({
+            radio_code: data.code,
+            session: params
+        })
 
         res.json(data)
     }
@@ -62,12 +72,18 @@ export class RadiosController {
 
     public addClient = async (req: Request, res: Response): Promise<void> => {
         const { code } = req.params
-        const params = req.body as RadiosCompanySchemaType
+        const params = req.body as RadiosCompanySchemaType & SessionUserInfoSchemaType
 
         const data = await this.service.addClient(code, params)
 
         if (data) {
             res.status(204).json()
+
+            await this.logs.addRadioToClient({
+                radio_code: code,
+                client_code: params.client_code,
+                session: params
+            })
         } else {
             res.status(400).json()
         }
@@ -75,11 +91,19 @@ export class RadiosController {
 
     public removeClient = async (req: Request, res: Response): Promise<void> => {
         const { code } = req.params
+        const params = req.body as SessionUserInfoSchemaType
 
-        const data = await this.service.removeClient(code)
+        const client = await this.service.getClients(code)
+        const data = await this.service.removeClient(code, { client_code: client.code })
 
         if (data) {
             res.status(204).json()
+
+            await this.logs.removeRadioFromClient({
+                radio_code: code,
+                client_code: client.code,
+                session: params
+            })
         } else {
             res.status(400).json()
         }

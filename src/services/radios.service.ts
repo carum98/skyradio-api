@@ -89,9 +89,8 @@ export class RadiosService {
         return await this.radios.addClient(client_id, [code])
     }
 
-    public async removeClient (code: string): Promise<boolean> {
-        const client = await this.getClients(code)
-        const { client_id = 0 } = await this.findIdsByCodes({ client_code: client.code })
+    public async removeClient (code: string, params: RadiosCompanySchemaType): Promise<boolean> {
+        const { client_id = 0 } = await this.findIdsByCodes({ client_code: params.client_code })
 
         return await this.radios.removeClient(client_id, [code])
     }
