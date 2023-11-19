@@ -142,5 +142,16 @@ export class RadiosRauter extends RouterCore {
                 })
             ]
         })
+
+        this.get({
+            name: '/:code/logs',
+            handler: controller.getLogs,
+            middlewares: [
+                requestMiddleware({
+                    params: RadiosSchemaUniqueIdentifier,
+                    query: PaginationSchema
+                })
+            ]
+        })
     }
 }

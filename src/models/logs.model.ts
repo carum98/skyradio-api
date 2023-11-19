@@ -1,10 +1,10 @@
 import { sql } from 'drizzle-orm'
 import { datetime, index, int, mysqlEnum, mysqlTable, primaryKey } from 'drizzle-orm/mysql-core'
-import { users } from './users.model'
+import { UserSchemaSelect, users } from './users.model'
 import { groups } from './groups.model'
-import { radios } from './radios.model'
-import { clients } from './clients.model'
-import { sims } from './sims.model'
+import { RadiosSchemaSelect, radios } from './radios.model'
+import { ClientsSchemaSelect, clients } from './clients.model'
+import { SimsShemaSelect, sims } from './sims.model'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 import { ResponsePaginationSchema } from '@/utils/pagination'
@@ -29,7 +29,8 @@ export const logs = mysqlTable('logs', {
     client_id: int('client_id').references(() => clients.id),
     sim_id: int('sim_id').references(() => sims.id),
     action: mysqlEnum('action', Actions).notNull(),
-	created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull()
+	created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+    deleted_at: datetime('deleted_at', { mode: 'string' })
 }, (table) => {
     return {
         logs_id: primaryKey({ columns: [table.id] }),
@@ -43,8 +44,43 @@ export const logs = mysqlTable('logs', {
 
 export const ActionsSchema = z.enum(Actions)
 
+export const actionsMessages = z.function()
+    .args(ActionsSchema)
+    .returns(z.string())
+    .implement((action) => {
+        switch (action) {
+            case 'create-client':
+                return 'Cliente creado {{ name }}'
+            case 'create-radio':
+                return 'Radio creado {{ imei }}'
+            case 'create-sim':
+                return 'Sim creado {{ number }}'
+            case 'add-radio-to-client':
+                return 'Radio {{ imei }} agregado al cliente {{ name }}'
+            case 'add-sim-to-radio':
+                return 'Sim {{ number }} agregado a radio {{ imei }}'
+            case 'remove-radio-from-client':
+                return 'Radio {{ imei }} removido de cliente {{ name }}'
+            case 'remove-sim-from-radio':
+                return 'Sim {{ number }} removido de radio {{ imei }}'
+            case 'swap-radio-from-client':
+                return 'Radio cambiado de cliente'
+            case 'swap-sim-from-radio':
+                return 'Sim cambiado de radio'
+        }
+    })
+
 export const LogsSchemaSelect = createSelectSchema(logs)
-    .omit({ created_at: true, updated_at: true })
+    .pick({ action: true, created_at: true })
+    .extend({
+        message: z.string(),
+        user: UserSchemaSelect.pick({ id: true, name: true }),
+        values: z.object({
+            radio: RadiosSchemaSelect.pick({ code: true, imei: true }).nullable(),
+            client: ClientsSchemaSelect.pick({ code: true, name: true }).nullable(),
+            sim: SimsShemaSelect.pick({ code: true, number: true }).nullable()
+        })
+    })
 
 export const LogsSchemaCreate = createInsertSchema(logs)
 
