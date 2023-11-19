@@ -133,4 +133,13 @@ export class ClientsController {
             res.status(400).json()
         }
     }
+
+    public getLogs = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+        const query = req.query as unknown as PaginationSchemaType
+
+        const data = await this.service.getLogs(code, query)
+
+        res.json(data)
+    }
 }

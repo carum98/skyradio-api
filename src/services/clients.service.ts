@@ -5,19 +5,23 @@ import { PaginationSchemaType } from '@/utils/pagination'
 import { RadiosSchemaSelectPaginated, RadiosSchemaSelectPaginatedType } from '@models/radios.model'
 import { ClientsModalityRepository } from '@/repositories/clients_modality.repository'
 import { DataSource } from '@/core/data-source.core'
-import { SellersRepository } from '@/repositories/sellers.repository'
+import { SellersRepository } from '@repositories/sellers.repository'
+import { LogsRepository } from '@repositories/logs.repository'
+import { LogsSchemaSelectPaginated, LogsSchemaSelectPaginatedType } from '@/models/logs.model'
 
 export class ClientsService {
     private readonly radios: RadiosRepository
     private readonly companies: ClientsRepository
     private readonly modality: ClientsModalityRepository
     private readonly seller: SellersRepository
+    private readonly logs: LogsRepository
 
     constructor (datasource: DataSource) {
         this.radios = datasource.create(RadiosRepository)
         this.companies = datasource.create(ClientsRepository)
         this.modality = datasource.create(ClientsModalityRepository)
         this.seller = datasource.create(SellersRepository)
+        this.logs = datasource.create(LogsRepository)
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<ClientsSchemaSelectPaginatedType> {
@@ -67,24 +71,32 @@ export class ClientsService {
     }
 
     public async addRadios (code: string, params: ClientsRadiosSchemaType): Promise<boolean> {
-        const { company_id = 0 } = await this.findIdsByCodes({ client_code: code })
+        const { client_id = 0 } = await this.findIdsByCodes({ client_code: code })
 
-        return await this.radios.addClient(company_id, params.radios_codes)
+        return await this.radios.addClient(client_id, params.radios_codes)
     }
 
     public async swapRadios (code: string, params: ClientRadiosSwapSchemaType): Promise<boolean> {
-        const { company_id = 0 } = await this.findIdsByCodes({ client_code: code })
+        const { client_id = 0 } = await this.findIdsByCodes({ client_code: code })
 
-        return await this.radios.swapClient(company_id, params.radio_code_from, params.radio_code_to)
+        return await this.radios.swapClient(client_id, params.radio_code_from, params.radio_code_to)
     }
 
     public async removeRadios (code: string, params: ClientsRadiosSchemaType): Promise<boolean> {
-        const { company_id = 0 } = await this.findIdsByCodes({ client_code: code })
+        const { client_id = 0 } = await this.findIdsByCodes({ client_code: code })
 
-        return await this.radios.removeClient(company_id, params.radios_codes)
+        return await this.radios.removeClient(client_id, params.radios_codes)
     }
 
-    private async findIdsByCodes ({ modality_code, seller_code, client_code }: { modality_code?: string, seller_code?: string, client_code?: string }): Promise<{ modality_id?: number, seller_id?: number, company_id?: number }> {
+    public async getLogs (code: string, query: PaginationSchemaType): Promise<LogsSchemaSelectPaginatedType> {
+        const { client_id = 0 } = await this.findIdsByCodes({ client_code: code })
+
+        const data = await this.logs.getAll({ client_id }, query)
+
+        return LogsSchemaSelectPaginated.parse(data)
+    }
+
+    private async findIdsByCodes ({ modality_code, seller_code, client_code }: { modality_code?: string, seller_code?: string, client_code?: string }): Promise<{ modality_id?: number, seller_id?: number, client_id?: number }> {
         const modality_id = modality_code !== undefined
             ? await this.modality.getId(modality_code)
             : undefined
@@ -93,10 +105,10 @@ export class ClientsService {
             ? await this.seller.getId(seller_code)
             : undefined
 
-        const company_id = client_code !== undefined
+        const client_id = client_code !== undefined
             ? await this.companies.getId(client_code)
             : undefined
 
-        return { modality_id, seller_id, company_id }
+        return { modality_id, seller_id, client_id }
     }
 }

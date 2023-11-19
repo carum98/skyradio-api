@@ -113,5 +113,16 @@ export class ClientsRouter extends RouterCore {
                 })
             ]
         })
+
+        this.get({
+            name: '/:code/logs',
+            handler: controller.getLogs,
+            middlewares: [
+                requestMiddleware({
+                    params: ClientsSchemaUniqueIdentifier,
+                    query: PaginationSchema
+                })
+            ]
+        })
     }
 }

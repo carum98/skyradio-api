@@ -40,7 +40,7 @@ export class LogsService {
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<LogsSchemaSelectPaginatedType> {
-        const data = await this.logs.getAll(group_id, query)
+        const data = await this.logs.getAll({ group_id }, query)
 
         return LogsSchemaSelectPaginated.parse(data)
     }
