@@ -6,16 +6,20 @@ import { NotFoundError } from '@/utils/errors'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { SimsRadioSchemaType, SimsSchemaSelectPaginated, SimsSchemaSelectPaginatedType, SimsShemaCreateType, SimsShemaSelect, SimsShemaSelectType, SimsShemaUpdateType } from '@models/sims.model'
 import { SimsRepository } from '@repositories/sims.repository'
+import { LogsRepository } from '@repositories/logs.repository'
+import { LogsSchemaSelectPaginated, LogsSchemaSelectPaginatedType } from '@models/logs.model'
 
 export class SimsService {
     private readonly sims: SimsRepository
     private readonly radios: RadiosRepository
     private readonly provider: SimsProviderRepository
+    private readonly logs: LogsRepository
 
     constructor (datasource: DataSource) {
         this.sims = datasource.create(SimsRepository)
         this.radios = datasource.create(RadiosRepository)
         this.provider = datasource.create(SimsProviderRepository)
+        this.logs = datasource.create(LogsRepository)
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<SimsSchemaSelectPaginatedType> {
@@ -81,6 +85,14 @@ export class SimsService {
         const radio = await this.getRadio(sim_code)
 
         return await this.radios.removeSim(radio.code)
+    }
+
+    public async getLogs (code: string, query: PaginationSchemaType): Promise<LogsSchemaSelectPaginatedType> {
+        const { sim_id } = await this.findIdsByCodes({ sim_code: code })
+
+        const data = await this.logs.getAll({ sim_id }, query)
+
+        return LogsSchemaSelectPaginated.parse(data)
     }
 
     private async findIdsByCodes ({ provider_code, radio_code, sim_code }: { provider_code?: string, radio_code?: string, sim_code?: string }): Promise<{ provider_id?: number, radio_id?: number, sim_id?: number }> {

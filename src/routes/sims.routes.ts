@@ -102,5 +102,16 @@ export class SimsRouter extends RouterCore {
                 })
             ]
         })
+
+        this.get({
+            name: '/:code/logs',
+            handler: controller.getLogs,
+            middlewares: [
+                requestMiddleware({
+                    params: SimsShemaUniqueIdentifier,
+                    query: PaginationSchema
+                })
+            ]
+        })
     }
 }
