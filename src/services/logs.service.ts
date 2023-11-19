@@ -124,6 +124,31 @@ export class LogsService {
         })
     }
 
+    // Multiple methods
+    public async addRadiosToClient (props: LogsProps<'client_code'>, radios_code: string[]): Promise<void> {
+        await Promise.all(radios_code.map(async radio_code => {
+            await this.addRadioToClient({
+                session: props.session,
+                params: {
+                    radio_code,
+                    client_code: props.params.client_code
+                }
+            })
+        }))
+    }
+
+    public async removeRadiosFromClient (props: LogsProps<'client_code'>, radios_code: string[]): Promise<void> {
+        await Promise.all(radios_code.map(async radio_code => {
+            await this.removeRadioFromClient({
+                session: props.session,
+                params: {
+                    radio_code,
+                    client_code: props.params.client_code
+                }
+            })
+        }))
+    }
+
     private async findIdsByCodes (params: Partial<Relations>): Promise<{ client_id?: number, sim_id?: number, radio_id?: number }> {
         const { client_code, sim_code, radio_code } = params
 

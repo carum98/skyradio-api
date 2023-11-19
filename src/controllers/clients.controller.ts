@@ -80,6 +80,13 @@ export class ClientsController {
         const data = await this.service.addRadios(code, params)
 
         if (data) {
+            await this.logs.addRadiosToClient({
+                session: req.body,
+                params: {
+                    client_code: code
+                }
+            }, params.radios_codes)
+
             res.status(204).json()
         } else {
             res.status(400).json()
@@ -93,6 +100,14 @@ export class ClientsController {
         const data = await this.service.swapRadios(code, params)
 
         if (data) {
+            await this.logs.swapRadioFromClient({
+                session: req.body,
+                params: {
+                    client_code: code,
+                    radio_code: params.radio_code_to
+                }
+            })
+
             res.status(204).json()
         } else {
             res.status(400).json()
@@ -106,6 +121,13 @@ export class ClientsController {
         const data = await this.service.removeRadios(code, params)
 
         if (data) {
+            await this.logs.removeRadiosFromClient({
+                session: req.body,
+                params: {
+                    client_code: code
+                }
+            }, params.radios_codes)
+
             res.status(204).json()
         } else {
             res.status(400).json()
