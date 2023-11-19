@@ -1,11 +1,30 @@
 import { DataSource } from '@/core/data-source.core'
-import { LogsSchemaCreateType, LogsSchemaSelectPaginated, LogsSchemaSelectPaginatedType } from '@models/logs.model'
+import { LogsSchemaSelectPaginated, LogsSchemaSelectPaginatedType, ActionsType } from '@models/logs.model'
 import { LogsRepository } from '@/repositories/logs.repository'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { RadiosRepository } from '@repositories/radios.repository'
 import { ClientsRepository } from '@repositories/clients.repository'
 import { SimsRepository } from '@repositories/sims.repository'
 import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
+
+interface Relations {
+    radio_code: string
+    client_code: string
+    sim_code: string
+}
+
+interface LogsPropsBase {
+    session: SessionUserInfoSchemaType
+    action: ActionsType
+}
+
+interface LogsProps<T extends keyof Relations = keyof Relations> extends Omit<LogsPropsBase, 'action'> {
+    params: Pick<Relations, T>
+}
+
+interface LogsPropsCreate extends LogsPropsBase {
+    params: Partial<Relations>
+}
 
 export class LogsService {
     private readonly logs: LogsRepository
@@ -26,55 +45,46 @@ export class LogsService {
         return LogsSchemaSelectPaginated.parse(data)
     }
 
-    public async create (params: Omit<LogsSchemaCreateType, 'user_id' | 'group_id'>, session: SessionUserInfoSchemaType): Promise<void> {
+    private async create (props: LogsPropsCreate): Promise<void> {
+        const { session, action, params } = props
+
         const { user_id, group_id } = session
+        const { radio_id, client_id, sim_id } = await this.findIdsByCodes(params)
 
         await this.logs.create({
-            ...params,
+            action,
+            client_id,
+            radio_id,
+            sim_id,
             user_id,
             group_id
         })
     }
 
-    public async createRadio (params: { radio_code: string, session: SessionUserInfoSchemaType }): Promise<void> {
-        const { radio_code, session } = params
-
-        const { radio_id = 0 } = await this.findIdsByCodes({ radio_code })
-
+    public async createRadio (props: LogsProps<'radio_code'>): Promise<void> {
         await this.create({
             action: 'create-radio',
-            radio_id
-        }, session)
+            ...props
+        })
     }
 
-    public async addRadioToClient (params: { radio_code: string, client_code: string, session: SessionUserInfoSchemaType }): Promise<void> {
-        const { radio_code, client_code, session } = params
-
-        const { radio_id = 0, client_id = 0 } = await this.findIdsByCodes({ radio_code, client_code })
-
+    public async addRadioToClient (props: LogsProps<'radio_code' | 'client_code'>): Promise<void> {
         await this.create({
             action: 'add-radio-to-client',
-            radio_id,
-            client_id
-        }, session)
+            ...props
+        })
     }
 
-    public async removeRadioFromClient (params: { radio_code: string, client_code: string, session: SessionUserInfoSchemaType }): Promise<void> {
-        const { radio_code, client_code, session } = params
-
-        const { radio_id = 0, client_id = 0 } = await this.findIdsByCodes({
-            radio_code,
-            client_code
-        })
-
+    public async removeRadioFromClient (props: LogsProps<'radio_code' | 'client_code'>): Promise<void> {
         await this.create({
             action: 'remove-radio-from-client',
-            radio_id,
-            client_id
-        }, session)
+            ...props
+        })
     }
 
-    private async findIdsByCodes ({ client_code, sim_code, radio_code }: { client_code?: string, sim_code?: string, radio_code?: string }): Promise<{ client_id?: number, sim_id?: number, radio_id?: number }> {
+    private async findIdsByCodes (params: Partial<Relations>): Promise<{ client_id?: number, sim_id?: number, radio_id?: number }> {
+        const { client_code, sim_code, radio_code } = params
+
         const client_id = client_code !== undefined
             ? await this.client.getId(client_code)
             : undefined

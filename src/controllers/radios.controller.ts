@@ -34,8 +34,10 @@ export class RadiosController {
         const data = await this.service.create(params)
 
         await this.logs.createRadio({
-            radio_code: data.code,
-            session: params
+            session: params,
+            params: {
+                radio_code: data.code
+            }
         })
 
         res.json(data)
@@ -77,13 +79,15 @@ export class RadiosController {
         const data = await this.service.addClient(code, params)
 
         if (data) {
-            res.status(204).json()
-
             await this.logs.addRadioToClient({
-                radio_code: code,
-                client_code: params.client_code,
-                session: params
+                session: params,
+                params: {
+                    radio_code: code,
+                    client_code: params.client_code
+                }
             })
+
+            res.status(204).json()
         } else {
             res.status(400).json()
         }
@@ -97,13 +101,15 @@ export class RadiosController {
         const data = await this.service.removeClient(code, { client_code: client.code })
 
         if (data) {
-            res.status(204).json()
-
             await this.logs.removeRadioFromClient({
-                radio_code: code,
-                client_code: client.code,
-                session: params
+                session: params,
+                params: {
+                    radio_code: code,
+                    client_code: client.code
+                }
             })
+
+            res.status(204).json()
         } else {
             res.status(400).json()
         }

@@ -9,7 +9,7 @@ import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 
-export const Actions = [
+const Actions = [
     'create-client',
     'create-radio',
     'create-sim',
@@ -42,6 +42,8 @@ export const logs = mysqlTable('logs', {
     }
 })
 
+export const ActionsSchema = z.enum(Actions)
+
 export const LogsSchemaSelect = createSelectSchema(logs)
     .omit({ created_at: true, updated_at: true })
 
@@ -51,6 +53,7 @@ export const LogsSchemaUpdata = LogsSchemaCreate
 
 export const LogsSchemaSelectPaginated = ResponsePaginationSchema(LogsSchemaSelect)
 
+export type ActionsType = z.infer<typeof ActionsSchema>
 export type LogsSchemaSelectType = z.infer<typeof LogsSchemaSelect>
 export type LogsSchemaCreateType = z.infer<typeof LogsSchemaCreate>
 export type LogsSchemaUpdateType = z.infer<typeof LogsSchemaUpdata>
