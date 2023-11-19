@@ -29,12 +29,12 @@ export class RadiosController {
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        const params = req.body as RadiosSchemaCreateType & SessionUserInfoSchemaType
+        const params = req.body as RadiosSchemaCreateType
 
         const data = await this.service.create(params)
 
         await this.logs.createRadio({
-            session: params,
+            session: req.body,
             params: {
                 radio_code: data.code
             }
@@ -74,13 +74,13 @@ export class RadiosController {
 
     public addClient = async (req: Request, res: Response): Promise<void> => {
         const { code } = req.params
-        const params = req.body as RadiosCompanySchemaType & SessionUserInfoSchemaType
+        const params = req.body as RadiosCompanySchemaType
 
         const data = await this.service.addClient(code, params)
 
         if (data) {
             await this.logs.addRadioToClient({
-                session: params,
+                session: req.body,
                 params: {
                     radio_code: code,
                     client_code: params.client_code
@@ -130,6 +130,14 @@ export class RadiosController {
         const data = await this.service.addSim(code, params)
 
         if (data) {
+            await this.logs.addSimToRadio({
+                session: req.body,
+                params: {
+                    radio_code: code,
+                    sim_code: params.sim_code
+                }
+            })
+
             res.status(204).json()
         } else {
             res.status(400).json()
@@ -139,9 +147,18 @@ export class RadiosController {
     public removeSim = async (req: Request, res: Response): Promise<void> => {
         const { code } = req.params
 
+        const radio = await this.service.get(code)
         const data = await this.service.removeSim(code)
 
         if (data) {
+            await this.logs.removeSimFromRadio({
+                session: req.body,
+                params: {
+                    radio_code: code,
+                    sim_code: radio.sim?.code ?? ''
+                }
+            })
+
             res.status(204).json()
         } else {
             res.status(400).json()
@@ -155,6 +172,14 @@ export class RadiosController {
         const data = await this.service.swapSim(code, params)
 
         if (data) {
+            await this.logs.swapSimFromRadio({
+                session: req.body,
+                params: {
+                    radio_code: code,
+                    sim_code: params.sim_code
+                }
+            })
+
             res.status(204).json()
         } else {
             res.status(400).json()

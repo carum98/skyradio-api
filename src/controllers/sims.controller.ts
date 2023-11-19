@@ -79,6 +79,14 @@ export class SimsController {
         const data = await this.service.addRadio(code, params)
 
         if (data) {
+            await this.logs.addSimToRadio({
+                session: req.body,
+                params: {
+                    radio_code: params.radio_code,
+                    sim_code: code
+                }
+            })
+
             res.status(204).json()
         } else {
             res.status(400).json()
@@ -88,9 +96,18 @@ export class SimsController {
     public removeRadio = async (req: Request, res: Response): Promise<void> => {
         const { code } = req.params
 
+        const radio = await this.service.getRadio(code)
         const data = await this.service.removeRadio(code)
 
         if (data) {
+            await this.logs.removeSimFromRadio({
+                session: req.body,
+                params: {
+                    radio_code: radio.code,
+                    sim_code: code
+                }
+            })
+
             res.status(204).json()
         } else {
             res.status(400).json()

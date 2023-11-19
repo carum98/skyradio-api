@@ -68,9 +68,30 @@ export class LogsService {
         })
     }
 
+    public async createClient (props: LogsProps<'client_code'>): Promise<void> {
+        await this.create({
+            action: 'create-client',
+            ...props
+        })
+    }
+
+    public async createSim (props: LogsProps<'sim_code'>): Promise<void> {
+        await this.create({
+            action: 'create-sim',
+            ...props
+        })
+    }
+
     public async addRadioToClient (props: LogsProps<'radio_code' | 'client_code'>): Promise<void> {
         await this.create({
             action: 'add-radio-to-client',
+            ...props
+        })
+    }
+
+    public async addSimToRadio (props: LogsProps<'radio_code' | 'sim_code'>): Promise<void> {
+        await this.create({
+            action: 'add-sim-to-radio',
             ...props
         })
     }
@@ -82,16 +103,23 @@ export class LogsService {
         })
     }
 
-    public async createClient (props: LogsProps<'client_code'>): Promise<void> {
+    public async removeSimFromRadio (props: LogsProps<'radio_code' | 'sim_code'>): Promise<void> {
         await this.create({
-            action: 'create-client',
+            action: 'remove-sim-from-radio',
             ...props
         })
     }
 
-    public async createSim (props: LogsProps<'sim_code'>): Promise<void> {
+    public async swapRadioFromClient (props: LogsProps<'radio_code' | 'client_code'>): Promise<void> {
         await this.create({
-            action: 'create-sim',
+            action: 'swap-radio-from-client',
+            ...props
+        })
+    }
+
+    public async swapSimFromRadio (props: LogsProps<'radio_code' | 'sim_code'>): Promise<void> {
+        await this.create({
+            action: 'swap-sim-from-radio',
             ...props
         })
     }
