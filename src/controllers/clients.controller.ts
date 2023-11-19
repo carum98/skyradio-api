@@ -2,9 +2,14 @@ import { Request, Response } from 'express'
 import { ClientsService } from '@services/clients.service'
 import { ClientsSchemaCreateType, ClientsSchemaUpdateType, ClientsRadiosSchemaType, ClientRadiosSwapSchemaType } from '@models/clients.model'
 import { PaginationSchemaType } from '@/utils/pagination'
+import { LogsService } from '@/services/logs.service'
+import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
 
 export class ClientsController {
-    constructor (private readonly service: ClientsService) {}
+    constructor (
+        private readonly service: ClientsService,
+        private readonly logs: LogsService
+    ) {}
 
     public getAll = async (req: Request, res: Response): Promise<void> => {
         const { group_id } = req.body
@@ -24,9 +29,16 @@ export class ClientsController {
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        const params = req.body as ClientsSchemaCreateType
+        const params = req.body as ClientsSchemaCreateType & SessionUserInfoSchemaType
 
         const data = await this.service.create(params)
+
+        await this.logs.createClient({
+            session: params,
+            params: {
+                client_code: data.code
+            }
+        })
 
         res.json(data)
     }

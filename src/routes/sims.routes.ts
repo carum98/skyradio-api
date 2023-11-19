@@ -6,6 +6,7 @@ import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { SimsRadioSchema, SimsShemaCreate, SimsShemaUniqueIdentifier, SimsShemaUpdate } from '@models/sims.model'
 import { PaginationSchema } from '@/utils/pagination'
+import { LogsService } from '@/services/logs.service'
 
 export class SimsRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -17,7 +18,8 @@ export class SimsRouter extends RouterCore {
         })
 
         const service = new SimsService(datasource)
-        const controller = new SimsController(service)
+        const logs = new LogsService(datasource)
+        const controller = new SimsController(service, logs)
 
         this.get({
             name: '/',

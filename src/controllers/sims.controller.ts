@@ -2,9 +2,14 @@ import { Request, Response } from 'express'
 import { SimsService } from '@/services/sims.service'
 import { SimsShemaCreateType, SimsShemaUpdateType, SimsRadioSchemaType } from '@/models/sims.model'
 import { PaginationSchemaType } from '@/utils/pagination'
+import { LogsService } from '@/services/logs.service'
+import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
 
 export class SimsController {
-    constructor (private readonly service: SimsService) {}
+    constructor (
+        private readonly service: SimsService,
+        private readonly logs: LogsService
+    ) {}
 
     public getAll = async (req: Request, res: Response): Promise<void> => {
         const { group_id } = req.body
@@ -24,9 +29,16 @@ export class SimsController {
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        const params = req.body as SimsShemaCreateType
+        const params = req.body as SimsShemaCreateType & SessionUserInfoSchemaType
 
         const data = await this.service.create(params)
+
+        await this.logs.createSim({
+            session: params,
+            params: {
+                sim_code: data.code
+            }
+        })
 
         res.json(data)
     }

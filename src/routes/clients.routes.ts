@@ -6,6 +6,7 @@ import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { ClientRadiosSwapSchema, ClientsRadiosSchema, ClientsSchemaCreate, ClientsSchemaUniqueIdentifier, ClientsSchemaUpdate } from '@models/clients.model'
 import { PaginationSchema } from '@/utils/pagination'
+import { LogsService } from '@/services/logs.service'
 
 export class ClientsRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -15,7 +16,8 @@ export class ClientsRouter extends RouterCore {
         })
 
         const service = new ClientsService(datasource)
-        const controller = new ClientsController(service)
+        const logs = new LogsService(datasource)
+        const controller = new ClientsController(service, logs)
 
         this.get({
             name: '/',

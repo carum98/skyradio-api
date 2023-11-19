@@ -82,6 +82,20 @@ export class LogsService {
         })
     }
 
+    public async createClient (props: LogsProps<'client_code'>): Promise<void> {
+        await this.create({
+            action: 'create-client',
+            ...props
+        })
+    }
+
+    public async createSim (props: LogsProps<'sim_code'>): Promise<void> {
+        await this.create({
+            action: 'create-sim',
+            ...props
+        })
+    }
+
     private async findIdsByCodes (params: Partial<Relations>): Promise<{ client_id?: number, sim_id?: number, radio_id?: number }> {
         const { client_code, sim_code, radio_code } = params
 
