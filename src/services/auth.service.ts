@@ -2,7 +2,7 @@ import { NotFoundError, UnauthorizedError } from '@utils/errors'
 import { generate } from '@/utils/jwt'
 import { AuthRepository } from '@repositories/auth.repository'
 import { comparePassword } from '@/utils/hashed-password'
-import { AuthTokenContentSchemaType, AuthTokenResponseSchema, AuthTokenResponseSchemaType } from '@/core/auth.shemas'
+import { SessionUserInfoSchemaType, AuthTokenResponseSchema, AuthTokenResponseSchemaType } from '@/core/auth.shemas'
 
 export class AuthService {
     constructor (private readonly repository: AuthRepository) { }
@@ -23,7 +23,7 @@ export class AuthService {
         return await this.generateToken(user.id)
     }
 
-    public async refreshToken (refresh_token: string, tokenContent: AuthTokenContentSchemaType): Promise<AuthTokenResponseSchemaType> {
+    public async refreshToken (refresh_token: string, tokenContent: SessionUserInfoSchemaType): Promise<AuthTokenResponseSchemaType> {
         const exists = await this.repository.checkRefreshToken(tokenContent.user_id, refresh_token)
 
         if (!exists) {

@@ -1,3 +1,4 @@
+import { SessionUserInfoSchema } from '@/core/auth.shemas'
 import { Request, Response, NextFunction } from 'express'
 import { AnyZodObject, ZodError } from 'zod'
 
@@ -18,7 +19,7 @@ export function requestMiddleware ({ body, query, params }: IRequest) {
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             if (params != null) req.params = params.parse(req.params)
-            if (body != null) req.body = body.parse(req.body)
+            if (body != null) req.body = SessionUserInfoSchema.partial().merge(body).parse(req.body)
             if (query != null) req.query = query.parse(req.query)
 
             next()

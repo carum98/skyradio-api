@@ -22,11 +22,11 @@ export const AuthTokenResponseSchema = z.object({
     user: UserSchemaSelect
 })
 
-export const AuthTokenContentSchema = z.object({
+export const SessionUserInfoSchema = z.object({
     user_id: z.number(),
     group_id: z.number(),
     role: UserSchemaRoles
 })
 
 export type AuthTokenResponseSchemaType = z.infer<typeof AuthTokenResponseSchema>
-export type AuthTokenContentSchemaType = z.infer<typeof AuthTokenContentSchema>
+export type SessionUserInfoSchemaType = z.infer<typeof SessionUserInfoSchema>

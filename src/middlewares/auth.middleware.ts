@@ -3,7 +3,7 @@ import { TokenExpiredError } from 'jsonwebtoken'
 
 import { verify } from '@utils/jwt'
 import { UnauthorizedError } from '@utils/errors'
-import { AuthTokenContentSchema } from '@/core/auth.shemas'
+import { SessionUserInfoSchema } from '@/core/auth.shemas'
 import { ZodError } from 'zod'
 
 export function authMiddleware (req: Request, _res: Response, next: NextFunction): void {
@@ -16,7 +16,7 @@ export function authMiddleware (req: Request, _res: Response, next: NextFunction
     try {
         const payload = verify(token)
 
-        const payloadContent = AuthTokenContentSchema.parse(payload)
+        const payloadContent = SessionUserInfoSchema.parse(payload)
 
         req.body.user_id = payloadContent.user_id
         req.body.group_id = payloadContent.group_id
