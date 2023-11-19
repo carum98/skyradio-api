@@ -29,8 +29,7 @@ export const logs = mysqlTable('logs', {
     client_id: int('client_id').references(() => clients.id),
     sim_id: int('sim_id').references(() => sims.id),
     action: mysqlEnum('action', Actions).notNull(),
-	created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-	updated_at: datetime('updated_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull()
+	created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull()
 }, (table) => {
     return {
         logs_id: primaryKey({ columns: [table.id] }),
