@@ -4,11 +4,13 @@ import { GroupSchemaSelect, groups } from './groups.model'
 
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
+import { ResponsePaginationSchema } from '@/utils/pagination'
 
 export const UserRoles = ['admin', 'user'] as const
 
 export const users = mysqlTable('users', {
 	id: int('id').autoincrement().notNull(),
+	code: varchar('code', { length: 6 }).notNull(),
 	name: varchar('name', { length: 255 }).notNull(),
 	email: varchar('email', { length: 255 }).notNull(),
 	password: varchar('password', { length: 255 }).notNull(),
@@ -35,6 +37,7 @@ export const UserSchema = createSelectSchema(users, {
 })
 
 export const UserSchemaSelect = UserSchema.omit({
+	id: true,
 	group_id: true,
 	password: true,
 	deleted_at: true,
@@ -56,11 +59,14 @@ export const UserSchemaUpdate = UserSchemaCreate
 	.partial()
 
 export const UserSchemaUniqueIdentifier = createSelectSchema(users, {
-	id: (schema) => schema.id.or(z.coerce.number())
-}).pick({ id: true }).required()
+	code: (schema) => schema.code
+}).pick({ code: true }).required()
+
+export const UserSchemaSelectPaginated = ResponsePaginationSchema(UserSchemaSelect)
 
 export type UserSchemaType = z.infer<typeof UserSchema>
 export type UserSchemaCreateType = z.infer<typeof UserSchemaCreate>
 export type UserSchemaSelectType = z.infer<typeof UserSchemaSelect>
 export type UserSchemaUpdateType = z.infer<typeof UserSchemaUpdate>
+export type UserSchemaSelectPaginatedType = z.infer<typeof UserSchemaSelectPaginated>
 export type UserRolesType = z.infer<typeof UserSchemaRoles>

@@ -1,56 +1,59 @@
-import { UserSchemaCreateType, UserSchemaSelect, UserSchemaSelectType, UserSchemaUpdateType, users } from '@models/users.model'
+import { UserSchemaCreateType, UserSchemaSelectPaginatedType, UserSchemaSelectType, UserSchemaUpdateType, users } from '@models/users.model'
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { eq, isNull, sql, and } from 'drizzle-orm'
-import { IRepository } from '@/core/repository.core'
+import { eq } from 'drizzle-orm'
+import { RepositoryCore } from '@/core/repository.core'
+import { PaginationSchemaType } from '@/utils/pagination'
+import { groups } from '@/models/groups.model'
 
-export class UserRepository implements IRepository {
-    constructor (public readonly db: MySql2Database) {}
+export class UserRepository extends RepositoryCore<UserSchemaSelectType, UserSchemaCreateType, UserSchemaUpdateType> {
+    constructor (public readonly db: MySql2Database) {
+        const table = users
 
-    public async getAll (): Promise<UserSchemaSelectType[]> {
-        const data = await this.db.select().from(users)
-            .where(isNull(users.deleted_at))
+        const select = db.select({
+            code: users.code,
+            name: users.name,
+            email: users.email,
+            role: users.role,
+            group: {
+                id: groups.id,
+                name: groups.name
+            }
+        })
+        .from(table)
+        .leftJoin(groups, eq(users.group_id, groups.id))
 
-        return UserSchemaSelect.array().parse(data)
+        super({ db, table, select, search_columns: [users.email] })
     }
 
-    public async get (id: number): Promise<UserSchemaSelectType | null> {
-        const data = await this.db.select().from(users)
-            .where(
-                and(
-                    eq(users.id, id),
-                    isNull(users.deleted_at)
-                )
-            )
-
-        return data.length > 0
-            ? UserSchemaSelect.parse(data[0])
-            : null
+    public async getAll (group_id: number, query: PaginationSchemaType): Promise<UserSchemaSelectPaginatedType> {
+        return await super.getAllCore({
+            query,
+            where: eq(users.group_id, group_id)
+        })
     }
 
-    public async create (params: UserSchemaCreateType): Promise<number> {
-        const data = await this.db.insert(users).values(params)
-
-        return data[0].insertId
+    public async get (code: string): Promise<UserSchemaSelectType | null> {
+        return await super.getOneCore({
+            where: eq(users.code, code)
+        })
     }
 
-    public async update (id: number, params: UserSchemaUpdateType): Promise<number> {
-        const data = await this.db.update(users)
-            .set(params)
-            .where(
-                and(
-                    eq(users.id, id),
-                    isNull(users.deleted_at)
-                )
-            )
-
-        return data[0].affectedRows > 0 ? id : 0
+    public async create (params: UserSchemaCreateType): Promise<string> {
+        return await super.insertCore({
+            params
+        })
     }
 
-    public async delete (id: number): Promise<boolean> {
-        const data = await this.db.update(users)
-            .set({ deleted_at: sql`CURRENT_TIMESTAMP` })
-            .where(eq(users.id, id))
+    public async update (code: string, params: UserSchemaUpdateType): Promise<string> {
+        const data = await super.updateCore({
+            params,
+            where: eq(users.code, code)
+        })
 
-        return data[0].affectedRows > 0
+        return data ? code : ''
+    }
+
+    public async delete (code: string): Promise<boolean> {
+        return await super.deleteCore(eq(users.code, code))
     }
 }

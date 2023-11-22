@@ -4,6 +4,7 @@ import { refresh_tokens } from '@models/refresh-token.model'
 import { UserSchema, UserSchemaType, UserSchemaSelectType, users, UserSchemaSelect } from '@models/users.model'
 import { and, eq } from 'drizzle-orm'
 import { MySql2Database } from 'drizzle-orm/mysql2'
+import { z } from 'zod'
 
 export class AuthRepository implements IRepository {
     constructor (public readonly db: MySql2Database) {}
@@ -38,12 +39,12 @@ export class AuthRepository implements IRepository {
         return data.length > 0
     }
 
-    public async getUserById (id: number): Promise<UserSchemaSelectType> {
+    public async getUserById (id: number): Promise<UserSchemaSelectType & { id: number }> {
         const data = await this.db.select().from(users)
             .leftJoin(groups, eq(groups.id, users.group_id))
             .where(eq(users.id, id))
 
-        return UserSchemaSelect.parse({
+        return UserSchemaSelect.extend({ id: z.number() }).parse({
             ...data[0].users,
             group: data[0].groups
         })

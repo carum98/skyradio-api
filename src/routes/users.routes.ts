@@ -7,6 +7,7 @@ import { DataSource } from '@/core/data-source.core'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { UserSchemaCreate, UserSchemaUniqueIdentifier, UserSchemaUpdate } from '@models/users.model'
 import { rolesMiddleware } from '@middlewares/roles.middleware'
+import { PaginationSchema } from '@/utils/pagination'
 
 export class UserRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -24,7 +25,12 @@ export class UserRouter extends RouterCore {
 
         this.get({
             name: '/',
-            handler: controller.getAll
+            handler: controller.getAll,
+            middlewares: [
+                requestMiddleware({
+                    query: PaginationSchema
+                })
+            ]
         })
 
         this.post({
@@ -38,7 +44,7 @@ export class UserRouter extends RouterCore {
         })
 
         this.get({
-            name: '/:id',
+            name: '/:code',
             handler: controller.get,
             middlewares: [
                 requestMiddleware({
@@ -48,7 +54,7 @@ export class UserRouter extends RouterCore {
         })
 
         this.put({
-            name: '/:id',
+            name: '/:code',
             handler: controller.update,
             middlewares: [
                 requestMiddleware({
@@ -59,7 +65,7 @@ export class UserRouter extends RouterCore {
         })
 
         this.delete({
-            name: '/:id',
+            name: '/:code',
             handler: controller.delete,
             middlewares: [
                 requestMiddleware({
