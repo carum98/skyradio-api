@@ -29,7 +29,7 @@ export const clients = mysqlTable('clients', {
 export const ClientsSchemaSelect = createSelectSchema(clients)
     .pick({ code: true, name: true })
     .extend({
-        modality: ClientsModalitySchemaSelect.pick({ code: true, name: true }),
+        modality: ClientsModalitySchemaSelect.pick({ code: true, name: true, color: true }),
         seller: SellersSchemaSelect.pick({ code: true, name: true }).nullable(),
         radios_count: z.number().int()
     })

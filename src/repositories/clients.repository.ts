@@ -16,7 +16,8 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
             name: clients.name,
             modality: {
                 code: companies_modality.code,
-                name: companies_modality.name
+                name: companies_modality.name,
+                color: companies_modality.color
             },
             seller: {
                 code: sellers.code,

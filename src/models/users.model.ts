@@ -10,7 +10,7 @@ export const UserRoles = ['admin', 'user'] as const
 
 export const users = mysqlTable('users', {
 	id: int('id').autoincrement().notNull(),
-	code: varchar('code', { length: 6 }).notNull(),
+	code: varchar('code', { length: 6 }).notNull().default('123456'),
 	name: varchar('name', { length: 255 }).notNull(),
 	email: varchar('email', { length: 255 }).notNull(),
 	password: varchar('password', { length: 255 }).notNull(),

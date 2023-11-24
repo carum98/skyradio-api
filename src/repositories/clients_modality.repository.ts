@@ -10,7 +10,8 @@ export class ClientsModalityRepository extends RepositoryCore<ClientsModalitySch
 
         const select = db.select({
             code: companies_modality.code,
-            name: companies_modality.name
+            name: companies_modality.name,
+            color: companies_modality.color
         })
         .from(table)
 
