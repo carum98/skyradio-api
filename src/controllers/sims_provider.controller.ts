@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { SimsProviderService } from '@services/sims_provider.service'
 import { PaginationSchemaType } from '@/utils/pagination'
+import { SimsProviderShemaCreateType, SimsProviderShemaUpdateType } from '@models/sims_provider.model'
 
 export class SimsProviderController {
     constructor (private readonly service: SimsProviderService) {}
@@ -23,22 +24,20 @@ export class SimsProviderController {
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        const { name, group_id } = req.body
+        const params = req.body as SimsProviderShemaCreateType
 
-        const data = await this.service.create({
-            name,
-            group_id: parseInt(group_id)
-        })
+        const data = await this.service.create(params)
 
         res.json(data)
     }
 
     public update = async (req: Request, res: Response): Promise<void> => {
         const { code } = req.params
-        const { name } = req.body
+        const { name, color } = req.body as SimsProviderShemaUpdateType
 
         const data = await this.service.update(code, {
-            name
+            name,
+            color
         })
 
         res.json(data)

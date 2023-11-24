@@ -32,7 +32,8 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
             },
             sim__provider: {
                 code: sims_provider.code,
-                name: sims_provider.name
+                name: sims_provider.name,
+                color: sims_provider.color
             },
             client: {
                 code: clients.code,

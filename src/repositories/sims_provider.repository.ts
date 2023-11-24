@@ -10,7 +10,8 @@ export class SimsProviderRepository extends RepositoryCore<SimsProviderShemaSele
 
         const select = db.select({
             code: sims_provider.code,
-            name: sims_provider.name
+            name: sims_provider.name,
+            color: sims_provider.color
         })
         .from(table)
 

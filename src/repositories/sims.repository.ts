@@ -17,7 +17,8 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsSche
             serial: sims.serial,
             provider: {
                 code: sims_provider.code,
-                name: sims_provider.name
+                name: sims_provider.name,
+                color: sims_provider.color
             },
             radio: {
                 code: radios.code,

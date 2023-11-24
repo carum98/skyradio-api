@@ -4,11 +4,13 @@ import { groups } from './groups.model'
 import { createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 import { ResponsePaginationSchema } from '@/utils/pagination'
+import { HexColorSchema } from '@/utils/schemas'
 
 export const sims_provider = mysqlTable('sims_provider', {
     id: int('id').autoincrement().notNull(),
     code: varchar('code', { length: 6 }).notNull(),
     name: varchar('name', { length: 255 }).notNull(),
+    color: varchar('color', { length: 7 }).notNull().default('#000000'),
     group_id: int('group_id').notNull().references(() => groups.id),
     created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
     updated_at: datetime('updated_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
@@ -22,14 +24,15 @@ export const sims_provider = mysqlTable('sims_provider', {
 })
 
 export const SimsProviderShemaSelect = createSelectSchema(sims_provider)
-    .pick({ code: true, name: true })
+    .pick({ code: true, name: true, color: true })
 
 export const SimsProviderShemaCreate = createSelectSchema(sims_provider, {
-    name: (schema) => schema.name.min(3).max(100)
-}).pick({ name: true, group_id: true }).required()
+    name: (schema) => schema.name.min(3).max(100),
+    color: (schema) => HexColorSchema
+}).pick({ name: true, group_id: true, color: true }).required()
 
 export const SimsProviderShemaUpdate = SimsProviderShemaCreate
-    .pick({ name: true })
+    .pick({ name: true, color: true })
     .partial()
 
 export const SimsProviderShemaUniqueIdentifier = createSelectSchema(sims_provider, {
