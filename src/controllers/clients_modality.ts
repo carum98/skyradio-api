@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { ClientsModalityService } from '@/services/clients_modality.service'
 import { PaginationSchemaType } from '@/utils/pagination'
+import { ClientsModalitySchemaCreateType, ClientsModalitySchemaUpdateType } from '@models/clients_modality.model'
 
 export class ClientsModalityController {
     constructor (private readonly service: ClientsModalityService) {}
@@ -23,21 +24,19 @@ export class ClientsModalityController {
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        const { name, group_id } = req.body
+        const params = req.body as ClientsModalitySchemaCreateType
 
-        const data = await this.service.create({
-            name,
-            group_id: parseInt(group_id)
-        })
+        const data = await this.service.create(params)
 
         res.json(data)
     }
 
     public update = async (req: Request, res: Response): Promise<void> => {
         const { code } = req.params
-        const { name } = req.body
+        const { color, name } = req.body as ClientsModalitySchemaUpdateType
 
         const data = await this.service.update(code, {
+            color,
             name
         })
 

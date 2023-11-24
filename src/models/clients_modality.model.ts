@@ -28,10 +28,10 @@ export const ClientsModalitySchemaSelect = createSelectSchema(companies_modality
 export const ClientsModalitySchemaCreate = createInsertSchema(companies_modality, {
     name: (schema) => schema.name.min(3).max(100),
     color: (schema) => HexColorSchema
-}).pick({ name: true, group_id: true }).required()
+}).pick({ name: true, group_id: true, color: true }).required()
 
 export const ClientsModalitySchemaUpdate = ClientsModalitySchemaCreate
-    .pick({ name: true })
+    .pick({ name: true, color: true })
     .partial()
 
 export const ClientsModalitySchemaUniqueIdentifier = createSelectSchema(companies_modality, {
