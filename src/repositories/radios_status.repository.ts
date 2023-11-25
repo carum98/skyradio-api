@@ -10,7 +10,8 @@ export class RadiosStatusRepository extends RepositoryCore<RadiosStatusShemaSele
 
         const select = db.select({
             code: radios_status.code,
-            name: radios_status.name
+            name: radios_status.name,
+            color: radios_status.color
         })
         .from(table)
 

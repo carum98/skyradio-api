@@ -39,7 +39,7 @@ export const RadiosSchemaSelect = createSelectSchema(radios)
     .pick({ code: true, name: true, imei: true, serial: true })
     .extend({
         model: RadiosModelShemaSelect.pick({ code: true, name: true }),
-        status: RadiosStatusShemaSelect.pick({ code: true, name: true }).nullable(),
+        status: RadiosStatusShemaSelect.pick({ code: true, name: true, color: true }).nullable(),
         sim: SimsShemaSelect.pick({ code: true, number: true, provider: true }).nullable(),
         client: ClientsSchemaSelect.pick({ code: true, name: true }).nullable()
     })

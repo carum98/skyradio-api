@@ -24,7 +24,8 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
             },
             status: {
                 code: radios_status.code,
-                name: radios_status.name
+                name: radios_status.name,
+                color: radios_status.color
             },
             sim: {
                 code: sims.code,

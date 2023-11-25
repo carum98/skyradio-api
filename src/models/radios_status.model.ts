@@ -4,11 +4,13 @@ import { groups } from './groups.model'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 import { ResponsePaginationSchema } from '@/utils/pagination'
+import { HexColorSchema } from '@/utils/schemas'
 
 export const radios_status = mysqlTable('radios_status', {
     id: int('id').autoincrement().notNull(),
     code: varchar('code', { length: 6 }).notNull(),
     name: varchar('name', { length: 12 }).notNull(),
+    color: varchar('color', { length: 7 }).notNull().default('#000000'),
     group_id: int('group_id').notNull().references(() => groups.id),
     created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
     updated_at: datetime('updated_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
@@ -22,17 +24,19 @@ export const radios_status = mysqlTable('radios_status', {
 })
 
 export const RadiosStatusShemaSelect = createSelectSchema(radios_status)
-    .pick({ code: true, name: true })
+    .pick({ code: true, name: true, color: true })
 
 export const RadiosStatusShemaCreate = createInsertSchema(radios_status, {
-    name: (schema) => schema.name.min(3).max(12)
+    name: (schema) => schema.name.min(3).max(12),
+    color: HexColorSchema
 }).pick({
     name: true,
-    group_id: true
-})
+    group_id: true,
+    color: true
+}).required()
 
 export const RadiosStatusShemaUpdate = RadiosStatusShemaCreate
-    .pick({ name: true })
+    .pick({ name: true, color: true })
     .partial()
 
 export const RadiosStatusShemaUniqueIdentifier = createSelectSchema(radios_status, {

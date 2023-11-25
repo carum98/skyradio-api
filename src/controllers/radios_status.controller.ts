@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { RadiosStatusService } from '@services/radios_status.service'
 import { PaginationSchemaType } from '@/utils/pagination'
+import { RadiosStatusShemaCreateType, RadiosStatusShemaUpdateType } from '@models/radios_status.model'
 
 export class RadiosStatusController {
     constructor (public readonly service: RadiosStatusService) {}
@@ -23,22 +24,20 @@ export class RadiosStatusController {
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        const { name, group_id } = req.body
+        const params = req.body as RadiosStatusShemaCreateType
 
-        const data = await this.service.create({
-            name,
-            group_id: parseInt(group_id)
-        })
+        const data = await this.service.create(params)
 
         res.json(data)
     }
 
     public update = async (req: Request, res: Response): Promise<void> => {
         const { code } = req.params
-        const { name } = req.body
+        const { name, color } = req.body as RadiosStatusShemaUpdateType
 
         const data = await this.service.update(code, {
-            name
+            name,
+            color
         })
 
         res.json(data)
