@@ -39,7 +39,8 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
             },
             client: {
                 code: clients.code,
-                name: clients.name
+                name: clients.name,
+                color: clients.color
             }
         })
         .from(table)

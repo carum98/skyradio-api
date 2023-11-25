@@ -41,7 +41,7 @@ export const RadiosSchemaSelect = createSelectSchema(radios)
         model: RadiosModelShemaSelect.pick({ code: true, name: true, color: true }),
         status: RadiosStatusShemaSelect.pick({ code: true, name: true, color: true }).nullable(),
         sim: SimsShemaSelect.pick({ code: true, number: true, provider: true }).nullable(),
-        client: ClientsSchemaSelect.pick({ code: true, name: true }).nullable()
+        client: ClientsSchemaSelect.pick({ code: true, name: true, color: true }).nullable()
     })
 
 export const RadiosSchemaCreateRaw = createInsertSchema(radios, {

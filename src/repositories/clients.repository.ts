@@ -14,6 +14,7 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
     const select = db.select({
             code: clients.code,
             name: clients.name,
+            color: clients.color,
             modality: {
                 code: companies_modality.code,
                 name: companies_modality.name,

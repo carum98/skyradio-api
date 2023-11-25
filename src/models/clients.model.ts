@@ -6,11 +6,13 @@ import { z } from 'zod'
 import { ClientsModalitySchemaSelect, companies_modality } from './clients_modality.model'
 import { SellersSchemaSelect, sellers } from './sellers.model'
 import { ResponsePaginationSchema } from '@/utils/pagination'
+import { HexColorSchema } from '@/utils/schemas'
 
 export const clients = mysqlTable('clients', {
     id: int('id').autoincrement().notNull(),
     code: varchar('code', { length: 6 }).notNull(),
     name: varchar('name', { length: 255 }).notNull(),
+    color: varchar('color', { length: 7 }).notNull().default('#000000'),
 	group_id: int('group_id').notNull().references(() => groups.id),
     modality_id: int('modality_id').notNull().references(() => companies_modality.id),
     seller_id: int('seller_id').references(() => sellers.id),
@@ -27,7 +29,7 @@ export const clients = mysqlTable('clients', {
 })
 
 export const ClientsSchemaSelect = createSelectSchema(clients)
-    .pick({ code: true, name: true })
+    .pick({ code: true, name: true, color: true })
     .extend({
         modality: ClientsModalitySchemaSelect.pick({ code: true, name: true, color: true }),
         seller: SellersSchemaSelect.pick({ code: true, name: true }).nullable(),
@@ -35,17 +37,20 @@ export const ClientsSchemaSelect = createSelectSchema(clients)
     })
 
 export const ClientsSchemaCreateRaw = createInsertSchema(clients, {
-    name: (schema) => schema.name.min(3).max(100)
+    name: (schema) => schema.name.min(3).max(100),
+    color: HexColorSchema
 }).pick({
     name: true,
     group_id: true,
     modality_id: true,
-    seller_id: true
+    seller_id: true,
+    color: true
 })
 
 export const ClientsSchemaCreate = ClientsSchemaCreateRaw.pick({
     name: true,
-    group_id: true
+    group_id: true,
+    color: true
 })
 .extend({
     modality_code: z.string().length(6),
