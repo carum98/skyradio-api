@@ -10,7 +10,8 @@ export class RadiosModelRepository extends RepositoryCore<RadiosModelShemaSelect
 
         const select = db.select({
             code: radios_model.code,
-            name: radios_model.name
+            name: radios_model.name,
+            color: radios_model.color
         })
         .from(table)
 

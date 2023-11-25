@@ -20,7 +20,8 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
             serial: radios.serial,
             model: {
                 code: radios_model.code,
-                name: radios_model.name
+                name: radios_model.name,
+                color: radios_model.color
             },
             status: {
                 code: radios_status.code,
