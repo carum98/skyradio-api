@@ -68,7 +68,8 @@ export const ClientsSchemaUpdate = ClientsSchemaCreate.pick({
     id: true,
     name: true,
     modality_code: true,
-    seller_code: true
+    seller_code: true,
+    color: true
 })
 .partial()
 

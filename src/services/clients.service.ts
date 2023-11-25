@@ -53,6 +53,7 @@ export class ClientsService {
 
         const updateId = await this.companies.update(code, {
             name: params.name,
+            color: params.color,
             modality_id,
             seller_id
         })
