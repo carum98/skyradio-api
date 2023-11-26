@@ -109,21 +109,31 @@ export class ClientsService {
             sim: radio.sim?.number ?? '-'
         }))
 
-        const ws = XLSX.utils.json_to_sheet(data, {
-            origin: 'A2'
-        })
+        if (params.format === 'xlsx') {
+            const ws = XLSX.utils.json_to_sheet(data, {
+                origin: 'A2'
+            })
 
-        XLSX.utils.sheet_add_aoa(ws, [
-            ['Cliente', client.name]
-        ], { origin: 'A1' })
+            XLSX.utils.sheet_add_aoa(ws, [
+                ['Cliente', client.name]
+            ], { origin: 'A1' })
 
-        const wb = XLSX.utils.book_new()
+            const wb = XLSX.utils.book_new()
 
-        XLSX.utils.book_append_sheet(wb, ws, 'Data')
+            XLSX.utils.book_append_sheet(wb, ws, 'Data')
 
-        const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
+            const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
 
-        return buf
+            return buf
+        } else if (params.format === 'csv') {
+            const ws = XLSX.utils.json_to_sheet(data)
+
+            const csv = XLSX.utils.sheet_to_csv(ws)
+
+            return Buffer.from(csv)
+        } else {
+            throw new Error('Formato inválido')
+        }
     }
 
     private async findIdsByCodes ({ modality_code, seller_code, client_code }: { modality_code?: string, seller_code?: string, client_code?: string }): Promise<{ modality_id?: number, seller_id?: number, client_id?: number }> {
