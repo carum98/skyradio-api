@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { ClientsService } from '@services/clients.service'
-import { ClientsSchemaCreateType, ClientsSchemaUpdateType, ClientsRadiosSchemaType, ClientRadiosSwapSchemaType } from '@models/clients.model'
+import { ClientsSchemaCreateType, ClientsSchemaUpdateType, ClientsRadiosSchemaType, ClientRadiosSwapSchemaType, ClientsExportType } from '@models/clients.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { LogsService } from '@/services/logs.service'
 import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
@@ -62,6 +62,19 @@ export class ClientsController {
         } else {
             res.status(400).json()
         }
+    }
+
+    public export = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+        const params = req.body as ClientsExportType
+
+        const data = await this.service.export(code, params)
+
+        res.attachment('SheetJSExpress.xlsx')
+
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+        res.status(200).end(data)
     }
 
     public getRadios = async (req: Request, res: Response): Promise<void> => {

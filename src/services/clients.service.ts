@@ -1,4 +1,4 @@
-import { ClientsSchemaCreateType, ClientsSchemaSelect, ClientsSchemaSelectPaginated, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateType, ClientsRadiosSchemaType, ClientRadiosSwapSchemaType } from '@models/clients.model'
+import { ClientsSchemaCreateType, ClientsSchemaSelect, ClientsSchemaSelectPaginated, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateType, ClientsRadiosSchemaType, ClientRadiosSwapSchemaType, ClientsExportType } from '@models/clients.model'
 import { ClientsRepository } from '@/repositories/clients.repository'
 import { RadiosRepository } from '@repositories/radios.repository'
 import { PaginationSchemaType } from '@/utils/pagination'
@@ -8,6 +8,7 @@ import { DataSource } from '@/core/data-source.core'
 import { SellersRepository } from '@repositories/sellers.repository'
 import { LogsRepository } from '@repositories/logs.repository'
 import { LogsSchemaSelectPaginated, LogsSchemaSelectPaginatedType } from '@/models/logs.model'
+import XLSX from 'xlsx'
 
 export class ClientsService {
     private readonly radios: RadiosRepository
@@ -95,6 +96,34 @@ export class ClientsService {
         const data = await this.logs.getAll({ client_id }, query)
 
         return LogsSchemaSelectPaginated.parse(data)
+    }
+
+    public async export (code: string, params: ClientsExportType): Promise<Buffer> {
+        const client = await this.get(code)
+        const radios = await this.getRadios(code, { page: 1, per_page: 1000 })
+
+        const data = radios.data.map(radio => ({
+            ...radio,
+            model: radio.model.name,
+            status: radio.status?.name ?? '-',
+            sim: radio.sim?.number ?? '-'
+        }))
+
+        const ws = XLSX.utils.json_to_sheet(data, {
+            origin: 'A2'
+        })
+
+        XLSX.utils.sheet_add_aoa(ws, [
+            ['Cliente', client.name]
+        ], { origin: 'A1' })
+
+        const wb = XLSX.utils.book_new()
+
+        XLSX.utils.book_append_sheet(wb, ws, 'Data')
+
+        const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
+
+        return buf
     }
 
     private async findIdsByCodes ({ modality_code, seller_code, client_code }: { modality_code?: string, seller_code?: string, client_code?: string }): Promise<{ modality_id?: number, seller_id?: number, client_id?: number }> {
