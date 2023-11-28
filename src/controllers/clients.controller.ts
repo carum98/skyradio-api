@@ -68,11 +68,31 @@ export class ClientsController {
         const { code } = req.params
         const params = req.body as ClientsExportType
 
+        const fileName = `export-${code}-${Date.now()}`
+
+        let fileExtension = ''
+        let contentType = ''
+
+        switch (params.format) {
+            case 'pdf':
+                fileExtension = 'pdf'
+                contentType = 'application/pdf'
+                break
+            case 'csv':
+                fileExtension = 'csv'
+                contentType = 'text/csv'
+                break
+            default:
+                fileExtension = 'xlsx'
+                contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                break
+        }
+
         const data = await this.service.export(code, params)
 
-        res.attachment('SheetJSExpress.xlsx')
+        res.attachment(`${fileName}.${fileExtension}`)
 
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        res.setHeader('Content-Type', contentType)
 
         res.status(200).end(data)
     }
