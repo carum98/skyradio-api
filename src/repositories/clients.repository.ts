@@ -1,7 +1,7 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { eq, sql } from 'drizzle-orm'
 import { ClientsSchemaCreateRawType, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateRawType, clients } from '@models/clients.model'
-import { companies_modality } from '@/models/clients_modality.model'
+import { clients_modality } from '@/models/clients_modality.model'
 import { sellers } from '@models/sellers.model'
 import { radios } from '@models/radios.model'
 import { PaginationSchemaType } from '@/utils/pagination'
@@ -16,9 +16,9 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
             name: clients.name,
             color: clients.color,
             modality: {
-                code: companies_modality.code,
-                name: companies_modality.name,
-                color: companies_modality.color
+                code: clients_modality.code,
+                name: clients_modality.name,
+                color: clients_modality.color
             },
             seller: {
                 code: sellers.code,
@@ -27,7 +27,7 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
             radios_count: sql<number>`(select count(${radios.id}) from ${radios} where ${radios.client_id} = ${clients.id})`
         })
         .from(table)
-        .leftJoin(companies_modality, eq(companies_modality.id, clients.modality_id))
+        .leftJoin(clients_modality, eq(clients_modality.id, clients.modality_id))
         .leftJoin(sellers, eq(sellers.id, clients.seller_id))
 
         super({ db, table, select, search_columns: [clients.name] })

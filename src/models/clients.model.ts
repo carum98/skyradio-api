@@ -3,7 +3,7 @@ import { groups } from './groups.model'
 import { sql } from 'drizzle-orm'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
-import { ClientsModalitySchemaSelect, companies_modality } from './clients_modality.model'
+import { ClientsModalitySchemaSelect, clients_modality } from './clients_modality.model'
 import { SellersSchemaSelect, sellers } from './sellers.model'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 import { HexColorSchema } from '@/utils/schemas'
@@ -14,9 +14,9 @@ export const clients = mysqlTable('clients', {
     id: int('id').autoincrement().notNull(),
     code: varchar('code', { length: 6 }).notNull(),
     name: varchar('name', { length: 255 }).notNull(),
-    color: varchar('color', { length: 7 }).notNull().default('#000000'),
+    color: varchar('color', { length: 7 }).notNull(),
 	group_id: int('group_id').notNull().references(() => groups.id),
-    modality_id: int('modality_id').notNull().references(() => companies_modality.id),
+    modality_id: int('modality_id').notNull().references(() => clients_modality.id),
     seller_id: int('seller_id').references(() => sellers.id),
 	created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updated_at: datetime('updated_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),

@@ -6,11 +6,11 @@ import { groups } from './groups.model'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 import { HexColorSchema } from '@/utils/schemas'
 
-export const companies_modality = mysqlTable('companies_modality', {
+export const clients_modality = mysqlTable('clients_modality', {
     id: int('id').autoincrement().notNull(),
     code: varchar('code', { length: 6 }).notNull(),
     name: varchar('name', { length: 255 }).notNull(),
-    color: varchar('color', { length: 7 }).notNull().default('#000000'),
+    color: varchar('color', { length: 7 }).notNull(),
     group_id: int('group_id').notNull().references(() => groups.id),
 	created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updated_at: datetime('updated_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
@@ -22,10 +22,10 @@ export const companies_modality = mysqlTable('companies_modality', {
     }
 })
 
-export const ClientsModalitySchemaSelect = createSelectSchema(companies_modality)
+export const ClientsModalitySchemaSelect = createSelectSchema(clients_modality)
     .pick({ code: true, name: true, color: true })
 
-export const ClientsModalitySchemaCreate = createInsertSchema(companies_modality, {
+export const ClientsModalitySchemaCreate = createInsertSchema(clients_modality, {
     name: (schema) => schema.name.min(3).max(100),
     color: (schema) => HexColorSchema
 }).pick({ name: true, group_id: true, color: true }).required()
@@ -34,7 +34,7 @@ export const ClientsModalitySchemaUpdate = ClientsModalitySchemaCreate
     .pick({ name: true, color: true })
     .partial()
 
-export const ClientsModalitySchemaUniqueIdentifier = createSelectSchema(companies_modality, {
+export const ClientsModalitySchemaUniqueIdentifier = createSelectSchema(clients_modality, {
     code: (schema) => schema.code.length(6)
 }).pick({ code: true }).required()
 
