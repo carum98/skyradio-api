@@ -3,7 +3,9 @@ import { z } from 'zod'
 export const PaginationSchema = z.object({
     page: z.coerce.number().int().positive().default(1),
     per_page: z.coerce.number().int().positive().default(10),
-    search: z.string().optional()
+    search: z.string().optional(),
+    sort_by: z.string().default('created_at'),
+    sort_order: z.enum(['asc', 'desc']).default('desc')
 })
 
 export interface ResponsePaginationSchemaType<T> {

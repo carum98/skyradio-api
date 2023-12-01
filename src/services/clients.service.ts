@@ -103,7 +103,7 @@ export class ClientsService {
 
     public async export (code: string, params: ClientsExportType): Promise<Buffer> {
         const client = await this.get(code)
-        const radios = await this.getRadios(code, { page: 1, per_page: 1000 })
+        const radios = await this.getRadios(code, { page: 1, per_page: 1000, sort_by: 'create_at', sort_order: 'desc' })
 
         const data = radios.data.map(radio => ({
             ...radio,

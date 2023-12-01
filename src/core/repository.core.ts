@@ -1,7 +1,7 @@
 import { generateCode } from '@/utils/code'
 import { NotFoundError } from '@/utils/errors'
 import { PaginationSchemaType, ResponsePaginationSchemaType } from '@/utils/pagination'
-import { SQL, and, isNull, like, or, sql } from 'drizzle-orm'
+import { SQL, and, isNull, like, or, sql, desc, asc } from 'drizzle-orm'
 import { MySqlColumn, MySqlSelect, MySqlTable, getTableConfig } from 'drizzle-orm/mysql-core'
 import { MySql2Database } from 'drizzle-orm/mysql2'
 
@@ -23,9 +23,8 @@ interface PaginateParams {
     where: Where
 }
 
-interface SelectorParams {
+interface SelectorParams extends Partial<Omit<PaginationSchemaType, 'search'>> {
     where: Where
-    per_page?: number
     offset?: number
 }
 
@@ -41,6 +40,7 @@ interface UpdateParams<TUpdate> {
 export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
     protected readonly db: MySql2Database
     protected readonly table: MySqlTable
+    private readonly columns: MySqlColumn[]
     protected readonly select: MySqlSelect
     protected readonly table_name: string
     protected readonly search_columns?: MySqlColumn[]
@@ -54,14 +54,16 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
 
         const { columns, name } = getTableConfig(this.table)
 
-        const deleted_column = columns.find((column) => column.name === 'deleted_at')
+        this.columns = columns
+
+        const deleted_column = this.columns.find((column) => column.name === 'deleted_at')
 
         this.deleted_column = deleted_column as MySqlColumn
         this.table_name = name
     }
 
     protected async getAllCore ({ query, where }: PaginateParams): Promise<ResponsePaginationSchemaType<TSelect>> {
-        const { page, per_page, search } = query
+        const { page, per_page, search, sort_by, sort_order } = query
 
         const offset = (page - 1) * per_page
 
@@ -72,7 +74,7 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
             )
         }
 
-        const data = await this.query({ where, per_page, offset })
+        const data = await this.query({ where, per_page, offset, sort_by, sort_order })
         const total = await this.count(where)
 
         return {
@@ -143,7 +145,7 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
         return data[0].id
     }
 
-    private async query ({ where, offset, per_page }: SelectorParams): Promise<TSelect[]> {
+    private async query ({ where, offset, per_page, sort_by, sort_order }: SelectorParams): Promise<TSelect[]> {
         let query = this.select.where(and(where, isNull(this.deleted_column)))
 
         if (per_page !== undefined) {
@@ -152,6 +154,18 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
 
         if (offset !== undefined) {
             query = query.offset(offset)
+        }
+
+        if (sort_by !== undefined && sort_order !== undefined) {
+            const column = this.columns.find((column) => column.name === sort_by) as MySqlColumn
+
+            if (sort_order === 'desc') {
+                query = query.orderBy(desc(column))
+            }
+
+            if (sort_order === 'asc') {
+                query = query.orderBy(asc(column))
+            }
         }
 
         const data = await query
