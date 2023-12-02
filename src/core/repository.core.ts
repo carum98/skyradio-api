@@ -76,7 +76,7 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
         }
 
         const data = await this.query({ where, per_page, offset, sort_by, sort_order, filters })
-        const total = await this.count(where)
+        const total = await this.count({ where, filters })
 
         return {
             data,
@@ -126,12 +126,30 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
         return data[0].affectedRows > 0
     }
 
-    protected async count (where: Where): Promise<number> {
-        const total = await this.db.select({ count: sql<number>`count(id)` })
-            .from(this.table)
-            .where(and(where, isNull(this.deleted_column)))
+    protected async count (params: Pick<SelectorParams, 'where' | 'filters'>): Promise<number> {
+        const { where, filters } = params
 
-        return total[0].count
+        const toSQL = this.select.where(this.buildWhere(
+            [where as SQL, isNull(this.deleted_column)],
+            filters
+        )).toSQL()
+
+        const countQuery = toSQL.sql.replace(/select[\s\S]*?from[^]*from/i, 'select count(*) as count from')
+
+        let counter = 0
+
+        const replacedQuery = countQuery.replace(/\?/g, () => {
+            const value = toSQL.params[counter]
+            counter++
+
+            return typeof value === 'string' ? `'${value}'` : value as string
+        })
+
+        const result = await this.db.execute(sql`${sql.raw(replacedQuery)}`)
+
+        const data = result[0] as any as Array<{ count: number }>
+
+        return data[0].count
     }
 
     protected async getIdCore ({ where }: { where: Where }): Promise<number> {
