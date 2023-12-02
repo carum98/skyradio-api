@@ -20,7 +20,7 @@ export function requestMiddleware ({ body, query, params }: IRequest) {
         try {
             if (params != null) req.params = params.parse(req.params)
             if (body != null) req.body = SessionUserInfoSchema.partial().merge(body).parse(req.body)
-            if (query != null) req.query = query.parse(req.query)
+            if (query != null) req.query = query.passthrough().parse(req.query)
 
             next()
         } catch (error) {

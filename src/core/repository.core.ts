@@ -26,6 +26,7 @@ interface PaginateParams {
 interface SelectorParams extends Partial<Omit<PaginationSchemaType, 'search'>> {
     where: Where
     offset?: number
+    filters?: Record<string, unknown>
 }
 
 interface InsertParams<TInsert> {
@@ -63,7 +64,7 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
     }
 
     protected async getAllCore ({ query, where }: PaginateParams): Promise<ResponsePaginationSchemaType<TSelect>> {
-        const { page, per_page, search, sort_by, sort_order } = query
+        const { page, per_page, search, sort_by, sort_order, ...filters } = query
 
         const offset = (page - 1) * per_page
 
@@ -74,7 +75,7 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
             )
         }
 
-        const data = await this.query({ where, per_page, offset, sort_by, sort_order })
+        const data = await this.query({ where, per_page, offset, sort_by, sort_order, filters })
         const total = await this.count(where)
 
         return {
@@ -145,8 +146,13 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
         return data[0].id
     }
 
-    private async query ({ where, offset, per_page, sort_by, sort_order }: SelectorParams): Promise<TSelect[]> {
-        let query = this.select.where(and(where, isNull(this.deleted_column)))
+    private async query (params: SelectorParams): Promise<TSelect[]> {
+        const { where, offset, per_page, sort_by, sort_order, filters } = params
+
+        let query = this.select.where(this.buildWhere(
+            [where as SQL, isNull(this.deleted_column)],
+            filters
+        ))
 
         if (per_page !== undefined) {
             query = query.limit(per_page)
@@ -183,6 +189,7 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
 
         delete config.limit
         delete config.offset
+        delete config.where
 
         return data as unknown as TSelect[]
     }
@@ -199,5 +206,31 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
             // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
             delete item[key]
         }
+    }
+
+    private buildWhere (initial: SQL[], filters?: Record<string, unknown>): SQL {
+        const conditions = {
+            equal: '=',
+            like: 'LIKE',
+            not_equal: '!='
+        } as const as Record<string, string>
+
+        const sqlChunks: SQL[] = [
+            ...initial
+        ]
+
+        if (filters !== undefined) {
+            Object.entries(filters).forEach(([key, value]) => {
+                const [column, data] = Object.entries(value as any)[0]
+                const [condition, item] = Object.entries(data as any)[0]
+
+                const table_column = `${key}.${column}`
+                const condition_symbol = conditions[condition]
+
+                sqlChunks.push(sql`${sql.raw(table_column)} ${sql.raw(condition_symbol)} ${item}`)
+            })
+        }
+
+        return sql`${sql.join(sqlChunks, sql.raw(' AND '))}`
     }
 }
