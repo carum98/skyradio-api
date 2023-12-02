@@ -134,7 +134,8 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
             filters
         )).toSQL()
 
-        const countQuery = toSQL.sql.replace(/select[\s\S]*?from[^]*from/i, 'select count(*) as count from')
+        const fromIndex = toSQL.sql.lastIndexOf('from')
+        const countQuery = 'select count(*) as count ' + toSQL.sql.substring(fromIndex)
 
         let counter = 0
 
