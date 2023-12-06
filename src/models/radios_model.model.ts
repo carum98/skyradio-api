@@ -46,7 +46,12 @@ export const RadiosModelShemaUniqueIdentifier = createSelectSchema(radios_model,
 
 export const RadiosModelShemaSelectPaginated = ResponsePaginationSchema(RadiosModelShemaSelect)
 
+export const RadioModelSchemaCounter = RadiosModelShemaSelect.extend({
+    count: z.number()
+})
+
 export type RadiosModelShemaCreateType = z.infer<typeof RadiosModelShemaCreate>
 export type RadiosModelShemaSelectType = z.infer<typeof RadiosModelShemaSelect>
 export type RadiosModelShemaUpdateType = z.infer<typeof RadiosModelShemaUpdate>
 export type RadiosModelShemaSelectPaginatedType = z.infer<typeof RadiosModelShemaSelectPaginated>
+export type RadioModelSchemaCounterType = z.infer<typeof RadioModelSchemaCounter>

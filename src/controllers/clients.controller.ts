@@ -175,4 +175,12 @@ export class ClientsController {
 
         res.json(data)
     }
+
+    public getStats = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+
+        const data = await this.service.getStats(code)
+
+        res.json(data)
+    }
 }

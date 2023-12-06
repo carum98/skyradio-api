@@ -135,5 +135,15 @@ export class ClientsRouter extends RouterCore {
                 })
             ]
         })
+
+        this.get({
+            name: '/:code/stats',
+            handler: controller.getStats,
+            middlewares: [
+                requestMiddleware({
+                    params: ClientsSchemaUniqueIdentifier
+                })
+            ]
+        })
     }
 }

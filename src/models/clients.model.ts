@@ -7,6 +7,7 @@ import { ClientsModalitySchemaSelect, clients_modality } from './clients_modalit
 import { SellersSchemaSelect, sellers } from './sellers.model'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 import { HexColorSchema } from '@/utils/schemas'
+import { RadioModelSchemaCounter } from './radios_model.model'
 
 export const ClientsExportFormats = ['xlsx', 'csv', 'pdf'] as const
 
@@ -94,6 +95,10 @@ export const ClientsSchemaUniqueIdentifier = createSelectSchema(clients, {
 
 export const ClientsSchemaSelectPaginated = ResponsePaginationSchema(ClientsSchemaSelect)
 
+export const ClientsSchemaStats = z.object({
+    models: RadioModelSchemaCounter.array()
+})
+
 export type ClientsSchemaCreateRawType = z.infer<typeof ClientsSchemaCreateRaw>
 export type ClientsSchemaCreateType = z.infer<typeof ClientsSchemaCreate>
 export type ClientsSchemaSelectType = z.infer<typeof ClientsSchemaSelect>
@@ -103,3 +108,4 @@ export type ClientsExportType = z.infer<typeof ClientsExport>
 export type ClientsSchemaSelectPaginatedType = z.infer<typeof ClientsSchemaSelectPaginated>
 export type ClientsRadiosSchemaType = z.infer<typeof ClientsRadiosSchema>
 export type ClientRadiosSwapSchemaType = z.infer<typeof ClientRadiosSwapSchema>
+export type ClientsSchemaStatsType = z.infer<typeof ClientsSchemaStats>

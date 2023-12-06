@@ -1,4 +1,4 @@
-import { ClientsSchemaCreateType, ClientsSchemaSelect, ClientsSchemaSelectPaginated, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateType, ClientsRadiosSchemaType, ClientRadiosSwapSchemaType, ClientsExportType } from '@models/clients.model'
+import { ClientsSchemaCreateType, ClientsSchemaSelect, ClientsSchemaSelectPaginated, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateType, ClientsRadiosSchemaType, ClientRadiosSwapSchemaType, ClientsExportType, ClientsSchemaStatsType, ClientsSchemaStats } from '@models/clients.model'
 import { ClientsRepository } from '@/repositories/clients.repository'
 import { RadiosRepository } from '@repositories/radios.repository'
 import { PaginationSchemaType } from '@/utils/pagination'
@@ -12,6 +12,7 @@ import XLSX from 'xlsx'
 import PdfPrinter from 'pdfmake'
 import { TDocumentDefinitions } from 'pdfmake/interfaces'
 import * as vfsFonts from 'pdfmake/build/vfs_fonts'
+import { RadiosModelRepository } from '@/repositories/radios_model.repository'
 
 export class ClientsService {
     private readonly radios: RadiosRepository
@@ -19,6 +20,7 @@ export class ClientsService {
     private readonly modality: ClientsModalityRepository
     private readonly seller: SellersRepository
     private readonly logs: LogsRepository
+    private readonly models: RadiosModelRepository
 
     constructor (datasource: DataSource) {
         this.radios = datasource.create(RadiosRepository)
@@ -26,6 +28,7 @@ export class ClientsService {
         this.modality = datasource.create(ClientsModalityRepository)
         this.seller = datasource.create(SellersRepository)
         this.logs = datasource.create(LogsRepository)
+        this.models = datasource.create(RadiosModelRepository)
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<ClientsSchemaSelectPaginatedType> {
@@ -171,6 +174,16 @@ export class ClientsService {
         } else {
             throw new Error('Formato inválido')
         }
+    }
+
+    public async getStats (client_code: string): Promise<ClientsSchemaStatsType> {
+        const { client_id = 0 } = await this.findIdsByCodes({ client_code })
+
+        const models = await this.models.countByClient(client_id)
+
+        return ClientsSchemaStats.parse({
+            models
+        })
     }
 
     private async findIdsByCodes ({ modality_code, seller_code, client_code }: { modality_code?: string, seller_code?: string, client_code?: string }): Promise<{ modality_id?: number, seller_id?: number, client_id?: number }> {

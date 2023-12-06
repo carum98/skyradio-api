@@ -1,7 +1,8 @@
 import { IRepository, RepositoryCore } from '@/core/repository.core'
+import { radios } from '@models/radios.model'
 import { PaginationSchemaType } from '@/utils/pagination'
-import { RadiosModelShemaCreateType, RadiosModelShemaSelectPaginatedType, RadiosModelShemaSelectType, RadiosModelShemaUpdateType, radios_model } from '@models/radios_model.model'
-import { eq } from 'drizzle-orm'
+import { RadioModelSchemaCounterType, RadiosModelShemaCreateType, RadiosModelShemaSelectPaginatedType, RadiosModelShemaSelectType, RadiosModelShemaUpdateType, radios_model } from '@models/radios_model.model'
+import { count, eq, sql } from 'drizzle-orm'
 import { MySql2Database } from 'drizzle-orm/mysql2'
 
 export class RadiosModelRepository extends RepositoryCore<RadiosModelShemaSelectType, RadiosModelShemaCreateType, RadiosModelShemaUpdateType> implements IRepository {
@@ -54,5 +55,18 @@ export class RadiosModelRepository extends RepositoryCore<RadiosModelShemaSelect
 
     public async delete (code: string): Promise<boolean> {
         return await super.deleteCore(eq(radios_model.code, code))
+    }
+
+    public async countByClient (client_id: number): Promise<RadioModelSchemaCounterType[]> {
+        return await this.db.select({
+            code: radios_model.code,
+            name: radios_model.name,
+            color: radios_model.color,
+            count: count(radios_model.code)
+        })
+        .from(radios)
+        .rightJoin(radios_model, eq(radios_model.id, radios.model_id))
+        .where(eq(radios.client_id, client_id))
+        .groupBy(sql`${radios_model.code}, ${radios_model.name}, ${radios_model.color}`)
     }
 }
