@@ -12,7 +12,8 @@ import XLSX from 'xlsx'
 import PdfPrinter from 'pdfmake'
 import { TDocumentDefinitions } from 'pdfmake/interfaces'
 import * as vfsFonts from 'pdfmake/build/vfs_fonts'
-import { RadiosModelRepository } from '@/repositories/radios_model.repository'
+import { RadiosModelRepository } from '@repositories/radios_model.repository'
+import { SimsProviderRepository } from '@repositories/sims_provider.repository'
 
 export class ClientsService {
     private readonly radios: RadiosRepository
@@ -21,6 +22,7 @@ export class ClientsService {
     private readonly seller: SellersRepository
     private readonly logs: LogsRepository
     private readonly models: RadiosModelRepository
+    private readonly providers: SimsProviderRepository
 
     constructor (datasource: DataSource) {
         this.radios = datasource.create(RadiosRepository)
@@ -29,6 +31,7 @@ export class ClientsService {
         this.seller = datasource.create(SellersRepository)
         this.logs = datasource.create(LogsRepository)
         this.models = datasource.create(RadiosModelRepository)
+        this.providers = datasource.create(SimsProviderRepository)
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<ClientsSchemaSelectPaginatedType> {
@@ -179,10 +182,14 @@ export class ClientsService {
     public async getStats (client_code: string): Promise<ClientsSchemaStatsType> {
         const { client_id = 0 } = await this.findIdsByCodes({ client_code })
 
-        const models = await this.models.countByClient(client_id)
+        const [models, sims_providers] = await Promise.all([
+            this.models.countByClient(client_id),
+            this.providers.countByClient(client_id)
+        ])
 
         return ClientsSchemaStats.parse({
-            models
+            models,
+            sims_providers
         })
     }
 

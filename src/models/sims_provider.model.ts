@@ -41,7 +41,12 @@ export const SimsProviderShemaUniqueIdentifier = createSelectSchema(sims_provide
 
 export const SimsProviderShemaSelectPaginated = ResponsePaginationSchema(SimsProviderShemaSelect)
 
+export const SimsProviderSchemaCounter = SimsProviderShemaSelect.extend({
+    count: z.number()
+})
+
 export type SimsProviderShemaCreateType = z.infer<typeof SimsProviderShemaCreate>
 export type SimsProviderShemaSelectType = z.infer<typeof SimsProviderShemaSelect>
 export type SimsProviderShemaUpdateType = z.infer<typeof SimsProviderShemaUpdate>
 export type SimsProviderShemaSelectPaginatedType = z.infer<typeof SimsProviderShemaSelectPaginated>
+export type SimsProviderSchemaCounterType = z.infer<typeof SimsProviderSchemaCounter>

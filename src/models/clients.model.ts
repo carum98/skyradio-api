@@ -8,6 +8,7 @@ import { SellersSchemaSelect, sellers } from './sellers.model'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 import { HexColorSchema } from '@/utils/schemas'
 import { RadioModelSchemaCounter } from './radios_model.model'
+import { SimsProviderSchemaCounter } from './sims_provider.model'
 
 export const ClientsExportFormats = ['xlsx', 'csv', 'pdf'] as const
 
@@ -96,7 +97,8 @@ export const ClientsSchemaUniqueIdentifier = createSelectSchema(clients, {
 export const ClientsSchemaSelectPaginated = ResponsePaginationSchema(ClientsSchemaSelect)
 
 export const ClientsSchemaStats = z.object({
-    models: RadioModelSchemaCounter.array()
+    models: RadioModelSchemaCounter.array(),
+    sims_providers: SimsProviderSchemaCounter.array()
 })
 
 export type ClientsSchemaCreateRawType = z.infer<typeof ClientsSchemaCreateRaw>
