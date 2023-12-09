@@ -231,7 +231,9 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
         const conditions = {
             equal: '=',
             like: 'LIKE',
-            not_equal: '!='
+            not_equal: '!=',
+            is_null: 'IS NULL',
+            is_not_null: 'IS NOT NULL'
         } as const as Record<string, string>
 
         const sqlChunks: SQL[] = [
@@ -240,13 +242,22 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
 
         if (filters !== undefined) {
             Object.entries(filters).forEach(([key, value]) => {
-                const [column, data] = Object.entries(value as any)[0]
-                const [condition, item] = Object.entries(data as any)[0]
+                const [column, data] = Object.entries(value as any)[0] as [string, Record<string, string>]
+                const [condition, item] = Object.entries(data as any)[0] as [keyof typeof conditions, string]
 
                 const table_column = `${key}.${column}`
                 const condition_symbol = conditions[condition]
 
-                sqlChunks.push(sql`${sql.raw(table_column)} ${sql.raw(condition_symbol)} ${item}`)
+                const queryChunks = [
+                    sql.raw(table_column),
+                    sql.raw(condition_symbol)
+                ]
+
+                if (item.length > 0) {
+                    queryChunks.push(sql.raw(`'${item}'`))
+                }
+
+                sqlChunks.push(sql.join(queryChunks, sql.raw(' ')))
             })
         }
 
