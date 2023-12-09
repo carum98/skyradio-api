@@ -233,7 +233,9 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
             like: 'LIKE',
             not_equal: '!=',
             is_null: 'IS NULL',
-            is_not_null: 'IS NOT NULL'
+            is_not_null: 'IS NOT NULL',
+            in: 'IN',
+            not_in: 'NOT IN'
         } as const as Record<string, string>
 
         const sqlChunks: SQL[] = [
@@ -254,7 +256,12 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
                 ]
 
                 if (item.length > 0) {
-                    queryChunks.push(sql.raw(`'${item}'`))
+                    if (item.includes(',')) {
+                        const values = item.split(',').map((value) => sql`${value}`)
+                        queryChunks.push(sql`(${sql.join(values, sql.raw(','))})`)
+                    } else {
+                        queryChunks.push(sql`${item}`)
+                    }
                 }
 
                 sqlChunks.push(sql.join(queryChunks, sql.raw(' ')))
