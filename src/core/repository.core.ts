@@ -256,7 +256,7 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
                 ]
 
                 if (item.length > 0) {
-                    if (item.includes(',')) {
+                    if (condition === 'in' || condition === 'not_in') {
                         const values = item.split(',').map((value) => sql`${value}`)
                         queryChunks.push(sql`(${sql.join(values, sql.raw(','))})`)
                     } else {
