@@ -11,6 +11,7 @@ import { SimsRouter } from '@routes/sims.routes'
 import { RadiosModelRouter } from '@routes/radios_model.routes'
 import { RadiosStatusRouter } from '@routes/radios_status.routes'
 import { RadiosRauter } from '@routes/radios.routes'
+import { ReportsRouter } from './routes/reports.routes'
 
 import { errorMiddleware } from '@middlewares/errors.middleware'
 import { DataSource } from './core/data-source.core'
@@ -31,7 +32,8 @@ server.routes([
     new SimsRouter(datasource),
     new RadiosModelRouter(datasource),
     new RadiosStatusRouter(datasource),
-    new RadiosRauter(datasource)
+    new RadiosRauter(datasource),
+    new ReportsRouter(datasource)
 ])
 
 // Error middleware

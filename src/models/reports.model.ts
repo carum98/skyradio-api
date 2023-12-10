@@ -1,0 +1,11 @@
+import { z } from 'zod'
+
+export const ReportsFormats = ['xlsx', 'csv', 'pdf'] as const
+
+export const ReportsSchemaClients = z.object({
+    client_code: z.string().length(6),
+    format: z.enum(ReportsFormats)
+})
+
+export type ReportsFormatsType = typeof ReportsFormats[number]
+export type ReportsSchemaClientsType = z.infer<typeof ReportsSchemaClients>

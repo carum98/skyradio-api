@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { ClientsService } from '@services/clients.service'
-import { ClientsSchemaCreateType, ClientsSchemaUpdateType, ClientsRadiosSchemaType, ClientRadiosSwapSchemaType, ClientsExportType } from '@models/clients.model'
+import { ClientsSchemaCreateType, ClientsSchemaUpdateType, ClientsRadiosSchemaType, ClientRadiosSwapSchemaType } from '@models/clients.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { LogsService } from '@/services/logs.service'
 import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
@@ -62,39 +62,6 @@ export class ClientsController {
         } else {
             res.status(400).json()
         }
-    }
-
-    public export = async (req: Request, res: Response): Promise<void> => {
-        const { code } = req.params
-        const params = req.body as ClientsExportType
-
-        const fileName = `export-${code}-${Date.now()}`
-
-        let fileExtension = ''
-        let contentType = ''
-
-        switch (params.format) {
-            case 'pdf':
-                fileExtension = 'pdf'
-                contentType = 'application/pdf'
-                break
-            case 'csv':
-                fileExtension = 'csv'
-                contentType = 'text/csv'
-                break
-            default:
-                fileExtension = 'xlsx'
-                contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                break
-        }
-
-        const data = await this.service.export(code, params)
-
-        res.attachment(`${fileName}.${fileExtension}`)
-
-        res.setHeader('Content-Type', contentType)
-
-        res.status(200).end(data)
     }
 
     public getRadios = async (req: Request, res: Response): Promise<void> => {

@@ -4,7 +4,7 @@ import { RouterCore } from '@/core/router.core'
 import { ClientsService } from '@services/clients.service'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
-import { ClientRadiosSwapSchema, ClientsExport, ClientsRadiosSchema, ClientsSchemaCreate, ClientsSchemaUniqueIdentifier, ClientsSchemaUpdate } from '@models/clients.model'
+import { ClientRadiosSwapSchema, ClientsRadiosSchema, ClientsSchemaCreate, ClientsSchemaUniqueIdentifier, ClientsSchemaUpdate } from '@models/clients.model'
 import { PaginationSchema } from '@/utils/pagination'
 import { LogsService } from '@/services/logs.service'
 
@@ -66,17 +66,6 @@ export class ClientsRouter extends RouterCore {
             middlewares: [
                 requestMiddleware({
                     params: ClientsSchemaUniqueIdentifier
-                })
-            ]
-        })
-
-        this.post({
-            name: '/:code/export',
-            handler: controller.export,
-            middlewares: [
-                requestMiddleware({
-                    params: ClientsSchemaUniqueIdentifier,
-                    body: ClientsExport
                 })
             ]
         })

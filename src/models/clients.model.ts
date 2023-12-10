@@ -10,8 +10,6 @@ import { HexColorSchema } from '@/utils/schemas'
 import { RadioModelSchemaCounter } from './radios_model.model'
 import { SimsProviderSchemaCounter } from './sims_provider.model'
 
-export const ClientsExportFormats = ['xlsx', 'csv', 'pdf'] as const
-
 export const clients = mysqlTable('clients', {
     id: int('id').autoincrement().notNull(),
     code: varchar('code', { length: 6 }).notNull(),
@@ -86,10 +84,6 @@ export const ClientRadiosSwapSchema = z.object({
     radio_code_to: z.string().length(6)
 })
 
-export const ClientsExport = z.object({
-    format: z.enum(ClientsExportFormats)
-})
-
 export const ClientsSchemaUniqueIdentifier = createSelectSchema(clients, {
     code: (schema) => schema.code.length(6)
 }).pick({ code: true }).required()
@@ -106,7 +100,6 @@ export type ClientsSchemaCreateType = z.infer<typeof ClientsSchemaCreate>
 export type ClientsSchemaSelectType = z.infer<typeof ClientsSchemaSelect>
 export type ClientsSchemaUpdateRawType = z.infer<typeof ClientsSchemaUpdateRaw>
 export type ClientsSchemaUpdateType = z.infer<typeof ClientsSchemaUpdate>
-export type ClientsExportType = z.infer<typeof ClientsExport>
 export type ClientsSchemaSelectPaginatedType = z.infer<typeof ClientsSchemaSelectPaginated>
 export type ClientsRadiosSchemaType = z.infer<typeof ClientsRadiosSchema>
 export type ClientRadiosSwapSchemaType = z.infer<typeof ClientRadiosSwapSchema>
