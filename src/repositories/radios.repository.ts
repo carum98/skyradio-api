@@ -159,4 +159,25 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
 
         return data[0].affectedRows > 0
     }
+
+    public async getAllBy (group_id: number, params: { client_code?: string, model_code?: string }): Promise<RadiosSchemaSelectPaginatedType> {
+        const { client_code } = params
+
+        const where = [
+            eq(radios.group_id, group_id)
+        ]
+
+        if (client_code !== undefined) {
+            where.push(eq(clients.code, client_code))
+        }
+
+        if (params.model_code !== undefined) {
+            where.push(eq(radios_model.code, params.model_code))
+        }
+
+        return await super.getAllCore({
+            query: { page: 1, per_page: 1000, sort_by: 'created_at', sort_order: 'desc' },
+            where: and(...where)
+        })
+    }
 }

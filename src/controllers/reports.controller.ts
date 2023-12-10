@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { ReportsService } from '@/services/reports.service'
-import { ReportsFormatsType, ReportsSchemaClientsType } from '@/models/reports.model'
+import { ReportsFormatsType, ReportsSchemaClientsType, ReportsSchemaModelsType } from '@models/reports.model'
 
 export class ReportsController {
     constructor (
@@ -8,9 +8,19 @@ export class ReportsController {
     ) {}
 
     public clients = async (req: Request, res: Response): Promise<void> => {
+        const { group_id } = req.body
         const params = req.body as unknown as ReportsSchemaClientsType
 
-        const data = await this.service.clients(params)
+        const data = await this.service.clients(group_id, params)
+
+        this.responseFile(res, data, params.format)
+    }
+
+    public models = async (req: Request, res: Response): Promise<void> => {
+        const { group_id } = req.body
+        const params = req.body as unknown as ReportsSchemaModelsType
+
+        const data = await this.service.models(group_id, params)
 
         this.responseFile(res, data, params.format)
     }
@@ -19,7 +29,7 @@ export class ReportsController {
         const fileName = `skyradio-report-${Date.now()}`
 
         let fileExtension = ''
-        let contentType = '' 
+        let contentType = ''
 
         switch (format) {
             case 'pdf':
