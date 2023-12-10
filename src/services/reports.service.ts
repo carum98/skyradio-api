@@ -1,26 +1,32 @@
 import { DataSource } from '@/core/data-source.core'
-import { ReportsSchemaClientsType, ReportsSchemaModelsType, ReportsSchemaSellersType } from '@models/reports.model'
+import { ReportsSchemaClientsType, ReportsSchemaModelsType, ReportsSchemaSellersType, ReportsSchemaSimsProviderType } from '@models/reports.model'
 import { ClientsRepository } from '@repositories/clients.repository'
 import { RadiosRepository } from '@repositories/radios.repository'
 import { RadiosModelRepository } from '@repositories/radios_model.repository'
+import { SellersRepository } from '@repositories/sellers.repository'
+import { SimsProviderRepository } from '@repositories/sims_provider.repository'
+import { SimsRepository } from '@repositories/sims.repository'
 
 import XLSX from 'xlsx'
 import PdfPrinter from 'pdfmake'
 import { TDocumentDefinitions } from 'pdfmake/interfaces'
 import * as vfsFonts from 'pdfmake/build/vfs_fonts'
-import { SellersRepository } from '@/repositories/sellers.repository'
 
 export class ReportsService {
     private readonly client: ClientsRepository
     private readonly radios: RadiosRepository
     private readonly model: RadiosModelRepository
     private readonly seller: SellersRepository
+    private readonly sims: SimsRepository
+    private readonly provider: SimsProviderRepository
 
     constructor (datasource: DataSource) {
         this.client = datasource.create(ClientsRepository)
         this.radios = datasource.create(RadiosRepository)
         this.model = datasource.create(RadiosModelRepository)
         this.seller = datasource.create(SellersRepository)
+        this.sims = datasource.create(SimsRepository)
+        this.provider = datasource.create(SimsProviderRepository)
     }
 
     public async clients (group_id: number, params: ReportsSchemaClientsType): Promise<Buffer> {
@@ -224,6 +230,77 @@ export class ReportsService {
                                     client.modality
                                 ])
                             ]
+                        }
+                  }
+                ],
+                styles: {
+                    header: {
+                        fontSize: 18,
+                        bold: true,
+                        margin: [0, 0, 0, 10]
+                    },
+                    tableExample: {
+                        margin: [0, 5, 0, 15]
+                    }
+                }
+            })
+        } else {
+            throw new Error('Formato inválido')
+        }
+    }
+
+    public async simsProvider (group_id: number, params: ReportsSchemaSimsProviderType): Promise<Buffer> {
+        const provider = await this.provider.get(params.provider_code)
+        const sims = await this.sims.getAllBy(group_id, {
+            provider_code: params.provider_code
+        })
+
+        const data = sims.data.map(sim => ({
+            ...sim,
+            provider: sim.provider?.name ?? '-',
+            radio: sim.radio?.imei ?? '-'
+        }))
+
+        if (params.format === 'xlsx') {
+            const ws = XLSX.utils.json_to_sheet(data, {
+                origin: 'A2'
+            })
+
+            XLSX.utils.sheet_add_aoa(ws, [
+                ['Proveedor', provider.name]
+            ], { origin: 'A1' })
+
+            const wb = XLSX.utils.book_new()
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Data')
+
+            const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
+
+            return buf
+        } else if (params.format === 'csv') {
+            const ws = XLSX.utils.json_to_sheet(data)
+
+            const csv = XLSX.utils.sheet_to_csv(ws)
+
+            return Buffer.from(csv)
+        } else if (params.format === 'pdf') {
+            return await createPdf({
+                content: [
+                    {
+                        text: `Proveedor: ${provider.name}`,
+                        style: 'header'
+                    },
+                    {
+                        style: 'tableExample',
+                        table: {
+                        body: [
+                            ['Código', 'Número', 'Rádio'],
+                            ...data.map(sim => [
+                                    sim.code,
+                                    sim.number,
+                                    sim.radio
+                                ])
+                        ]
                         }
                   }
                 ],

@@ -17,7 +17,13 @@ export const ReportSchemaSellers = z.object({
     format: z.enum(ReportsFormats)
 })
 
+export const ReportSchemaSimsProvider = z.object({
+    provider_code: z.string().length(6),
+    format: z.enum(ReportsFormats)
+})
+
 export type ReportsFormatsType = typeof ReportsFormats[number]
 export type ReportsSchemaClientsType = z.infer<typeof ReportsSchemaClients>
 export type ReportsSchemaModelsType = z.infer<typeof ReportsSchemaModels>
 export type ReportsSchemaSellersType = z.infer<typeof ReportSchemaSellers>
+export type ReportsSchemaSimsProviderType = z.infer<typeof ReportSchemaSimsProvider>
