@@ -179,7 +179,7 @@ export class ReportsService {
 
         const data = clients.data.map(client => ({
             ...client,
-            radios: client.radios_count ?? '-',
+            seller: client.seller?.name ?? '-',
             modality: client.modality?.name ?? '-'
         }))
 
@@ -220,7 +220,7 @@ export class ReportsService {
                             ...data.map(client => [
                                     client.code,
                                     client.name,
-                                    client.radios,
+                                    client.radios_count,
                                     client.modality
                                 ])
                             ]
