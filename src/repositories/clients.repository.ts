@@ -1,5 +1,5 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { eq, sql } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import { ClientsSchemaCreateRawType, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateRawType, clients } from '@models/clients.model'
 import { clients_modality } from '@/models/clients_modality.model'
 import { sellers } from '@models/sellers.model'
@@ -69,5 +69,22 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
 
     public async delete (code: string): Promise<boolean> {
         return await super.deleteCore(eq(clients.code, code))
+    }
+
+    public async getAllBy (group_id: number, params: { seller_code?: string }): Promise<ClientsSchemaSelectPaginatedType> {
+        const { seller_code } = params
+
+        const where = [
+            eq(clients.group_id, group_id)
+        ]
+
+        if (seller_code !== undefined) {
+            where.push(eq(sellers.code, seller_code))
+        }
+
+        return await super.getAllCore({
+            query: { page: 1, per_page: 1000, sort_by: 'created_at', sort_order: 'desc' },
+            where: and(...where)
+        })
     }
 }
