@@ -12,9 +12,9 @@ import { ResponsePaginationSchema } from '@/utils/pagination'
 export const radios = mysqlTable('radios', {
     id: int('id').autoincrement().notNull(),
     code: varchar('code', { length: 6 }).notNull(),
-    name: varchar('name', { length: 255 }).notNull(),
-    imei: varchar('imei', { length: 255 }).notNull(),
-    serial: varchar('serial', { length: 255 }).notNull(),
+    name: varchar('name', { length: 100 }),
+    imei: varchar('imei', { length: 50 }).notNull(),
+    serial: varchar('serial', { length: 100 }),
     model_id: int('model_id').notNull().references(() => radios_model.id),
     status_id: int('status_id').references(() => radios_status.id),
     sim_id: int('sim_id').references(() => sims.id),
@@ -45,7 +45,8 @@ export const RadiosSchemaSelect = createSelectSchema(radios)
     })
 
 export const RadiosSchemaCreateRaw = createInsertSchema(radios, {
-    name: (schema) => schema.name.min(3).max(100)
+    name: (schema) => schema.name.min(3).max(100).nullable(),
+    imei: (schema) => schema.imei.length(15)
 }).pick({
     name: true,
     imei: true,
@@ -71,6 +72,8 @@ export const RadiosSchemaCreate = RadiosSchemaCreateRaw.pick({
 })
 .required()
 .partial({
+    name: true,
+    serial: true,
     status_code: true,
     sim_code: true,
     client_code: true
