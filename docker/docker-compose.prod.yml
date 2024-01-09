@@ -1,5 +1,9 @@
 services:
     api:
+      build: 
+        context: .
+        dockerfile: docker/Dockerfile.prod
+
       environment:
         - NODE_ENV=production
 

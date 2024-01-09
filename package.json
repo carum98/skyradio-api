@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev -r tsconfig-paths/register --inspect=2000 ./src/index.ts",
-    "start": "tsc && tsc-alias && node ./dist/src/index.js",
+    "build": "tsc && tsc-alias",
+    "start": "node ./dist/src/index.js",
     "db:generate": "drizzle-kit generate:mysql --config ./config/drizzle.config.ts",
     "db:introspect": "drizzle-kit introspect:mysql --config ./config/drizzle.config.ts",
     "db:migrate": "ts-node -r tsconfig-paths/register -e \"require('./src/core/migrations.core.ts').init()\"",
