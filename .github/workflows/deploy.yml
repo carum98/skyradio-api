@@ -36,6 +36,9 @@ jobs:
     environment: production
 
     steps:
+    - name: Checkout the code
+      uses: actions/checkout@v3
+
     - name: Copy docker-compose.yml
       uses: appleboy/scp-action@master
       with:
