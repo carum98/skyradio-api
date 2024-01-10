@@ -50,7 +50,7 @@ jobs:
           docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.TOKEN_DEPLOY }} &&
           docker pull ghcr.io/carum98/skyradio-api:latest
 
-  copy-docker-files:
+  docker-compose-files:
     runs-on: ubuntu-latest
     environment: production
 
@@ -67,7 +67,7 @@ jobs:
         source: "docker-compose.yml,docker/docker-compose.prod.yml"
         target: "~/api"
 
-    - name: Create docker files
+    - name: Create docker-compose override
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
