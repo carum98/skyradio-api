@@ -75,4 +75,4 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           cd ~/api &&
-          echo "services: api:  image: ghcr.io/carum98/skyradio-api:latest" > docker-compose.override.yml
+          echo -e "services:\n  api:\n    image: ghcr.io/carum98/skyradio-api:latest" > docker-compose.override.yml
