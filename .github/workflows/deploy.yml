@@ -58,11 +58,11 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@v3
 
-    - name: Copy docker-compose.yml, docker-compose.prod.yml and Dockerfile.prod
+    - name: Copy docker-compose.yml and docker-compose.prod.yml
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
-        source: "docker-compose.yml,docker/docker-compose.prod.yml,docker/Dockerfile.prod"
+        source: "docker-compose.yml,docker/docker-compose.prod.yml"
         target: "~/api"
