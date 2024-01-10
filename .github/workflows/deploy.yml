@@ -14,9 +14,6 @@ jobs:
     environment: production
 
     steps:
-    - name: Checkout the code
-      uses: actions/checkout@v3
-
     - name: Docker Login
       uses: docker/login-action@v3.0.0
       with:
@@ -37,9 +34,6 @@ jobs:
     environment: production
 
     steps:
-    - name: Checkout the code
-      uses: actions/checkout@v3
-
     - name: Pull the image
       uses: appleboy/ssh-action@master
       with:
@@ -55,9 +49,6 @@ jobs:
     environment: production
 
     steps:
-    - name: Checkout the code
-      uses: actions/checkout@v3
-
     - name: Copy docker-compose.yml and docker-compose.prod.yml
       uses: appleboy/scp-action@master
       with:
