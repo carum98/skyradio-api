@@ -66,3 +66,13 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         source: "docker-compose.yml,docker/docker-compose.prod.yml"
         target: "~/api"
+
+    - name: Create docker files
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd ~/api &&
+          echo "services: api:  image: ghcr.io/carum98/skyradio-api:latest" > docker-compose.override.yml

@@ -1,7 +1,5 @@
 services:
     api:
-      build: !reset null
-
       environment:
         - NODE_ENV=production
 

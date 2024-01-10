@@ -3,9 +3,6 @@ services:
   api:
     image: skyradio-api
     container_name: skyradio-api
-    build: 
-      context: .
-      dockerfile: docker/Dockerfile
     ports:
       - "${PORT}:${PORT}"
     depends_on:

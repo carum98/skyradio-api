@@ -1,5 +1,9 @@
 services:
     api:
+      build: 
+        context: .
+        dockerfile: docker/Dockerfile
+
       volumes:
         - ./src:/app/src
         - ./.git:/app/.git
