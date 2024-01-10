@@ -12,17 +12,6 @@ jobs:
     environment: production
 
     steps:
-    - name: Docker Metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ghcr.io/carum98/skyradio-api
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-
     - name: Checkout the code
       uses: actions/checkout@v3
 
@@ -35,10 +24,10 @@ jobs:
         logout: true
     
     - name: Build the Docker image
-      run: docker build . --file ./docker/Dockerfile.prod --tag ${{ steps.meta.outputs.tags }}
+      run: docker build . --file ./docker/Dockerfile.prod --tag ghcr.io/carum98/skyradio-api:${{ github.ref_name }}"
 
     - name: Send to registry
-      run: docker push ${{ steps.meta.outputs.tags }}
+      run: docker push ghcr.io/carum98/skyradio-api:${{ github.ref_name }}
 
   pull-into-server:
     runs-on: ubuntu-latest
@@ -57,7 +46,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.TOKEN_DEPLOY }} &&
-          docker pull ${{ steps.meta.outputs.tags }}
+          docker pull ghcr.io/carum98/skyradio-api:${{ github.ref_name }}
 
   docker-compose-files:
     runs-on: ubuntu-latest
@@ -85,4 +74,4 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           cd ~/api &&
-          echo -e "services:\n  api:\n    image: ${{ steps.meta.outputs.tags }}" > docker-compose.override.yml
+          echo -e "services:\n  api:\n    image: ghcr.io/carum98/skyradio-api${{ github.ref_name }}" > docker-compose.override.yml
