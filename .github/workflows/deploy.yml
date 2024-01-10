@@ -24,7 +24,7 @@ jobs:
         logout: true
     
     - name: Build the Docker image
-      run: docker build . --file ./docker/Dockerfile.prod --tag ghcr.io/carum98/skyradio-api:${{ github.ref_name }}"
+      run: docker build . --file ./docker/Dockerfile.prod --tag ghcr.io/carum98/skyradio-api:${{ github.ref_name }}
 
     - name: Send to registry
       run: docker push ghcr.io/carum98/skyradio-api:${{ github.ref_name }}
