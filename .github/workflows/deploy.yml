@@ -58,14 +58,14 @@ jobs:
     - name: Create .env file
       run: |
         cd ~/api &&
-        echo "PORT=${{ secrets.PORT }}" >> .env &&
-        echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env &&
-        echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env &&
-        echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env &&
-        echo "DB_USER=${{ secrets.DB_USER }}" >> .env &&
-        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env &&
-        echo "SECRET_TOKEN=${{ secrets.SECRET_TOKEN }}" >> .env &&
-        echo "SECRET_REFRESH_TOKEN=${{ secrets.SECRET_REFRESH_TOKEN }}" >> .env
+        echo "PORT=${{ secrets.PORT }}" > .env &&
+        echo "DB_HOST=${{ secrets.DB_HOST }}" > .env &&
+        echo "DB_PORT=${{ secrets.DB_PORT }}" > .env &&
+        echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" > .env &&
+        echo "DB_USER=${{ secrets.DB_USER }}" > .env &&
+        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env &&
+        echo "SECRET_TOKEN=${{ secrets.SECRET_TOKEN }}" > .env &&
+        echo "SECRET_REFRESH_TOKEN=${{ secrets.SECRET_REFRESH_TOKEN }}" > .env
 
   docker-compose-files:
     runs-on: ubuntu-latest
@@ -113,7 +113,7 @@ jobs:
           # Check if container is running
           if [ "$(docker ps -q -f status=running -f name=skyradio-db)" ]; then
             # Backup the database
-            docker exec skyradio-db sh -c 'exec mysqldump --all-databases -uroot -proot > backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql &&
+            docker exec skyradio-db sh -c 'exec mysqldump --all-databases -uroot -proot > backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql' &&
             # Copy the backup to the host
             docker cp skyradio-db:/backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql ~/api/backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql && 
             echo "Backup done"
