@@ -1,4 +1,4 @@
-name: Deploy - CI
+name: Deploy
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
     environment: production
 
@@ -29,9 +29,9 @@ jobs:
     - name: Send to registry
       run: docker push ghcr.io/carum98/skyradio-api:${{ github.ref_name }}
 
-  pull-into-server:
+  pull-image:
     runs-on: ubuntu-latest
-    needs: build
+    needs: build-and-push
     environment: production
 
     steps:
@@ -50,7 +50,7 @@ jobs:
 
   docker-compose-files:
     runs-on: ubuntu-latest
-    needs: build
+    needs: build-and-push
     environment: production
 
     steps:
@@ -75,3 +75,27 @@ jobs:
         script: |
           cd ~/api &&
           echo -e "services:\n  api:\n    image: ghcr.io/carum98/skyradio-api:${{ github.ref_name }}" > docker-compose.override.yml
+
+  docker-compose-up:
+    runs-on: ubuntu-latest
+    needs: [build-and-push, docker-compose-files]
+    environment: production
+
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v3
+
+    - name: SSH into the server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd ~/api &&
+          # Check if container is running
+          if [ "$(docker ps -q -f status=running -f name=skyradio-api)" ]; then
+            # Stop the container
+            docker stop skyradio-api
+          fi &&
+          docker compose -f docker-compose.yml -f docker/docker-compose.prod.yml -f docker-compose.override.yml --env-file .env up -d
