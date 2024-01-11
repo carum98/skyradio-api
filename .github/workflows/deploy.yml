@@ -49,7 +49,6 @@ jobs:
 
   docker-compose-files:
     runs-on: ubuntu-latest
-    needs: build-and-push
     environment: production
 
     steps:
@@ -83,7 +82,7 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@v3
 
-    - name: SSH into the server
+    - name: Backup the database and copy it to the server
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
@@ -94,11 +93,13 @@ jobs:
           # Check if container is running
           if [ "$(docker ps -q -f status=running -f name=skyradio-db)" ]; then
             # Backup the database
-            docker exec skyradio-db sh -c 'exec mysqldump --all-databases -uroot -proot > backup_$(date +%Y-%m-%d).sql &&
+            docker exec skyradio-db sh -c 'exec mysqldump --all-databases -uroot -proot > backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql &&
             # Copy the backup to the host
-            docker cp skyradio-db:/backup_$(date +%Y-%m-%d).sql /backup_$(date +%Y-%m-%d).sql' && echo "Backup done"
-          fi &&
-          echo "No database container running"
+            docker cp skyradio-db:/backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql ~/api/backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql' && echo 
+            "Backup done"
+          else 
+            echo "Container not running"
+          fi
 
   docker-compose-up:
     runs-on: ubuntu-latest
@@ -109,7 +110,7 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@v3
 
-    - name: SSH into the server
+    - name: Start the containers
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
