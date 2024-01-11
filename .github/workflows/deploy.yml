@@ -95,8 +95,8 @@ jobs:
             # Backup the database
             docker exec skyradio-db sh -c 'exec mysqldump --all-databases -uroot -proot > backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql &&
             # Copy the backup to the host
-            docker cp skyradio-db:/backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql ~/api/backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql' && echo 
-            "Backup done"
+            docker cp skyradio-db:/backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql ~/api/backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql' && 
+            echo "Backup done"
           else 
             echo "Container not running"
           fi
