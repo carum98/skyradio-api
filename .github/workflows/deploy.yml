@@ -47,6 +47,26 @@ jobs:
           docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.TOKEN_DEPLOY }} &&
           docker pull ghcr.io/carum98/skyradio-api:${{ github.ref_name }}
 
+  env-file:
+    runs-on: ubuntu-latest
+    environment: production-env
+
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v3
+
+    - name: Create .env file
+      run: |
+        cd ~/api &&
+        echo "PORT=${{ secrets.PORT }}" >> .env &&
+        echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env &&
+        echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env &&
+        echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env &&
+        echo "DB_USER=${{ secrets.DB_USER }}" >> .env &&
+        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env &&
+        echo "SECRET_TOKEN=${{ secrets.SECRET_TOKEN }}" >> .env &&
+        echo "SECRET_REFRESH_TOKEN=${{ secrets.SECRET_REFRESH_TOKEN }}" >> .env
+
   docker-compose-files:
     runs-on: ubuntu-latest
     environment: production
@@ -95,7 +115,7 @@ jobs:
             # Backup the database
             docker exec skyradio-db sh -c 'exec mysqldump --all-databases -uroot -proot > backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql &&
             # Copy the backup to the host
-            docker cp skyradio-db:/backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql ~/api/backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql' && 
+            docker cp skyradio-db:/backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql ~/api/backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql && 
             echo "Backup done"
           else 
             echo "Container not running"
