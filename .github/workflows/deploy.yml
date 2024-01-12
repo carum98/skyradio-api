@@ -38,7 +38,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Pull the image
-      uses: appleboy/ssh-action@master
+      uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
@@ -49,16 +49,28 @@ jobs:
 
   env-file:
     runs-on: ubuntu-latest
-    environment: production-env
+    environment: production
 
     steps:
     - name: Checkout the code
       uses: actions/checkout@v3
 
     - name: Create .env file
-      run: |
-        cd ~/api &&
-        echo -e "PORT=${{ secrets.PORT }}\nDB_HOST=${{ secrets.DB_HOST }}\nDB_PORT=${{ secrets.DB_PORT }}\nDB_DATABASE=${{ secrets.DB_DATABASE }}\nDB_USER=${{ secrets.DB_USER }}\nDB_PASSWORD=${{ secrets.DB_PASSWORD }}\nSECRET_TOKEN=${{ secrets.SECRET_TOKEN }}\nSECRET_REFRESH_TOKEN=${{ secrets.SECRET_REFRESH_TOKEN }}" > .env
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd ~/api &&
+          echo "PORT=${{ secrets.PORT }}" >> .env &&
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env &&
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env &&
+          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env &&
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env &&
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env &&
+          echo "SECRET_TOKEN=${{ secrets.SECRET_TOKEN }}" >> .env &&
+          echo "SECRET_REFRESH_TOKEN=${{ secrets.SECRET_REFRESH_TOKEN }}" >> .env
 
   docker-compose-files:
     runs-on: ubuntu-latest
@@ -78,7 +90,7 @@ jobs:
         target: "~/api"
 
     - name: Create docker-compose override
-      uses: appleboy/ssh-action@master
+      uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
@@ -96,7 +108,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Backup the database and copy it to the server
-      uses: appleboy/ssh-action@master
+      uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
@@ -124,7 +136,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Start the containers
-      uses: appleboy/ssh-action@master
+      uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
