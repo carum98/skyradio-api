@@ -13,7 +13,6 @@ services:
       - PORT=${PORT}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_DATABASE=${DB_DATABASE}
-      - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_USER=${DB_USER}
       - SECRET_TOKEN=${SECRET_TOKEN}

@@ -8,6 +8,6 @@ services:
     
     db:
       ports:
-        - 3306:3306
+        - "${DB_PORT}:3306"
       volumes:
         - ./.db:/var/lib/mysql
