@@ -5,8 +5,6 @@ services:
     container_name: skyradio-api
     depends_on:
       - db
-    links:
-      - db
     environment:
       - PORT=${PORT}
       - DB_PASSWORD=${DB_PASSWORD}
