@@ -3,8 +3,6 @@ services:
   api:
     image: skyradio-api
     container_name: skyradio-api
-    ports:
-      - "${PORT}:${PORT}"
     depends_on:
       - db
     links:

@@ -1,9 +1,10 @@
 services:
     api:
+      ports:
+        - "${PORT}:${PORT}"
       build: 
         context: .
         dockerfile: docker/Dockerfile
-
       volumes:
         - ./src:/app/src
         - ./.git:/app/.git
@@ -20,7 +21,6 @@ services:
         - ./test:/app/test
         # 
         - ..:/workspaces:cached
-  
       command: npm run dev
     
     db:

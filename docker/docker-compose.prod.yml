@@ -1,13 +1,18 @@
+networks:
+  skyradio-network:
+    external: true
+
 services:
     api:
       environment:
         - NODE_ENV=production
-
-      # Start the API service
-      command: npm run start
+      networks:
+        - skyradio-network
     
     db:
       ports:
         - "${DB_PORT}:3306"
       volumes:
         - ./.db:/var/lib/mysql
+      networks:
+        - skyradio-network
