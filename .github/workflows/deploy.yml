@@ -132,9 +132,9 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          cd ~/backend &&
           # Check if container is running
           if [ "$(docker ps -q -f status=running -f name=skyradio-db)" ]; then
+            cd ~/backend &&
             # Backup the database
             docker exec skyradio-db sh -c 'exec mysqldump --all-databases -uroot -proot > backup_${{ github.ref_name }}_$(date +%Y-%m-%d).sql' &&
             # Copy the backup to the host
