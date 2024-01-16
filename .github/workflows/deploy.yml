@@ -148,4 +148,5 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         script: |
+          cd ~/backend &&
           docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.override.yml --env-file .env up -d --force-recreate --no-deps
