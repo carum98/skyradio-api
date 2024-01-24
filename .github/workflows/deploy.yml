@@ -158,7 +158,13 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           cd ~/backend &&
-          docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.override.yml --env-file .env up -d --force-recreate --no-deps
+          # Check if the container is running
+          if [ "$(docker ps -q -f name=skyradio-api)" ]; then
+            # Stop the container
+            docker compose down
+          fi &&
+          # Start the container
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.override.yml --env-file .env up -d
 
   database-migration:
     runs-on: ubuntu-latest
