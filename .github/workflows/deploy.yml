@@ -80,7 +80,7 @@ jobs:
           echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env &&
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env &&
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env &&
-          ehco "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> .env &&
+          echo "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> .env &&
           echo "SECRET_TOKEN=${{ secrets.SECRET_TOKEN }}" >> .env &&
           echo "SECRET_REFRESH_TOKEN=${{ secrets.SECRET_REFRESH_TOKEN }}" >> .env
 
