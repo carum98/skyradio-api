@@ -12,6 +12,8 @@ import PdfPrinter from 'pdfmake'
 import { TDocumentDefinitions } from 'pdfmake/interfaces'
 import * as vfsFonts from 'pdfmake/build/vfs_fonts'
 
+import ExcelJS from 'exceljs'
+
 export class ReportsService {
     private readonly client: ClientsRepository
     private readonly radios: RadiosRepository
@@ -43,27 +45,41 @@ export class ReportsService {
         }))
 
         if (params.format === 'xlsx') {
-            const ws = XLSX.utils.json_to_sheet(data, {
-                origin: 'A2'
-            })
+            const workbook = new ExcelJS.Workbook()
 
-            XLSX.utils.sheet_add_aoa(ws, [
-                ['Cliente', client.name]
-            ], { origin: 'A1' })
+            const worksheet = workbook.addWorksheet('Data')
 
-            const wb = XLSX.utils.book_new()
+            worksheet.columns = [
+                { header: 'Código', key: 'code', width: 10 },
+                { header: 'Modelo', key: 'model', width: 32 },
+                { header: 'IMEI', key: 'imei', width: 15 },
+                { header: 'Status', key: 'status', width: 15 },
+                { header: 'SIM', key: 'sim', width: 15 }
+            ]
 
-            XLSX.utils.book_append_sheet(wb, ws, 'Data')
+            worksheet.addRows(data)
 
-            const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
+            const buf = await workbook.xlsx.writeBuffer()
 
-            return buf
+            return buf as Buffer
         } else if (params.format === 'csv') {
-            const ws = XLSX.utils.json_to_sheet(data)
+            const workbook = new ExcelJS.Workbook()
 
-            const csv = XLSX.utils.sheet_to_csv(ws)
+            const worksheet = workbook.addWorksheet('Data')
 
-            return Buffer.from(csv)
+            worksheet.columns = [
+                { header: 'Código', key: 'code', width: 10 },
+                { header: 'Modelo', key: 'model', width: 32 },
+                { header: 'IMEI', key: 'imei', width: 15 },
+                { header: 'Status', key: 'status', width: 15 },
+                { header: 'SIM', key: 'sim', width: 15 }
+            ]
+
+            worksheet.addRows(data)
+
+            const buf = await workbook.csv.writeBuffer()
+
+            return buf as Buffer
         } else if (params.format === 'pdf') {
             return await createPdf({
                 content: [
