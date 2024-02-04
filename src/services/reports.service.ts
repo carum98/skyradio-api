@@ -9,6 +9,7 @@ import { SimsRepository } from '@repositories/sims.repository'
 
 import * as ClientsReports from '@/reports/clients.reports'
 import * as ModelsReports from '@/reports/models.reports'
+import * as SellersReports from '@/reports/sellers.reports'
 
 import XLSX from 'xlsx'
 import PdfPrinter from 'pdfmake'
@@ -150,35 +151,17 @@ export class ReportsService {
             seller_code: params.seller_code
         })
 
-        const data = clients.data.map(client => ({
-            ...client,
-            seller: client.seller?.name ?? '-',
-            modality: client.modality?.name ?? '-'
-        }))
-
         if (params.format === 'xlsx') {
-            const ws = XLSX.utils.json_to_sheet(data, {
-                origin: 'A2'
-            })
-
-            XLSX.utils.sheet_add_aoa(ws, [
-                ['Vendedor', seller.name]
-            ], { origin: 'A1' })
-
-            const wb = XLSX.utils.book_new()
-
-            XLSX.utils.book_append_sheet(wb, ws, 'Data')
-
-            const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
-
-            return buf
+            return await SellersReports.xlsx(seller, clients.data)
         } else if (params.format === 'csv') {
-            const ws = XLSX.utils.json_to_sheet(data)
-
-            const csv = XLSX.utils.sheet_to_csv(ws)
-
-            return Buffer.from(csv)
+            return SellersReports.csv(clients.data)
         } else if (params.format === 'pdf') {
+            const data = clients.data.map(client => ({
+                ...client,
+                seller: client.seller?.name ?? '-',
+                modality: client.modality?.name ?? '-'
+            }))
+
             return await createPdf({
                 content: [
                     {
