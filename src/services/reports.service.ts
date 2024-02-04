@@ -10,8 +10,8 @@ import { SimsRepository } from '@repositories/sims.repository'
 import * as ClientsReports from '@/reports/clients.reports'
 import * as ModelsReports from '@/reports/models.reports'
 import * as SellersReports from '@/reports/sellers.reports'
+import * as SimsProviderReports from '@/reports/sim_provider.reports'
 
-import XLSX from 'xlsx'
 import PdfPrinter from 'pdfmake'
 import { TDocumentDefinitions } from 'pdfmake/interfaces'
 import * as vfsFonts from 'pdfmake/build/vfs_fonts'
@@ -205,35 +205,17 @@ export class ReportsService {
             provider_code: params.provider_code
         })
 
-        const data = sims.data.map(sim => ({
-            ...sim,
-            provider: sim.provider?.name ?? '-',
-            radio: sim.radio?.imei ?? '-'
-        }))
-
         if (params.format === 'xlsx') {
-            const ws = XLSX.utils.json_to_sheet(data, {
-                origin: 'A2'
-            })
-
-            XLSX.utils.sheet_add_aoa(ws, [
-                ['Proveedor', provider.name]
-            ], { origin: 'A1' })
-
-            const wb = XLSX.utils.book_new()
-
-            XLSX.utils.book_append_sheet(wb, ws, 'Data')
-
-            const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
-
-            return buf
+            return await SimsProviderReports.xlsx(provider, sims.data)
         } else if (params.format === 'csv') {
-            const ws = XLSX.utils.json_to_sheet(data)
-
-            const csv = XLSX.utils.sheet_to_csv(ws)
-
-            return Buffer.from(csv)
+            return SimsProviderReports.csv(sims.data)
         } else if (params.format === 'pdf') {
+            const data = sims.data.map(sim => ({
+                ...sim,
+                provider: sim.provider?.name ?? '-',
+                radio: sim.radio?.imei ?? '-'
+            }))
+
             return await createPdf({
                 content: [
                     {
