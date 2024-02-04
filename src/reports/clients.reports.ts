@@ -4,7 +4,7 @@ import { RadiosSchemaSelectType } from '@/models/radios.model'
 import fs from 'fs'
 import path from 'path'
 
-import ExcelJS from 'exceljs'
+import ExcelJS, { Cell } from 'exceljs'
 
 async function xlsx (
     client: ClientsSchemaSelectType,
@@ -15,12 +15,12 @@ async function xlsx (
     const worksheet = workbook.addWorksheet(client.name)
 
     worksheet.columns = [
-        { width: 8 },
-        { width: 25 },
-        { width: 20 },
-        { width: 8 },
-        { width: 15 },
-        { width: 15 }
+        { key: 'code', width: 8 },
+        { key: 'name', width: 25 },
+        { key: 'imei', width: 20 },
+        { key: 'model', width: 10 },
+        { key: 'sim', width: 15 },
+        { key: 'provider', width: 15 }
     ]
 
     // Table
@@ -46,10 +46,13 @@ async function xlsx (
             radio.name,
             radio.imei,
             radio.model,
-            radio.sim,
-            radio.sim?.provider.name
+            radio.sim?.number,
+            radio.sim?.provider
         ])
     })
+
+    worksheet.getColumn('D').eachCell(cellCircleColor)
+    worksheet.getColumn('F').eachCell(cellCircleColor)
 
     worksheet.addTable({
         name: 'Modelos',
@@ -65,10 +68,15 @@ async function xlsx (
             { name: 'Cantidad', filterButton: false }
         ],
         rows: Object.entries(groupBy(radios, radio => radio.model.name)).map(([model, radios]) => [
-            model,
+            radios[0].model,
             radios.length
         ])
     })
+
+    worksheet.getColumn('H').width = 10
+    worksheet.getColumn('H').eachCell(cellCircleColor)
+
+    worksheet.getColumn('I').alignment = { horizontal: 'center' }
 
     worksheet.addTable({
         name: 'Proveedores',
@@ -84,10 +92,15 @@ async function xlsx (
             { name: 'Cantidad', filterButton: false }
         ],
         rows: Object.entries(groupBy(radios, radio => radio.sim.provider.name)).map(([provider, radios]) => [
-            provider,
+            radios[0].sim.provider,
             radios.length
         ])
     })
+
+    worksheet.getColumn('K').width = 15
+    worksheet.getColumn('K').eachCell(cellCircleColor)
+
+    worksheet.getColumn('L').alignment = { horizontal: 'center' }
 
     // Logo
     const logo = workbook.addImage({
@@ -148,6 +161,31 @@ export default {
     csv
 }
 
+function cellCircleColor(cell: Cell, rowNumber: number): void {
+    if (rowNumber !== 3) {
+        const value = cell.value as unknown as { name: string, color: string }
+
+        if (!value) return
+
+        cell.value = {
+            richText: [
+                {
+                    text: '⬤',
+                    font: {
+                        bold: true,
+                        color: { 
+                            argb: hexaToArgb(value.color) 
+                        }
+                    }
+                },
+                { 
+                    text: ` ${value.name}`
+                }
+            ]
+        }
+    }
+}
+
 // Group by function
 // Object.groupBy works in this version of Node.js (21.6.1) but this typescript version doesn't recognize it
 const groupBy = (x: any[], f: (arg: any) => any): Record<string, any[]> =>
@@ -155,3 +193,7 @@ const groupBy = (x: any[], f: (arg: any) => any): Record<string, any[]> =>
         (a[f(b)] ||= []).push(b)
         return a
     }, {})
+
+// Hexa to ARGB
+// Example: #FF0000 -> 'FFFF0000'
+const hexaToArgb = (hexa: string = '#FF0000'): string => hexa.slice(1).padStart(8, 'F')
