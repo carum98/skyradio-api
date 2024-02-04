@@ -7,7 +7,7 @@ import { SellersRepository } from '@repositories/sellers.repository'
 import { SimsProviderRepository } from '@repositories/sims_provider.repository'
 import { SimsRepository } from '@repositories/sims.repository'
 
-import ClientsReports from '@/reports/clients.reports'
+import * as ClientsReports from '@/reports/clients.reports'
 
 import XLSX from 'xlsx'
 import PdfPrinter from 'pdfmake'

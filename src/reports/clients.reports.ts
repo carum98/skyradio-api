@@ -1,12 +1,15 @@
-import { ClientsSchemaSelectType } from '@/models/clients.model'
-import { RadiosSchemaSelectType } from '@/models/radios.model'
-
 import fs from 'fs'
 import path from 'path'
 
-import ExcelJS, { Cell } from 'exceljs'
+import { ClientsSchemaSelectType } from '@/models/clients.model'
+import { RadiosSchemaSelectType } from '@/models/radios.model'
 
-async function xlsx (
+import { groupBy } from '@/utils/index'
+import { cellCircleColor } from './util'
+
+import ExcelJS from 'exceljs'
+
+export async function xlsx (
     client: ClientsSchemaSelectType,
     radios: RadiosSchemaSelectType[]
 ): Promise<Buffer> {
@@ -127,7 +130,7 @@ async function xlsx (
     return buf as Buffer
 }
 
-async function csv (
+export async function csv (
     client: ClientsSchemaSelectType,
     radios: RadiosSchemaSelectType[]
 ): Promise<Buffer> {
@@ -160,40 +163,3 @@ export default {
     xlsx,
     csv
 }
-
-function cellCircleColor(cell: Cell, rowNumber: number): void {
-    if (rowNumber !== 3) {
-        const value = cell.value as unknown as { name: string, color: string }
-
-        if (!value) return
-
-        cell.value = {
-            richText: [
-                {
-                    text: '⬤',
-                    font: {
-                        bold: true,
-                        color: { 
-                            argb: hexaToArgb(value.color) 
-                        }
-                    }
-                },
-                { 
-                    text: ` ${value.name}`
-                }
-            ]
-        }
-    }
-}
-
-// Group by function
-// Object.groupBy works in this version of Node.js (21.6.1) but this typescript version doesn't recognize it
-const groupBy = (x: any[], f: (arg: any) => any): Record<string, any[]> =>
-    x.reduce((a, b) => {
-        (a[f(b)] ||= []).push(b)
-        return a
-    }, {})
-
-// Hexa to ARGB
-// Example: #FF0000 -> 'FFFF0000'
-const hexaToArgb = (hexa: string = '#FF0000'): string => hexa.slice(1).padStart(8, 'F')
