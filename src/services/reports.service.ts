@@ -8,6 +8,7 @@ import { SimsProviderRepository } from '@repositories/sims_provider.repository'
 import { SimsRepository } from '@repositories/sims.repository'
 
 import * as ClientsReports from '@/reports/clients.reports'
+import * as ModelsReports from '@/reports/models.reports'
 
 import XLSX from 'xlsx'
 import PdfPrinter from 'pdfmake'
@@ -93,36 +94,18 @@ export class ReportsService {
             model_code: params.model_code
         })
 
-        const data = radios.data.map(radio => ({
-            ...radio,
-            client: radio.client?.name ?? '-',
-            status: radio.status?.name ?? '-',
-            sim: radio.sim?.number ?? '-'
-        }))
-
         if (params.format === 'xlsx') {
-            const ws = XLSX.utils.json_to_sheet(data, {
-                origin: 'A2'
-            })
-
-            XLSX.utils.sheet_add_aoa(ws, [
-                ['Modelo', modelInfo.name]
-            ], { origin: 'A1' })
-
-            const wb = XLSX.utils.book_new()
-
-            XLSX.utils.book_append_sheet(wb, ws, 'Data')
-
-            const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
-
-            return buf
+            return await ModelsReports.xlsx(modelInfo, radios.data)
         } else if (params.format === 'csv') {
-            const ws = XLSX.utils.json_to_sheet(data)
-
-            const csv = XLSX.utils.sheet_to_csv(ws)
-
-            return Buffer.from(csv)
+            return await ModelsReports.csv(radios.data)
         } else if (params.format === 'pdf') {
+            const data = radios.data.map(radio => ({
+                ...radio,
+                client: radio.client?.name ?? '-',
+                status: radio.status?.name ?? '-',
+                sim: radio.sim?.number ?? '-'
+            }))
+
             return await createPdf({
                 content: [
                     {

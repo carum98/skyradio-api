@@ -1,11 +1,8 @@
-import fs from 'fs'
-import path from 'path'
-
 import { ClientsSchemaSelectType } from '@/models/clients.model'
 import { RadiosSchemaSelectType } from '@/models/radios.model'
 
 import { groupBy } from '@/utils/index'
-import { cellCircleColor } from './util'
+import { cellCircleColor, setLogo } from './util'
 
 import ExcelJS from 'exceljs'
 
@@ -106,16 +103,7 @@ export async function xlsx (
     worksheet.getColumn('L').alignment = { horizontal: 'center' }
 
     // Logo
-    const logo = workbook.addImage({
-        buffer: fs.readFileSync(path.resolve(__dirname, '../../assets/logo.png')),
-        extension: 'png'
-    })
-
-    worksheet.mergeCells('A1:A2')
-    worksheet.addImage(logo, {
-        tl: { col: 0.95, row: 0 },
-        ext: { width: 50, height: 50 }
-    })
+    setLogo(workbook, worksheet)
 
     // Header
     worksheet.mergeCells('B1:F1')
