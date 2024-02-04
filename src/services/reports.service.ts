@@ -7,12 +7,12 @@ import { SellersRepository } from '@repositories/sellers.repository'
 import { SimsProviderRepository } from '@repositories/sims_provider.repository'
 import { SimsRepository } from '@repositories/sims.repository'
 
+import ClientsReports from '@/reports/clients.reports'
+
 import XLSX from 'xlsx'
 import PdfPrinter from 'pdfmake'
 import { TDocumentDefinitions } from 'pdfmake/interfaces'
 import * as vfsFonts from 'pdfmake/build/vfs_fonts'
-
-import ExcelJS from 'exceljs'
 
 export class ReportsService {
     private readonly client: ClientsRepository
@@ -37,50 +37,18 @@ export class ReportsService {
             client_code: params.client_code
         })
 
-        const data = radios.data.map(radio => ({
-            ...radio,
-            model: radio.model.name,
-            status: radio.status?.name ?? '-',
-            sim: radio.sim?.number ?? '-'
-        }))
-
         if (params.format === 'xlsx') {
-            const workbook = new ExcelJS.Workbook()
-
-            const worksheet = workbook.addWorksheet('Data')
-
-            worksheet.columns = [
-                { header: 'Código', key: 'code', width: 10 },
-                { header: 'Modelo', key: 'model', width: 32 },
-                { header: 'IMEI', key: 'imei', width: 15 },
-                { header: 'Status', key: 'status', width: 15 },
-                { header: 'SIM', key: 'sim', width: 15 }
-            ]
-
-            worksheet.addRows(data)
-
-            const buf = await workbook.xlsx.writeBuffer()
-
-            return buf as Buffer
+            return await ClientsReports.xlsx(client, radios.data)
         } else if (params.format === 'csv') {
-            const workbook = new ExcelJS.Workbook()
-
-            const worksheet = workbook.addWorksheet('Data')
-
-            worksheet.columns = [
-                { header: 'Código', key: 'code', width: 10 },
-                { header: 'Modelo', key: 'model', width: 32 },
-                { header: 'IMEI', key: 'imei', width: 15 },
-                { header: 'Status', key: 'status', width: 15 },
-                { header: 'SIM', key: 'sim', width: 15 }
-            ]
-
-            worksheet.addRows(data)
-
-            const buf = await workbook.csv.writeBuffer()
-
-            return buf as Buffer
+            return await ClientsReports.csv(client, radios.data)
         } else if (params.format === 'pdf') {
+            const data = radios.data.map(radio => ({
+                ...radio,
+                model: radio.model.name,
+                status: radio.status?.name ?? '-',
+                sim: radio.sim?.number ?? '-'
+            }))
+
             return await createPdf({
                 content: [
                     {
