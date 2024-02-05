@@ -1,7 +1,7 @@
 import { RadiosSchemaSelectType } from '@/models/radios.model'
 import { RadiosModelShemaSelectType } from '@/models/radios_model.model'
 
-import { cellCircleColor, setLogo } from './util'
+import { cellCircleColor, createPdf, setLogo } from './util'
 
 import ExcelJS from 'exceljs'
 
@@ -65,9 +65,9 @@ export async function xlsx (
     return buf as Buffer
 }
 
-export async function csv (
+export function csv (
     radios: RadiosSchemaSelectType[]
-): Promise<Buffer> {
+): Buffer {
     const data = [
         ['Código', 'Nombre', 'IMEI', 'SIM', 'Proveedor'],
         ...radios.map(radio => [
@@ -82,4 +82,32 @@ export async function csv (
     const buf = Buffer.from(data.map(row => row.join(',')).join('\n'))
 
     return buf
+}
+
+export async function pdf (
+    model: RadiosModelShemaSelectType,
+    radios: RadiosSchemaSelectType[]
+): Promise<Buffer> {
+    return await createPdf([
+        {
+            text: `Modelo: ${model.name}`,
+            style: 'header'
+        },
+        {
+            style: 'tableExample',
+            table: {
+            body: [
+                ['Código', 'Nombre', 'IMEI', 'Modelo', 'SIM', 'Proveedor'],
+                ...radios.map(radio => [
+                        radio.code,
+                        radio.name ?? '-',
+                        radio.imei,
+                        radio.model.name,
+                        radio.sim?.number ?? '-',
+                        radio.sim?.provider?.name ?? '-'
+                    ])
+                ]
+            }
+      }
+    ])
 }

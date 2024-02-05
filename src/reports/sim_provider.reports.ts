@@ -1,7 +1,7 @@
 import { SimsShemaSelectType } from '@models/sims.model'
 import { SimsProviderShemaSelectType } from '@models/sims_provider.model'
 
-import { cellCircleColor, setLogo } from './util'
+import { cellCircleColor, createPdf, setLogo } from './util'
 
 import ExcelJS from 'exceljs'
 
@@ -67,4 +67,28 @@ export function csv (
     const buf = Buffer.from(data.map(row => row.join(',')).join('\n'))
 
     return buf
+}
+
+export async function pdf (
+    simProvider: SimsProviderShemaSelectType,
+    sims: SimsShemaSelectType[]
+): Promise<Buffer> {
+    return await createPdf([
+        {
+            text: `Proveedor: ${simProvider.name}`,
+            style: 'header'
+        },
+        {
+            style: 'tableExample',
+            table: {
+            body: [
+                ['Código', 'Número'],
+                ...sims.map(sim => [
+                    sim.code,
+                    sim.number
+                ])
+            ]
+            }
+        }
+    ])
 }

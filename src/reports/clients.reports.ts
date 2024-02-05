@@ -2,7 +2,7 @@ import { ClientsSchemaSelectType } from '@/models/clients.model'
 import { RadiosSchemaSelectType } from '@/models/radios.model'
 
 import { groupBy } from '@/utils/index'
-import { cellCircleColor, setLogo } from './util'
+import { cellCircleColor, createPdf, setLogo } from './util'
 
 import ExcelJS from 'exceljs'
 
@@ -119,35 +119,47 @@ export async function xlsx (
 }
 
 export async function csv (
+    radios: RadiosSchemaSelectType[]
+): Promise<Buffer> {
+    const data = [
+        ['Código', 'Nombre', 'IMEI', 'Modelo', 'SIM', 'Proveedor'],
+        ...radios.map(radio => [
+            radio.code,
+            radio.name,
+            radio.imei,
+            radio.model.name,
+            radio.sim?.number,
+            radio.sim?.provider?.name
+        ])
+    ]
+
+    return Buffer.from(data.map(row => row.join(',')).join('\n'))
+}
+
+export async function pdf (
     client: ClientsSchemaSelectType,
     radios: RadiosSchemaSelectType[]
 ): Promise<Buffer> {
-    const data = radios.map(radio => ({
-        ...radio,
-        model: radio.model.name,
-        sim: radio.sim?.number ?? '-'
-    }))
-
-    const workbook = new ExcelJS.Workbook()
-
-    const worksheet = workbook.addWorksheet(client.name)
-
-    worksheet.columns = [
-        { header: 'Código', key: 'code' },
-        { header: 'Nombre', key: 'name' },
-        { header: 'Modelo', key: 'model' },
-        { header: 'IMEI', key: 'imei' },
-        { header: 'SIM', key: 'sim' }
-    ]
-
-    worksheet.addRows(data)
-
-    const buf = await workbook.csv.writeBuffer()
-
-    return buf as Buffer
-}
-
-export default {
-    xlsx,
-    csv
+    return await createPdf([
+        {
+            text: `Cliente: ${client.name}`,
+            style: 'header'
+        },
+        {
+            style: 'tableExample',
+            table: {
+            body: [
+                    ['Código', 'Nombre', 'IMEI', 'Modelo', 'SIM', 'Proveedor'],
+                    ...radios.map(radio => [
+                        radio.code,
+                        radio.name ?? '-',
+                        radio.imei,
+                        radio.model.name,
+                        radio.sim?.number ?? '-',
+                        radio.sim?.provider?.name ?? '-'
+                    ])
+                ]
+            }
+        }
+    ])
 }

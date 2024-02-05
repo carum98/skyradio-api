@@ -1,7 +1,7 @@
 import { SellersSchemaSelectType } from '@/models/sellers.model'
 import { ClientsSchemaSelectType } from '@/models/clients.model'
 
-import { cellCircleColor, setLogo } from './util'
+import { cellCircleColor, setLogo, createPdf } from './util'
 
 import ExcelJS from 'exceljs'
 
@@ -75,4 +75,30 @@ export function csv (
     const buf = Buffer.from(data.map(row => row.join(',')).join('\n'))
 
     return buf
+}
+
+export async function pdf (
+    seller: SellersSchemaSelectType,
+    clients: ClientsSchemaSelectType[]
+): Promise<Buffer> {
+    return await createPdf([
+        {
+            text: `Vendedor: ${seller.name}`,
+            style: 'header'
+        },
+        {
+            style: 'tableExample',
+            table: {
+            body: [
+                ['Código', 'Cliente', 'Rádios', 'Modalidade'],
+                ...clients.map(client => [
+                        client.code,
+                        client.name,
+                        client.radios_count,
+                        client.modality.name
+                    ])
+                ]
+            }
+      }
+    ])
 }

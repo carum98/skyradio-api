@@ -12,10 +12,6 @@ import * as ModelsReports from '@/reports/models.reports'
 import * as SellersReports from '@/reports/sellers.reports'
 import * as SimsProviderReports from '@/reports/sim_provider.reports'
 
-import PdfPrinter from 'pdfmake'
-import { TDocumentDefinitions } from 'pdfmake/interfaces'
-import * as vfsFonts from 'pdfmake/build/vfs_fonts'
-
 export class ReportsService {
     private readonly client: ClientsRepository
     private readonly radios: RadiosRepository
@@ -42,48 +38,9 @@ export class ReportsService {
         if (params.format === 'xlsx') {
             return await ClientsReports.xlsx(client, radios.data)
         } else if (params.format === 'csv') {
-            return await ClientsReports.csv(client, radios.data)
+            return await ClientsReports.csv(radios.data)
         } else if (params.format === 'pdf') {
-            const data = radios.data.map(radio => ({
-                ...radio,
-                model: radio.model.name,
-                status: radio.status?.name ?? '-',
-                sim: radio.sim?.number ?? '-'
-            }))
-
-            return await createPdf({
-                content: [
-                    {
-                        text: `Cliente: ${client.name}`,
-                        style: 'header'
-                    },
-                    {
-                        style: 'tableExample',
-                        table: {
-                        body: [
-                            ['Código', 'Modelo', 'IMEI', 'Status', 'SIM'],
-                            ...data.map(radio => [
-                                    radio.code,
-                                    radio.model,
-                                    radio.imei,
-                                    radio.status,
-                                    radio.sim
-                                ])
-                            ]
-                        }
-                  }
-                ],
-                styles: {
-                    header: {
-                        fontSize: 18,
-                        bold: true,
-                        margin: [0, 0, 0, 10]
-                    },
-                    tableExample: {
-                        margin: [0, 5, 0, 15]
-                    }
-                }
-            })
+            return await ClientsReports.pdf(client, radios.data)
         } else {
             throw new Error('Formato inválido')
         }
@@ -98,48 +55,9 @@ export class ReportsService {
         if (params.format === 'xlsx') {
             return await ModelsReports.xlsx(modelInfo, radios.data)
         } else if (params.format === 'csv') {
-            return await ModelsReports.csv(radios.data)
+            return ModelsReports.csv(radios.data)
         } else if (params.format === 'pdf') {
-            const data = radios.data.map(radio => ({
-                ...radio,
-                client: radio.client?.name ?? '-',
-                status: radio.status?.name ?? '-',
-                sim: radio.sim?.number ?? '-'
-            }))
-
-            return await createPdf({
-                content: [
-                    {
-                        text: `Modelo: ${modelInfo.name}`,
-                        style: 'header'
-                    },
-                    {
-                        style: 'tableExample',
-                        table: {
-                        body: [
-                            ['Código', 'Cliente', 'IMEI', 'Status', 'SIM'],
-                            ...data.map(radio => [
-                                    radio.code,
-                                    radio.client,
-                                    radio.imei,
-                                    radio.status,
-                                    radio.sim
-                                ])
-                            ]
-                        }
-                  }
-                ],
-                styles: {
-                    header: {
-                        fontSize: 18,
-                        bold: true,
-                        margin: [0, 0, 0, 10]
-                    },
-                    tableExample: {
-                        margin: [0, 5, 0, 15]
-                    }
-                }
-            })
+            return await ModelsReports.pdf(modelInfo, radios.data)
         } else {
             throw new Error('Formato inválido')
         }
@@ -156,44 +74,7 @@ export class ReportsService {
         } else if (params.format === 'csv') {
             return SellersReports.csv(clients.data)
         } else if (params.format === 'pdf') {
-            const data = clients.data.map(client => ({
-                ...client,
-                seller: client.seller?.name ?? '-',
-                modality: client.modality?.name ?? '-'
-            }))
-
-            return await createPdf({
-                content: [
-                    {
-                        text: `Vendedor: ${seller.name}`,
-                        style: 'header'
-                    },
-                    {
-                        style: 'tableExample',
-                        table: {
-                        body: [
-                            ['Código', 'Cliente', 'Rádios', 'Modalidade'],
-                            ...data.map(client => [
-                                    client.code,
-                                    client.name,
-                                    client.radios_count,
-                                    client.modality
-                                ])
-                            ]
-                        }
-                  }
-                ],
-                styles: {
-                    header: {
-                        fontSize: 18,
-                        bold: true,
-                        margin: [0, 0, 0, 10]
-                    },
-                    tableExample: {
-                        margin: [0, 5, 0, 15]
-                    }
-                }
-            })
+            return await SellersReports.pdf(seller, clients.data)
         } else {
             throw new Error('Formato inválido')
         }
@@ -210,71 +91,9 @@ export class ReportsService {
         } else if (params.format === 'csv') {
             return SimsProviderReports.csv(sims.data)
         } else if (params.format === 'pdf') {
-            const data = sims.data.map(sim => ({
-                ...sim,
-                provider: sim.provider?.name ?? '-',
-                radio: sim.radio?.imei ?? '-'
-            }))
-
-            return await createPdf({
-                content: [
-                    {
-                        text: `Proveedor: ${provider.name}`,
-                        style: 'header'
-                    },
-                    {
-                        style: 'tableExample',
-                        table: {
-                        body: [
-                            ['Código', 'Número', 'Rádio'],
-                            ...data.map(sim => [
-                                    sim.code,
-                                    sim.number,
-                                    sim.radio
-                                ])
-                        ]
-                        }
-                  }
-                ],
-                styles: {
-                    header: {
-                        fontSize: 18,
-                        bold: true,
-                        margin: [0, 0, 0, 10]
-                    },
-                    tableExample: {
-                        margin: [0, 5, 0, 15]
-                    }
-                }
-            })
+            return await SimsProviderReports.pdf(provider, sims.data)
         } else {
             throw new Error('Formato inválido')
         }
     }
-}
-
-async function createPdf (docDefinition: TDocumentDefinitions): Promise<Buffer> {
-    const Roboto = {
-        normal: Buffer.from(vfsFonts.pdfMake.vfs['Roboto-Regular.ttf'], 'base64'),
-        bold: Buffer.from(vfsFonts.pdfMake.vfs['Roboto-Medium.ttf'], 'base64'),
-        italics: Buffer.from(vfsFonts.pdfMake.vfs['Roboto-Italic.ttf'], 'base64'),
-        bolditalics: Buffer.from(
-          vfsFonts.pdfMake.vfs['Roboto-MediumItalic.ttf'],
-          'base64'
-        )
-    }
-
-    const printer = new PdfPrinter({ Roboto })
-    const pdfDoc = printer.createPdfKitDocument(docDefinition)
-
-    return await new Promise((resolve, reject) => {
-      try {
-        const chunks: Uint8Array[] = []
-        pdfDoc.on('data', (chunk) => chunks.push(chunk))
-        pdfDoc.on('end', () => resolve(Buffer.concat(chunks)))
-        pdfDoc.end()
-      } catch (err) {
-        reject(err)
-      }
-    })
 }
