@@ -1,4 +1,4 @@
-import { mysqlTable, primaryKey, int, varchar, datetime, unique, index, mysqlEnum } from 'drizzle-orm/mysql-core'
+import { mysqlTable, int, varchar, datetime, unique, index, mysqlEnum } from 'drizzle-orm/mysql-core'
 import { sql } from 'drizzle-orm'
 import { GroupSchemaSelect, groups } from './groups.model'
 
@@ -9,7 +9,7 @@ import { ResponsePaginationSchema } from '@/utils/pagination'
 export const UserRoles = ['admin', 'user'] as const
 
 export const users = mysqlTable('users', {
-	id: int('id').autoincrement().notNull(),
+	id: int('id').autoincrement().primaryKey(),
 	code: varchar('code', { length: 6 }).notNull(),
 	name: varchar('name', { length: 100 }).notNull(),
 	email: varchar('email', { length: 100 }).notNull(),
@@ -24,7 +24,6 @@ export const users = mysqlTable('users', {
 	return {
 		group_id: index('group_id').on(table.group_id),
 		email_2: index('email_2').on(table.email),
-		users_id: primaryKey(table.id),
 		email: unique('email').on(table.email)
 	}
 })

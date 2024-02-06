@@ -1,4 +1,4 @@
-import { mysqlTable, primaryKey, int, varchar, datetime, unique, index } from 'drizzle-orm/mysql-core'
+import { mysqlTable, int, varchar, datetime, unique, index } from 'drizzle-orm/mysql-core'
 import { sql } from 'drizzle-orm'
 import { users } from './users.model'
 
@@ -6,7 +6,7 @@ import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 
 export const refresh_tokens = mysqlTable('refresh_tokens', {
-	id: int('id').autoincrement().notNull(),
+	id: int('id').autoincrement().primaryKey(),
 	user_id: int('user_id').notNull().references(() => users.id),
 	token: varchar('token', { length: 255 }).notNull(),
 	created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
@@ -17,7 +17,6 @@ export const refresh_tokens = mysqlTable('refresh_tokens', {
 	return {
 		user_id: index('user_id').on(table.user_id),
 		token_2: index('token_2').on(table.token, table.user_id),
-		refresh_tokens_id: primaryKey(table.id),
 		token: unique('token').on(table.token, table.user_id)
 	}
 })

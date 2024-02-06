@@ -1,4 +1,4 @@
-import { datetime, index, int, mysqlTable, primaryKey, varchar } from 'drizzle-orm/mysql-core'
+import { datetime, index, int, mysqlTable, varchar } from 'drizzle-orm/mysql-core'
 import { sql } from 'drizzle-orm'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
@@ -7,7 +7,7 @@ import { ResponsePaginationSchema } from '@/utils/pagination'
 import { HexColorSchema } from '@/utils/schemas'
 
 export const clients_modality = mysqlTable('clients_modality', {
-    id: int('id').autoincrement().notNull(),
+    id: int('id').autoincrement().primaryKey(),
     code: varchar('code', { length: 6 }).notNull(),
     name: varchar('name', { length: 100 }).notNull(),
     color: varchar('color', { length: 7 }).notNull(),
@@ -17,7 +17,6 @@ export const clients_modality = mysqlTable('clients_modality', {
 	deleted_at: datetime('deleted_at', { mode: 'string' })
 }, (table) => {
     return {
-        companies_modality_id: primaryKey(table.id),
         group_id: index('group_id').on(table.group_id)
     }
 })

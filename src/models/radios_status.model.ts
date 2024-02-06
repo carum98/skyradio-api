@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { datetime, index, int, mysqlTable, primaryKey, varchar } from 'drizzle-orm/mysql-core'
+import { datetime, index, int, mysqlTable, varchar } from 'drizzle-orm/mysql-core'
 import { groups } from './groups.model'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
@@ -8,7 +8,7 @@ import { HexColorSchema } from '@/utils/schemas'
 
 export const radios_status = mysqlTable('radios_status', {
     id: int('id').autoincrement().notNull(),
-    code: varchar('code', { length: 6 }).notNull(),
+    code: varchar('code', { length: 6 }).primaryKey(),
     name: varchar('name', { length: 12 }).notNull(),
     color: varchar('color', { length: 7 }).notNull(),
     group_id: int('group_id').notNull().references(() => groups.id),
@@ -17,7 +17,6 @@ export const radios_status = mysqlTable('radios_status', {
     deleted_at: datetime('deleted_at', { mode: 'string' })
 }, (table) => {
     return {
-        radios_status_id: primaryKey(table.id),
         radios_status_code: index('radios_status_code').on(table.code),
         group_id: index('group_id').on(table.group_id)
     }

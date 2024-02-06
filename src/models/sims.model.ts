@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { datetime, int, mysqlTable, varchar, primaryKey, index } from 'drizzle-orm/mysql-core'
+import { datetime, int, mysqlTable, varchar, index } from 'drizzle-orm/mysql-core'
 import { groups } from './groups.model'
 import { sims_provider } from './sims_provider.model'
 import { createSelectSchema } from 'drizzle-zod'
@@ -8,7 +8,7 @@ import { ResponsePaginationSchema } from '@/utils/pagination'
 import { ClientsSchemaSelect } from './clients.model'
 
 export const sims = mysqlTable('sims', {
-    id: int('id').autoincrement().notNull(),
+    id: int('id').autoincrement().primaryKey(),
     code: varchar('code', { length: 6 }).notNull(),
     number: varchar('number', { length: 12 }).notNull(),
     serial: varchar('serial', { length: 24 }),
@@ -19,7 +19,6 @@ export const sims = mysqlTable('sims', {
     deleted_at: datetime('deleted_at', { mode: 'string' })
 }, (table) => {
     return {
-        sims_id: primaryKey(table.id),
         sims_code: index('sims_code').on(table.code),
         provider_id: index('provider_id').on(table.provider_id),
         group_id: index('group_id').on(table.group_id)

@@ -1,4 +1,4 @@
-import { mysqlTable, primaryKey, int, varchar, datetime } from 'drizzle-orm/mysql-core'
+import { mysqlTable, int, varchar, datetime } from 'drizzle-orm/mysql-core'
 import { sql } from 'drizzle-orm'
 
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
@@ -6,16 +6,11 @@ import { z } from 'zod'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 
 export const groups = mysqlTable('groups', {
-	id: int('id').autoincrement().notNull(),
+	id: int('id').autoincrement().primaryKey(),
 	name: varchar('name', { length: 100 }).notNull(),
 	created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updated_at: datetime('updated_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
 	deleted_at: datetime('deleted_at', { mode: 'string' })
-},
-(table) => {
-	return {
-		groups_id: primaryKey(table.id)
-	}
 })
 
 export const GroupSchemaSelect = createSelectSchema(groups)

@@ -1,12 +1,12 @@
 import { sql } from 'drizzle-orm'
-import { datetime, index, int, mysqlTable, primaryKey, varchar } from 'drizzle-orm/mysql-core'
+import { datetime, index, int, mysqlTable, varchar } from 'drizzle-orm/mysql-core'
 import { groups } from './groups.model'
 import { createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 
 export const sellers = mysqlTable('sellers', {
-    id: int('id').autoincrement().notNull(),
+    id: int('id').autoincrement().primaryKey(),
     code: varchar('code', { length: 6 }).notNull(),
     name: varchar('name', { length: 100 }).notNull(),
 	group_id: int('group_id').notNull().references(() => groups.id),
@@ -15,7 +15,6 @@ export const sellers = mysqlTable('sellers', {
     deleted_at: datetime('deleted_at', { mode: 'string' })
 }, (table) => {
     return {
-        sellers_id: primaryKey(table.id),
         sellers_code: index('sellers_code').on(table.code),
 		group_id: index('group_id').on(table.group_id)
     }

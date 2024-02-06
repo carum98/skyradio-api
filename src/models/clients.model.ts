@@ -1,4 +1,4 @@
-import { datetime, index, int, mysqlTable, primaryKey, varchar } from 'drizzle-orm/mysql-core'
+import { datetime, index, int, mysqlTable, varchar } from 'drizzle-orm/mysql-core'
 import { groups } from './groups.model'
 import { sql } from 'drizzle-orm'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
@@ -11,7 +11,7 @@ import { RadioModelSchemaCounter } from './radios_model.model'
 import { SimsProviderSchemaCounter } from './sims_provider.model'
 
 export const clients = mysqlTable('clients', {
-    id: int('id').autoincrement().notNull(),
+    id: int('id').autoincrement().primaryKey(),
     code: varchar('code', { length: 6 }).notNull(),
     name: varchar('name', { length: 100 }).notNull(),
     color: varchar('color', { length: 7 }).notNull(),
@@ -24,7 +24,6 @@ export const clients = mysqlTable('clients', {
 }, (table) => {
     return {
 		group_id: index('group_id').on(table.group_id),
-        companies_id: primaryKey(table.id),
         modality_id: index('modality_id').on(table.modality_id),
         seller_id: index('seller_id').on(table.seller_id)
     }

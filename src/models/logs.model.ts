@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { datetime, index, int, mysqlEnum, mysqlTable, primaryKey } from 'drizzle-orm/mysql-core'
+import { datetime, index, int, mysqlEnum, mysqlTable } from 'drizzle-orm/mysql-core'
 import { UserSchemaSelect, users } from './users.model'
 import { groups } from './groups.model'
 import { RadiosSchemaSelect, radios } from './radios.model'
@@ -22,7 +22,7 @@ const Actions = [
 ] as const
 
 export const logs = mysqlTable('logs', {
-    id: int('id').autoincrement().notNull(),
+    id: int('id').autoincrement().primaryKey(),
     user_id: int('user_id').notNull().references(() => users.id),
     group_id: int('group_id').notNull().references(() => groups.id),
     radio_id: int('radio_id').references(() => radios.id),
@@ -33,7 +33,6 @@ export const logs = mysqlTable('logs', {
     deleted_at: datetime('deleted_at', { mode: 'string' })
 }, (table) => {
     return {
-        logs_id: primaryKey({ columns: [table.id] }),
         user_id: index('user_id').on(table.user_id),
         group_id: index('group_id').on(table.group_id),
         radio_id: index('radio_id').on(table.radio_id),

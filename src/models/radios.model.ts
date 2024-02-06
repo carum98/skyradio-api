@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { datetime, int, mysqlTable, varchar, primaryKey, index } from 'drizzle-orm/mysql-core'
+import { datetime, int, mysqlTable, varchar, index } from 'drizzle-orm/mysql-core'
 import { groups } from './groups.model'
 import { RadiosModelShemaSelect, radios_model } from './radios_model.model'
 import { RadiosStatusShemaSelect, radios_status } from './radios_status.model'
@@ -10,7 +10,7 @@ import { z } from 'zod'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 
 export const radios = mysqlTable('radios', {
-    id: int('id').autoincrement().notNull(),
+    id: int('id').autoincrement().primaryKey(),
     code: varchar('code', { length: 6 }).notNull(),
     name: varchar('name', { length: 100 }),
     imei: varchar('imei', { length: 50 }).notNull(),
@@ -25,7 +25,6 @@ export const radios = mysqlTable('radios', {
     deleted_at: datetime('deleted_at', { mode: 'string' })
 }, (table) => {
     return {
-        radios_id: primaryKey(table.id),
         radios_code: index('radios_code').on(table.code),
         radios_model_id: index('radios_model_id').on(table.model_id),
         radios_status_id: index('radios_status_id').on(table.status_id),
