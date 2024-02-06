@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "2dabef99-f6d7-4b7c-88ca-80efcba5c872",
+  "id": "96cc1d26-db91-4982-970f-61eff93a788f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "clients_modality": {
@@ -23,7 +23,7 @@
         },
         "name": {
           "name": "name",
-          "type": "varchar(255)",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -91,8 +91,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "clients_modality_id_pk": {
-          "name": "clients_modality_id_pk",
+        "clients_modality_id": {
+          "name": "clients_modality_id",
           "columns": [
             "id"
           ]
@@ -119,7 +119,7 @@
         },
         "name": {
           "name": "name",
-          "type": "varchar(255)",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -241,8 +241,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "clients_id_pk": {
-          "name": "clients_id_pk",
+        "clients_id": {
+          "name": "clients_id",
           "columns": [
             "id"
           ]
@@ -262,7 +262,7 @@
         },
         "name": {
           "name": "name",
-          "type": "varchar(255)",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -294,8 +294,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {
-        "groups_id_pk": {
-          "name": "groups_id_pk",
+        "groups_id": {
+          "name": "groups_id",
           "columns": [
             "id"
           ]
@@ -476,8 +476,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "logs_id_pk": {
-          "name": "logs_id_pk",
+        "logs_id": {
+          "name": "logs_id",
           "columns": [
             "id"
           ]
@@ -579,8 +579,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "radios_model_id_pk": {
-          "name": "radios_model_id_pk",
+        "radios_model_id": {
+          "name": "radios_model_id",
           "columns": [
             "id"
           ]
@@ -682,10 +682,10 @@
         }
       },
       "compositePrimaryKeys": {
-        "radios_status_id_pk": {
-          "name": "radios_status_id_pk",
+        "radios_status_code": {
+          "name": "radios_status_code",
           "columns": [
-            "id"
+            "code"
           ]
         }
       },
@@ -900,14 +900,27 @@
         }
       },
       "compositePrimaryKeys": {
-        "radios_id_pk": {
-          "name": "radios_id_pk",
+        "radios_id": {
+          "name": "radios_id",
           "columns": [
             "id"
           ]
         }
       },
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "radios_imei_unique": {
+          "name": "radios_imei_unique",
+          "columns": [
+            "imei"
+          ]
+        },
+        "radios_serial_unique": {
+          "name": "radios_serial_unique",
+          "columns": [
+            "serial"
+          ]
+        }
+      }
     },
     "refresh_tokens": {
       "name": "refresh_tokens",
@@ -990,8 +1003,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "refresh_tokens_id_pk": {
-          "name": "refresh_tokens_id_pk",
+        "refresh_tokens_id": {
+          "name": "refresh_tokens_id",
           "columns": [
             "id"
           ]
@@ -1026,7 +1039,7 @@
         },
         "name": {
           "name": "name",
-          "type": "varchar(255)",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -1094,8 +1107,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "sellers_id_pk": {
-          "name": "sellers_id_pk",
+        "sellers_id": {
+          "name": "sellers_id",
           "columns": [
             "id"
           ]
@@ -1122,7 +1135,7 @@
         },
         "name": {
           "name": "name",
-          "type": "varchar(255)",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -1197,8 +1210,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "sims_provider_id_pk": {
-          "name": "sims_provider_id_pk",
+        "sims_provider_id": {
+          "name": "sims_provider_id",
           "columns": [
             "id"
           ]
@@ -1327,14 +1340,27 @@
         }
       },
       "compositePrimaryKeys": {
-        "sims_id_pk": {
-          "name": "sims_id_pk",
+        "sims_id": {
+          "name": "sims_id",
           "columns": [
             "id"
           ]
         }
       },
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "sims_number_unique": {
+          "name": "sims_number_unique",
+          "columns": [
+            "number"
+          ]
+        },
+        "sims_serial_unique": {
+          "name": "sims_serial_unique",
+          "columns": [
+            "serial"
+          ]
+        }
+      }
     },
     "users": {
       "name": "users",
@@ -1355,14 +1381,14 @@
         },
         "name": {
           "name": "name",
-          "type": "varchar(255)",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "email": {
           "name": "email",
-          "type": "varchar(255)",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -1445,14 +1471,20 @@
         }
       },
       "compositePrimaryKeys": {
-        "users_id_pk": {
-          "name": "users_id_pk",
+        "users_id": {
+          "name": "users_id",
           "columns": [
             "id"
           ]
         }
       },
       "uniqueConstraints": {
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "columns": [
+            "email"
+          ]
+        },
         "email": {
           "name": "email",
           "columns": [

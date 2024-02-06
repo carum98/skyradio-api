@@ -1,19 +1,19 @@
 CREATE TABLE `clients_modality` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`code` varchar(6) NOT NULL,
-	`name` varchar(255) NOT NULL,
+	`name` varchar(100) NOT NULL,
 	`color` varchar(7) NOT NULL,
 	`group_id` int NOT NULL,
 	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`deleted_at` datetime,
-	CONSTRAINT `clients_modality_id_pk` PRIMARY KEY(`id`)
+	CONSTRAINT `clients_modality_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `clients` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`code` varchar(6) NOT NULL,
-	`name` varchar(255) NOT NULL,
+	`name` varchar(100) NOT NULL,
 	`color` varchar(7) NOT NULL,
 	`group_id` int NOT NULL,
 	`modality_id` int NOT NULL,
@@ -21,16 +21,16 @@ CREATE TABLE `clients` (
 	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`deleted_at` datetime,
-	CONSTRAINT `clients_id_pk` PRIMARY KEY(`id`)
+	CONSTRAINT `clients_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `groups` (
 	`id` int AUTO_INCREMENT NOT NULL,
-	`name` varchar(255) NOT NULL,
+	`name` varchar(100) NOT NULL,
 	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`deleted_at` datetime,
-	CONSTRAINT `groups_id_pk` PRIMARY KEY(`id`)
+	CONSTRAINT `groups_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `logs` (
@@ -43,7 +43,7 @@ CREATE TABLE `logs` (
 	`action` enum('create-client','create-radio','create-sim','add-radio-to-client','add-sim-to-radio','remove-radio-from-client','remove-sim-from-radio','swap-radio-from-client','swap-sim-from-radio') NOT NULL,
 	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`deleted_at` datetime,
-	CONSTRAINT `logs_id_pk` PRIMARY KEY(`id`)
+	CONSTRAINT `logs_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `radios_model` (
@@ -55,7 +55,7 @@ CREATE TABLE `radios_model` (
 	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`deleted_at` datetime,
-	CONSTRAINT `radios_model_id_pk` PRIMARY KEY(`id`)
+	CONSTRAINT `radios_model_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `radios_status` (
@@ -67,7 +67,7 @@ CREATE TABLE `radios_status` (
 	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`deleted_at` datetime,
-	CONSTRAINT `radios_status_id_pk` PRIMARY KEY(`id`)
+	CONSTRAINT `radios_status_code` PRIMARY KEY(`code`)
 );
 --> statement-breakpoint
 CREATE TABLE `radios` (
@@ -84,7 +84,9 @@ CREATE TABLE `radios` (
 	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`deleted_at` datetime,
-	CONSTRAINT `radios_id_pk` PRIMARY KEY(`id`)
+	CONSTRAINT `radios_id` PRIMARY KEY(`id`),
+	CONSTRAINT `radios_imei_unique` UNIQUE(`imei`),
+	CONSTRAINT `radios_serial_unique` UNIQUE(`serial`)
 );
 --> statement-breakpoint
 CREATE TABLE `refresh_tokens` (
@@ -94,31 +96,31 @@ CREATE TABLE `refresh_tokens` (
 	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`deleted_at` datetime,
-	CONSTRAINT `refresh_tokens_id_pk` PRIMARY KEY(`id`),
+	CONSTRAINT `refresh_tokens_id` PRIMARY KEY(`id`),
 	CONSTRAINT `token` UNIQUE(`token`,`user_id`)
 );
 --> statement-breakpoint
 CREATE TABLE `sellers` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`code` varchar(6) NOT NULL,
-	`name` varchar(255) NOT NULL,
+	`name` varchar(100) NOT NULL,
 	`group_id` int NOT NULL,
 	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`deleted_at` datetime,
-	CONSTRAINT `sellers_id_pk` PRIMARY KEY(`id`)
+	CONSTRAINT `sellers_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `sims_provider` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`code` varchar(6) NOT NULL,
-	`name` varchar(255) NOT NULL,
+	`name` varchar(100) NOT NULL,
 	`color` varchar(7) NOT NULL,
 	`group_id` int NOT NULL,
 	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`deleted_at` datetime,
-	CONSTRAINT `sims_provider_id_pk` PRIMARY KEY(`id`)
+	CONSTRAINT `sims_provider_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `sims` (
@@ -131,21 +133,24 @@ CREATE TABLE `sims` (
 	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`deleted_at` datetime,
-	CONSTRAINT `sims_id_pk` PRIMARY KEY(`id`)
+	CONSTRAINT `sims_id` PRIMARY KEY(`id`),
+	CONSTRAINT `sims_number_unique` UNIQUE(`number`),
+	CONSTRAINT `sims_serial_unique` UNIQUE(`serial`)
 );
 --> statement-breakpoint
 CREATE TABLE `users` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`code` varchar(6) NOT NULL,
-	`name` varchar(255) NOT NULL,
-	`email` varchar(255) NOT NULL,
+	`name` varchar(100) NOT NULL,
+	`email` varchar(100) NOT NULL,
 	`password` varchar(255) NOT NULL,
 	`role` enum('admin','user') NOT NULL DEFAULT 'user',
 	`group_id` int NOT NULL,
 	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`deleted_at` datetime,
-	CONSTRAINT `users_id_pk` PRIMARY KEY(`id`),
+	CONSTRAINT `users_id` PRIMARY KEY(`id`),
+	CONSTRAINT `users_email_unique` UNIQUE(`email`),
 	CONSTRAINT `email` UNIQUE(`email`)
 );
 --> statement-breakpoint
