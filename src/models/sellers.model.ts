@@ -8,7 +8,7 @@ import { ResponsePaginationSchema } from '@/utils/pagination'
 export const sellers = mysqlTable('sellers', {
     id: int('id').autoincrement().notNull(),
     code: varchar('code', { length: 6 }).notNull(),
-    name: varchar('name', { length: 255 }).notNull(),
+    name: varchar('name', { length: 100 }).notNull(),
 	group_id: int('group_id').notNull().references(() => groups.id),
     created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
     updated_at: datetime('updated_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),

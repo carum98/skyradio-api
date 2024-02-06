@@ -9,7 +9,7 @@ import { HexColorSchema } from '@/utils/schemas'
 export const sims_provider = mysqlTable('sims_provider', {
     id: int('id').autoincrement().notNull(),
     code: varchar('code', { length: 6 }).notNull(),
-    name: varchar('name', { length: 255 }).notNull(),
+    name: varchar('name', { length: 100 }).notNull(),
     color: varchar('color', { length: 7 }).notNull(),
     group_id: int('group_id').notNull().references(() => groups.id),
     created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),

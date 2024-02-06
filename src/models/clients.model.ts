@@ -13,7 +13,7 @@ import { SimsProviderSchemaCounter } from './sims_provider.model'
 export const clients = mysqlTable('clients', {
     id: int('id').autoincrement().notNull(),
     code: varchar('code', { length: 6 }).notNull(),
-    name: varchar('name', { length: 255 }).notNull(),
+    name: varchar('name', { length: 100 }).notNull(),
     color: varchar('color', { length: 7 }).notNull(),
 	group_id: int('group_id').notNull().references(() => groups.id),
     modality_id: int('modality_id').notNull().references(() => clients_modality.id),
