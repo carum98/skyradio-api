@@ -12,7 +12,7 @@ export const users = mysqlTable('users', {
 	id: int('id').autoincrement().primaryKey(),
 	code: varchar('code', { length: 6 }).notNull(),
 	name: varchar('name', { length: 100 }).notNull(),
-	email: varchar('email', { length: 100 }).notNull(),
+	email: varchar('email', { length: 100 }).unique().notNull(),
 	password: varchar('password', { length: 255 }).notNull(),
 	role: mysqlEnum('role', UserRoles).default('user').notNull(),
 	group_id: int('group_id').notNull().references(() => groups.id),

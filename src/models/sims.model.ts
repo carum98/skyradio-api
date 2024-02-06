@@ -10,8 +10,8 @@ import { ClientsSchemaSelect } from './clients.model'
 export const sims = mysqlTable('sims', {
     id: int('id').autoincrement().primaryKey(),
     code: varchar('code', { length: 6 }).notNull(),
-    number: varchar('number', { length: 12 }).notNull(),
-    serial: varchar('serial', { length: 24 }),
+    number: varchar('number', { length: 12 }).unique().notNull(),
+    serial: varchar('serial', { length: 24 }).unique(),
     provider_id: int('provider_id').notNull().references(() => sims_provider.id),
     group_id: int('group_id').notNull().references(() => groups.id),
     created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
