@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "96cc1d26-db91-4982-970f-61eff93a788f",
+  "id": "71bc1a15-7ad6-4eab-82fc-8cc0e2c04234",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "clients_modality": {
@@ -602,7 +602,7 @@
           "name": "code",
           "type": "varchar(6)",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "name": {
@@ -682,10 +682,10 @@
         }
       },
       "compositePrimaryKeys": {
-        "radios_status_code": {
-          "name": "radios_status_code",
+        "radios_status_id": {
+          "name": "radios_status_id",
           "columns": [
-            "code"
+            "id"
           ]
         }
       },

@@ -60,14 +60,14 @@ CREATE TABLE `radios_model` (
 --> statement-breakpoint
 CREATE TABLE `radios_status` (
 	`id` int AUTO_INCREMENT NOT NULL,
-	`code` varchar(6) NOT NULL,
+	`code` varchar(6),
 	`name` varchar(12) NOT NULL,
 	`color` varchar(7) NOT NULL,
 	`group_id` int NOT NULL,
 	`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`deleted_at` datetime,
-	CONSTRAINT `radios_status_code` PRIMARY KEY(`code`)
+	CONSTRAINT `radios_status_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `radios` (
