@@ -7,8 +7,8 @@ import { ResponsePaginationSchema } from '@/utils/pagination'
 import { HexColorSchema } from '@/utils/schemas'
 
 export const radios_status = mysqlTable('radios_status', {
-    id: int('id').autoincrement().notNull(),
-    code: varchar('code', { length: 6 }).primaryKey(),
+    id: int('id').autoincrement().primaryKey(),
+    code: varchar('code', { length: 6 }),
     name: varchar('name', { length: 12 }).notNull(),
     color: varchar('color', { length: 7 }).notNull(),
     group_id: int('group_id').notNull().references(() => groups.id),
