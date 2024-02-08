@@ -14,5 +14,6 @@ services:
         - 4462:3306
       volumes:
         - ./.db:/var/lib/mysql
+        - ./logs:/var/lib/logs
       networks:
         - skyradio-network
