@@ -9,3 +9,19 @@ export const groupBy = (x: any[], f: (arg: any) => any): Record<string, any[]> =
 // Hexa to ARGB
 // Example: #FF0000 -> 'FFFF0000'
 export const hexaToArgb = (hexa: string = '#FF0000'): string => hexa.slice(1).padStart(8, 'F')
+
+// Date now formatted
+export const dateNowFormatted = (): { date: string, time: string }=> {
+    const date = new Date()
+    const day = date.getDate()
+    const month = date.getMonth() + 1
+    const year = date.getFullYear()
+    const hour = date.getHours()
+    const minutes = date.getMinutes()
+    const seconds = date.getSeconds()
+
+    return { 
+        date: `${year}-${month}-${day}`, 
+        time: `${hour}:${minutes}:${seconds}`
+    }
+}
