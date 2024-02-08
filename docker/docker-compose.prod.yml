@@ -8,12 +8,13 @@ services:
         - NODE_ENV=production
       networks:
         - skyradio-network
+      volumes:
+        - ./logs:/app/logs
     
     db:
       ports:
         - 4462:3306
       volumes:
         - ./.db:/var/lib/mysql
-        - ./logs:/var/lib/logs
       networks:
         - skyradio-network
