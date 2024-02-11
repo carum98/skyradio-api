@@ -49,23 +49,23 @@ export const actionsMessages = z.function()
     .implement((action) => {
         switch (action) {
             case 'create-client':
-                return 'Cliente creado {{ client }}'
+                return 'Creado {{ client }}'
             case 'create-radio':
-                return 'Radio creado {{ radio }}'
+                return 'Creado {{ radio }}'
             case 'create-sim':
-                return 'Sim creado {{ sim }}'
+                return 'Creado {{ sim }}'
             case 'add-radio-to-client':
-                return 'Radio {{ radio }} agregado al cliente {{ client }}'
+                return 'Radio {{ radio }} relacionado al cliente {{ client }}'
             case 'add-sim-to-radio':
-                return 'Sim {{ sim }} agregado a radio {{ radio }}'
+                return 'Sim {{ sim }} relacionado al radio {{ radio }}'
             case 'remove-radio-from-client':
                 return 'Radio {{ radio }} removido de cliente {{ client }}'
             case 'remove-sim-from-radio':
                 return 'Sim {{ sim }} removido de radio {{ radio }}'
             case 'swap-radio-from-client':
-                return 'Radio cambiado de cliente'
+                return 'Cambio de radio'
             case 'swap-sim-from-radio':
-                return 'Sim cambiado de radio'
+                return 'Cambio de sim'
         }
     })
 
