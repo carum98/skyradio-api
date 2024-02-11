@@ -10,11 +10,12 @@ import { RadiosRepository } from '@repositories/radios.repository'
 import { SimsShemaSelect, SimsShemaSelectType } from '@/models/sims.model'
 import { LogsRepository } from '@/repositories/logs.repository'
 import { LogsSchemaSelectPaginated, LogsSchemaSelectPaginatedType } from '@/models/logs.model'
+import { RadiosStatusRepository } from '@/repositories/radios_status.repository'
 
 export class RadiosService {
     private readonly radios: RadiosRepository
     private readonly model: RadiosModelRepository
-    private readonly status: RadiosModelRepository
+    private readonly status: RadiosStatusRepository
     private readonly client: ClientsRepository
     private readonly sim: SimsRepository
     private readonly logs: LogsRepository
@@ -22,7 +23,7 @@ export class RadiosService {
     constructor (datasource: DataSource) {
         this.radios = datasource.create(RadiosRepository)
         this.model = datasource.create(RadiosModelRepository)
-        this.status = datasource.create(RadiosModelRepository)
+        this.status = datasource.create(RadiosStatusRepository)
         this.client = datasource.create(ClientsRepository)
         this.sim = datasource.create(SimsRepository)
         this.logs = datasource.create(LogsRepository)
