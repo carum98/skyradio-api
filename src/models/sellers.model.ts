@@ -35,9 +35,14 @@ export const SellersSchemaUniqueIdentifier = createSelectSchema(sellers, {
     code: (schema) => schema.code.length(6)
 }).pick({ code: true }).required()
 
+export const SellerSchemaCounter = SellersSchemaSelect.extend({
+    count: z.number()
+})
+
 export const SellersSchemaSelectPaginated = ResponsePaginationSchema(SellersSchemaSelect)
 
 export type SellersSchemaCreateType = z.infer<typeof SellersSchemaCreate>
 export type SellersSchemaSelectType = z.infer<typeof SellersSchemaSelect>
 export type SellersSchemaUpdateType = z.infer<typeof SellersSchemaUpdate>
 export type SellersSchemaSelectPaginatedType = z.infer<typeof SellersSchemaSelectPaginated>
+export type SellerSchemaCounterType = z.infer<typeof SellerSchemaCounter>

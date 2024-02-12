@@ -40,6 +40,11 @@ export class ClientsRouter extends RouterCore {
         })
 
         this.get({
+            name: '/stats/all',
+            handler: controller.getStats
+        })
+
+        this.get({
             name: '/:code',
             handler: controller.get,
             middlewares: [
@@ -127,7 +132,7 @@ export class ClientsRouter extends RouterCore {
 
         this.get({
             name: '/:code/stats',
-            handler: controller.getStats,
+            handler: controller.getStatsByClient,
             middlewares: [
                 requestMiddleware({
                     params: ClientsSchemaUniqueIdentifier

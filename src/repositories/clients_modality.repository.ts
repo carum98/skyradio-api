@@ -1,8 +1,9 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { eq } from 'drizzle-orm'
-import { ClientsModalitySchemaCreateType, ClientsModalitySchemaSelect, ClientsModalitySchemaSelectPaginated, ClientsModalitySchemaSelectPaginatedType, ClientsModalitySchemaSelectType, ClientsModalitySchemaUpdateType, clients_modality } from '@/models/clients_modality.model'
+import { count, eq, sql } from 'drizzle-orm'
+import { ClientsModalitySchemaCounterType, ClientsModalitySchemaCreateType, ClientsModalitySchemaSelect, ClientsModalitySchemaSelectPaginated, ClientsModalitySchemaSelectPaginatedType, ClientsModalitySchemaSelectType, ClientsModalitySchemaUpdateType, clients_modality } from '@models/clients_modality.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { IRepository, RepositoryCore } from '@/core/repository.core'
+import { clients } from '@models/clients.model'
 
 export class ClientsModalityRepository extends RepositoryCore<ClientsModalitySchemaSelectType, ClientsModalitySchemaCreateType, ClientsModalitySchemaUpdateType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
@@ -60,5 +61,17 @@ export class ClientsModalityRepository extends RepositoryCore<ClientsModalitySch
 
     public async delete (code: string): Promise<boolean> {
         return await super.deleteCore(eq(clients_modality.code, code))
+    }
+
+    public async countAll (): Promise<ClientsModalitySchemaCounterType[]> {
+        return await this.db.select({
+            code: clients_modality.code,
+            name: clients_modality.name,
+            color: clients_modality.color,
+            count: count(clients_modality.code)
+        })
+        .from(clients)
+        .rightJoin(clients_modality, eq(clients_modality.id, clients.modality_id))
+        .groupBy(sql`${clients_modality.code}, ${clients_modality.name}, ${clients_modality.color}`)
     }
 }

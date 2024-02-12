@@ -1,8 +1,9 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { eq } from 'drizzle-orm'
-import { SellersSchemaCreateType, SellersSchemaSelect, SellersSchemaSelectPaginated, SellersSchemaSelectPaginatedType, SellersSchemaSelectType, SellersSchemaUpdateType, sellers } from '@models/sellers.model'
+import { count, eq, sql } from 'drizzle-orm'
+import { SellerSchemaCounterType, SellersSchemaCreateType, SellersSchemaSelect, SellersSchemaSelectPaginated, SellersSchemaSelectPaginatedType, SellersSchemaSelectType, SellersSchemaUpdateType, sellers } from '@models/sellers.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { IRepository, RepositoryCore } from '@/core/repository.core'
+import { clients } from '@/models/clients.model'
 
 export class SellersRepository extends RepositoryCore<SellersSchemaSelectType, SellersSchemaCreateType, SellersSchemaUpdateType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
@@ -59,5 +60,16 @@ export class SellersRepository extends RepositoryCore<SellersSchemaSelectType, S
 
     public async delete (code: string): Promise<boolean> {
         return await super.deleteCore(eq(sellers.code, code))
+    }
+
+    public async countAll (): Promise<SellerSchemaCounterType[]> {
+        return await this.db.select({
+            code: sellers.code,
+            name: sellers.name,
+            count: count(sellers.code)
+        })
+        .from(clients)
+        .rightJoin(sellers, eq(sellers.id, clients.seller_id))
+        .groupBy(sql`${sellers.code}, ${sellers.name}`)
     }
 }

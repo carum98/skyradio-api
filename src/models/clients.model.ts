@@ -3,8 +3,8 @@ import { groups } from './groups.model'
 import { sql } from 'drizzle-orm'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
-import { ClientsModalitySchemaSelect, clients_modality } from './clients_modality.model'
-import { SellersSchemaSelect, sellers } from './sellers.model'
+import { ClientsModalitySchemaCounter, ClientsModalitySchemaSelect, clients_modality } from './clients_modality.model'
+import { SellerSchemaCounter, SellersSchemaSelect, sellers } from './sellers.model'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 import { HexColorSchema } from '@/utils/schemas'
 import { RadioModelSchemaCounter } from './radios_model.model'
@@ -89,9 +89,14 @@ export const ClientsSchemaUniqueIdentifier = createSelectSchema(clients, {
 
 export const ClientsSchemaSelectPaginated = ResponsePaginationSchema(ClientsSchemaSelect)
 
-export const ClientsSchemaStats = z.object({
+export const ClientsSchemaStatsByClient = z.object({
     models: RadioModelSchemaCounter.array(),
     sims_providers: SimsProviderSchemaCounter.array()
+})
+
+export const ClientSchemaStats = z.object({
+    sellers: SellerSchemaCounter.array(),
+    modality: ClientsModalitySchemaCounter.array()
 })
 
 export type ClientsSchemaCreateRawType = z.infer<typeof ClientsSchemaCreateRaw>
@@ -102,4 +107,5 @@ export type ClientsSchemaUpdateType = z.infer<typeof ClientsSchemaUpdate>
 export type ClientsSchemaSelectPaginatedType = z.infer<typeof ClientsSchemaSelectPaginated>
 export type ClientsRadiosSchemaType = z.infer<typeof ClientsRadiosSchema>
 export type ClientRadiosSwapSchemaType = z.infer<typeof ClientRadiosSwapSchema>
-export type ClientsSchemaStatsType = z.infer<typeof ClientsSchemaStats>
+export type ClientsSchemaStatsByClientType = z.infer<typeof ClientsSchemaStatsByClient>
+export type ClientSchemaStatsType = z.infer<typeof ClientSchemaStats>

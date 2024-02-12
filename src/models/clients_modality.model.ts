@@ -37,9 +37,14 @@ export const ClientsModalitySchemaUniqueIdentifier = createSelectSchema(clients_
     code: (schema) => schema.code.length(6)
 }).pick({ code: true }).required()
 
+export const ClientsModalitySchemaCounter = ClientsModalitySchemaSelect.extend({
+    count: z.number()
+})
+
 export const ClientsModalitySchemaSelectPaginated = ResponsePaginationSchema(ClientsModalitySchemaSelect)
 
 export type ClientsModalitySchemaCreateType = z.infer<typeof ClientsModalitySchemaCreate>
 export type ClientsModalitySchemaSelectType = z.infer<typeof ClientsModalitySchemaSelect>
 export type ClientsModalitySchemaUpdateType = z.infer<typeof ClientsModalitySchemaUpdate>
 export type ClientsModalitySchemaSelectPaginatedType = z.infer<typeof ClientsModalitySchemaSelectPaginated>
+export type ClientsModalitySchemaCounterType = z.infer<typeof ClientsModalitySchemaCounter>

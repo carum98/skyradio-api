@@ -1,4 +1,4 @@
-import { ClientsSchemaCreateType, ClientsSchemaSelect, ClientsSchemaSelectPaginated, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateType, ClientsRadiosSchemaType, ClientRadiosSwapSchemaType, ClientsSchemaStatsType, ClientsSchemaStats } from '@models/clients.model'
+import { ClientsSchemaCreateType, ClientsSchemaSelect, ClientsSchemaSelectPaginated, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateType, ClientsRadiosSchemaType, ClientRadiosSwapSchemaType, ClientsSchemaStatsByClientType, ClientsSchemaStatsByClient, ClientSchemaStatsType, ClientSchemaStats } from '@models/clients.model'
 import { ClientsRepository } from '@/repositories/clients.repository'
 import { RadiosRepository } from '@repositories/radios.repository'
 import { PaginationSchemaType } from '@/utils/pagination'
@@ -103,7 +103,7 @@ export class ClientsService {
         return LogsSchemaSelectPaginated.parse(data)
     }
 
-    public async getStats (client_code: string): Promise<ClientsSchemaStatsType> {
+    public async getStatsByClient (client_code: string): Promise<ClientsSchemaStatsByClientType> {
         const { client_id = 0 } = await this.findIdsByCodes({ client_code })
 
         const [models, sims_providers] = await Promise.all([
@@ -111,9 +111,21 @@ export class ClientsService {
             this.providers.countByClient(client_id)
         ])
 
-        return ClientsSchemaStats.parse({
+        return ClientsSchemaStatsByClient.parse({
             models,
             sims_providers
+        })
+    }
+
+    public async getStats (): Promise<ClientSchemaStatsType> {
+        const [sellers, modality] = await Promise.all([
+            this.seller.countAll(),
+            this.modality.countAll()
+        ])
+
+        return ClientSchemaStats.parse({
+            sellers,
+            modality
         })
     }
 
