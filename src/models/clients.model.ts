@@ -89,6 +89,14 @@ export const ClientsSchemaUniqueIdentifier = createSelectSchema(clients, {
 
 export const ClientsSchemaSelectPaginated = ResponsePaginationSchema(ClientsSchemaSelect)
 
+export const ClientsSchemaCounter = ClientsSchemaSelect
+    .omit({ modality: true, seller: true, radios_count: true })
+    .extend({
+        count: z.number().int(),
+        models: RadioModelSchemaCounter.array(),
+        providers: SimsProviderSchemaCounter.array()
+    })
+
 export const ClientsSchemaStatsByClient = z.object({
     models: RadioModelSchemaCounter.array(),
     sims_providers: SimsProviderSchemaCounter.array()
@@ -96,7 +104,8 @@ export const ClientsSchemaStatsByClient = z.object({
 
 export const ClientSchemaStats = z.object({
     sellers: SellerSchemaCounter.array(),
-    modality: ClientsModalitySchemaCounter.array()
+    modality: ClientsModalitySchemaCounter.array(),
+    clients: ClientsSchemaCounter.array()
 })
 
 export type ClientsSchemaCreateRawType = z.infer<typeof ClientsSchemaCreateRaw>
@@ -108,4 +117,5 @@ export type ClientsSchemaSelectPaginatedType = z.infer<typeof ClientsSchemaSelec
 export type ClientsRadiosSchemaType = z.infer<typeof ClientsRadiosSchema>
 export type ClientRadiosSwapSchemaType = z.infer<typeof ClientRadiosSwapSchema>
 export type ClientsSchemaStatsByClientType = z.infer<typeof ClientsSchemaStatsByClient>
+export type ClientsSchemaCounterType = z.infer<typeof ClientsSchemaCounter>
 export type ClientSchemaStatsType = z.infer<typeof ClientSchemaStats>

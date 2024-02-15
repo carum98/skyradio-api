@@ -118,14 +118,16 @@ export class ClientsService {
     }
 
     public async getStats (): Promise<ClientSchemaStatsType> {
-        const [sellers, modality] = await Promise.all([
+        const [sellers, modality, clients] = await Promise.all([
             this.seller.countAll(),
-            this.modality.countAll()
+            this.modality.countAll(),
+            this.companies.countAll()
         ])
 
         return ClientSchemaStats.parse({
             sellers,
-            modality
+            modality,
+            clients
         })
     }
 
