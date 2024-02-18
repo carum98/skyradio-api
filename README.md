@@ -11,6 +11,13 @@ This project use [Docker](https://www.docker.com/), with two containers, one for
 
 The project has 3 environments, development, testing and production. Each environment has its own docker configuration file, which is located in the `/docker` folder.
 
+## Documentation
+The documentation of the project is located in the `/docs` folder, and is divided into the following files:
+
+- [Endpoints](./docs/endpoints/index.md)
+- [File Structure](./docs/file_structure.md)
+- [Database Structure](./docs/database_structure.md)
+
 ## Environment variables
 The project has a `.env` file, which contains the environment variables, which are:
 
