@@ -97,7 +97,7 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
                 code: clients.code,
                 name: clients.name,
                 color: clients.color,
-                count: count(clients.code),
+                count: count(clients.code)
             },
             models: {
                 code: radios_model.code,
@@ -127,7 +127,7 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
 
             const client_code = client.code
 
-            if (!acc[client_code]) {
+            if (!Object.prototype.hasOwnProperty.call(acc, client_code)) {
                 acc[client_code] = {
                     ...client,
                     models: [],
@@ -135,11 +135,11 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
                 }
             }
 
-            if (models) {
+            if (models !== null) {
                 acc[client_code].models.push(models)
             }
 
-            if (providers) {
+            if (providers !== null) {
                 acc[client_code].providers.push(providers)
             }
 
