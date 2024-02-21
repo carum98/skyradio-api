@@ -152,7 +152,9 @@ export class ClientsController {
     }
 
     public getStats = async (req: Request, res: Response): Promise<Response> => {
-        const data = await this.service.getStats()
+        const { group_id } = req.body
+
+        const data = await this.service.getStats(parseInt(group_id))
 
         return res.json(data)
     }

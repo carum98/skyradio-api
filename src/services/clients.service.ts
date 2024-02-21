@@ -117,11 +117,11 @@ export class ClientsService {
         })
     }
 
-    public async getStats (): Promise<ClientSchemaStatsType> {
+    public async getStats (group_id: number): Promise<ClientSchemaStatsType> {
         const [sellers, modality, clients] = await Promise.all([
-            this.seller.countAll(),
-            this.modality.countAll(),
-            this.companies.countAll()
+            this.seller.countAll(group_id),
+            this.modality.countAll(group_id),
+            this.companies.countAll(group_id)
         ])
 
         return ClientSchemaStats.parse({

@@ -91,7 +91,7 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
         })
     }
 
-    public async countAll (): Promise<ClientsSchemaCounterType[]> {
+    public async countAll (group_id: number): Promise<ClientsSchemaCounterType[]> {
         const rows = await this.db.select({
             client: {
                 code: clients.code,
@@ -117,6 +117,7 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
         .leftJoin(radios_model, eq(radios.model_id, radios_model.id))
         .leftJoin(sims, eq(radios.sim_id, sims.id))
         .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
+        .where(eq(clients.group_id, group_id))
         .groupBy(sql`${clients.code}, ${clients.name}, ${clients.color}, ${radios_model.code}, ${radios_model.name}, ${radios_model.color}, ${sims_provider.code}, ${sims_provider.name}, ${sims_provider.color}`)
         .orderBy(clients.code, radios_model.code, sims_provider.code)
 

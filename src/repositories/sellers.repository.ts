@@ -62,7 +62,7 @@ export class SellersRepository extends RepositoryCore<SellersSchemaSelectType, S
         return await super.deleteCore(eq(sellers.code, code))
     }
 
-    public async countAll (): Promise<SellerSchemaCounterType[]> {
+    public async countAll (group_id: number): Promise<SellerSchemaCounterType[]> {
         return await this.db.select({
             code: sellers.code,
             name: sellers.name,
@@ -70,6 +70,7 @@ export class SellersRepository extends RepositoryCore<SellersSchemaSelectType, S
         })
         .from(clients)
         .rightJoin(sellers, eq(sellers.id, clients.seller_id))
+        .where(eq(clients.group_id, group_id))
         .groupBy(sql`${sellers.code}, ${sellers.name}`)
     }
 }
