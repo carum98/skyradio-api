@@ -4,6 +4,7 @@ import { SimsShemaSelectType } from '@models/sims.model'
 import { cellCircleColor, createPdf } from './util'
 
 import ExcelJS from 'exceljs'
+import { groupByAndCount } from '@/utils'
 
 export async function xlsx (
     radios: RadiosSchemaSelectType[],
@@ -11,11 +12,59 @@ export async function xlsx (
 ): Promise<Buffer> {
     const workbook = new ExcelJS.Workbook()
 
-    // Sort radios by model
+    // Sort
     radios.sort((a, b) => a.model.name.localeCompare(b.model.name))
-
-    // Sort sims by provider
     sims.sort((a, b) => a.provider.name.localeCompare(b.provider.name))
+
+    // Counters 
+    const counters = workbook.addWorksheet('Inventario')
+
+    const radiosGroupBy = groupByAndCount(radios, (radio) => radio.model.code)
+    const simsGroupBy = groupByAndCount(sims, (sim) => sim.provider.code)
+
+    counters.columns = [
+        { key: 'model', width: 15 },
+        { key: 'count', width: 8 },
+        { key: 'spacer', width: 15 },
+        { key: 'provider', width: 15 },
+        { key: 'count', width: 8 }
+    ]
+
+    counters.addTable({
+        name: 'Modelos',
+        ref: 'A1',
+        headerRow: true,
+        totalsRow: true,
+        style: {
+            theme: 'TableStyleLight9',
+            showRowStripes: false
+        },
+        columns: [
+            { name: 'Modelo' },
+            { name: 'Cantidad', totalsRowFunction: 'sum' }
+        ],
+        rows: Object.values(radiosGroupBy).sort((a, b) => b.count - a.count).map(({ model, count }) => [model, count])
+    })
+
+    counters.getColumn('A').eachCell(cellCircleColor)
+
+    counters.addTable({
+        name: 'Proveedores',
+        ref: 'D1',
+        headerRow: true,
+        totalsRow: true,
+        style: {
+            theme: 'TableStyleLight9',
+            showRowStripes: false
+        },
+        columns: [
+            { name: 'Proveedor' },
+            { name: 'Cantidad', totalsRowFunction: 'sum' }
+        ],
+        rows: Object.values(simsGroupBy).sort((a, b) => b.count - a.count).map(({ provider, count }) => [provider, count])
+    })
+
+    counters.getColumn('D').eachCell(cellCircleColor)
 
     // Radios
     const worksheetRadios = workbook.addWorksheet('Radios')
