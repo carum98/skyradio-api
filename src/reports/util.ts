@@ -9,7 +9,7 @@ import { Content } from 'pdfmake/interfaces'
 import * as vfsFonts from 'pdfmake/build/vfs_fonts'
 
 export function cellCircleColor (cell: Cell): void {
-    if (cell.value != null && typeof cell.value === 'object') {
+    if (cell.value != null && !cell.formula && typeof cell.value === 'object') {
         const value = cell.value as unknown as { name: string, color: string }
 
         cell.value = {

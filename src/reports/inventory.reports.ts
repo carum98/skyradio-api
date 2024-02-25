@@ -11,6 +11,12 @@ export async function xlsx (
 ): Promise<Buffer> {
     const workbook = new ExcelJS.Workbook()
 
+    // Sort radios by model
+    radios.sort((a, b) => a.model.name.localeCompare(b.model.name))
+
+    // Sort sims by provider
+    sims.sort((a, b) => a.provider.name.localeCompare(b.provider.name))
+
     // Radios
     const worksheetRadios = workbook.addWorksheet('Radios')
 
@@ -20,7 +26,6 @@ export async function xlsx (
         { key: 'model', width: 10 }
     ]
 
-    // Table
     worksheetRadios.addTable({
         name: 'Radios',
         ref: 'A1',
@@ -33,7 +38,7 @@ export async function xlsx (
         columns: [
             { name: 'Código', filterButton: false },
             { name: 'IMEI', filterButton: true },
-            { name: 'Modelo', filterButton: true }
+            { name: 'Modelo', filterButton: true, totalsRowFunction: 'count' }
         ],
         rows: radios.map(radio => [
             radio.code,
@@ -53,7 +58,6 @@ export async function xlsx (
         { key: 'provider', width: 15 }
     ]
 
-    // Table
     worksheetSims.addTable({
         name: 'Sims',
         ref: 'A1',
@@ -66,7 +70,7 @@ export async function xlsx (
         columns: [
             { name: 'Código', filterButton: false },
             { name: 'Número', filterButton: true },
-            { name: 'Proveedor', filterButton: true }
+            { name: 'Proveedor', filterButton: true, totalsRowFunction: 'count' }
         ],
         rows: sims.map(sim => [
             sim.code,
