@@ -1,5 +1,5 @@
 import { DataSource } from '@/core/data-source.core'
-import { ReportsSchemaClientsType, ReportsSchemaModelsType, ReportsSchemaSellersType, ReportsSchemaSimsProviderType } from '@models/reports.model'
+import { ReportsSchemaClientsType, ReportsSchemaInventoryType, ReportsSchemaModelsType, ReportsSchemaSellersType, ReportsSchemaSimsProviderType } from '@models/reports.model'
 import { ClientsRepository } from '@repositories/clients.repository'
 import { RadiosRepository } from '@repositories/radios.repository'
 import { RadiosModelRepository } from '@repositories/radios_model.repository'
@@ -11,6 +11,7 @@ import * as ClientsReports from '@/reports/clients.reports'
 import * as ModelsReports from '@/reports/models.reports'
 import * as SellersReports from '@/reports/sellers.reports'
 import * as SimsProviderReports from '@/reports/sim_provider.reports'
+import * as InventoryReports from '@/reports/inventory.reports'
 
 export class ReportsService {
     private readonly client: ClientsRepository
@@ -92,6 +93,20 @@ export class ReportsService {
             return SimsProviderReports.csv(sims.data)
         } else if (params.format === 'pdf') {
             return await SimsProviderReports.pdf(provider, sims.data)
+        } else {
+            throw new Error('Formato inválido')
+        }
+    }
+
+    public async inventory (group_id: number, params: ReportsSchemaInventoryType): Promise<Buffer> {
+        const radios = await this.radios.getAllBy(group_id, { available: true })
+
+        if (params.format === 'xlsx') {
+            return await InventoryReports.xlsx(radios.data)
+        } else if (params.format === 'csv') {
+            return await InventoryReports.csv(radios.data)
+        } else if (params.format === 'pdf') {
+            return await InventoryReports.pdf(radios.data)
         } else {
             throw new Error('Formato inválido')
         }

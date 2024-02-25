@@ -1,6 +1,6 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { RadiosSchemaCreateRawType, RadiosSchemaSelectPaginatedType, RadiosSchemaSelectType, RadiosSchemaUpdateRawType, radios } from '@models/radios.model'
-import { and, eq, inArray } from 'drizzle-orm'
+import { and, eq, inArray, isNull } from 'drizzle-orm'
 import { radios_model } from '@models/radios_model.model'
 import { radios_status } from '@models/radios_status.model'
 import { sims } from '@models/sims.model'
@@ -160,7 +160,7 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
         return data[0].affectedRows > 0
     }
 
-    public async getAllBy (group_id: number, params: { client_code?: string, model_code?: string }): Promise<RadiosSchemaSelectPaginatedType> {
+    public async getAllBy (group_id: number, params: { client_code?: string, model_code?: string, available?: boolean }): Promise<RadiosSchemaSelectPaginatedType> {
         const { client_code } = params
 
         const where = [
@@ -173,6 +173,11 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
 
         if (params.model_code !== undefined) {
             where.push(eq(radios_model.code, params.model_code))
+        }
+
+        if (params.available === true) {
+            where.push(isNull(radios.client_id))
+            where.push(isNull(radios.deleted_at))
         }
 
         return await super.getAllCore({
