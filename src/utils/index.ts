@@ -6,6 +6,16 @@ export const groupBy = (x: any[], f: (arg: any) => any): Record<string, any[]> =
         return a
     }, {})
 
+// Group by and count
+export function groupByAndCount<T> (arr: T[], f: (arg: T) => any): Record<string, T & { count: number }> {
+    const data = groupBy(arr, f)
+
+    return Object.entries(data).reduce((a, [key, value]) => {
+        a[key] = { ...value[0], count: value.length }
+        return a
+    }, {} as Record<string, T & { count: number }>)
+} 
+
 // Hexa to ARGB
 // Example: #FF0000 -> 'FFFF0000'
 export const hexaToArgb = (hexa: string = '#FF0000'): string => hexa.slice(1).padStart(8, 'F')

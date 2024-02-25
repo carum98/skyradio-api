@@ -1,5 +1,5 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { and, count, eq, sql } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import { ClientsSchemaCounterType, ClientsSchemaCreateRawType, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateRawType, clients } from '@models/clients.model'
 import { clients_modality } from '@models/clients_modality.model'
 import { sellers } from '@models/sellers.model'
@@ -9,6 +9,7 @@ import { IRepository, RepositoryCore } from '@/core/repository.core'
 import { radios_model } from '@models/radios_model.model'
 import { sims_provider } from '@models/sims_provider.model'
 import { sims } from '@models/sims.model'
+import { groupBy, groupByAndCount } from '@/utils'
 
 export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, ClientsSchemaCreateRawType, ClientsSchemaUpdateRawType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
@@ -92,65 +93,67 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
     }
 
     public async countAll (group_id: number): Promise<ClientsSchemaCounterType[]> {
+        type ResultType = {
+            client: {
+                code: string
+                name: string
+                color: string
+            }
+            models: {
+                code: string
+                name: string
+                color: string
+            } | null
+            providers: {
+                code: string
+                name: string
+                color: string
+            } | null
+        }
+
         const rows = await this.db.select({
             client: {
                 code: clients.code,
                 name: clients.name,
-                color: clients.color,
-                count: count(clients.code)
+                color: clients.color
             },
             models: {
                 code: radios_model.code,
                 name: radios_model.name,
-                color: radios_model.color,
-                count: count(radios_model.code)
+                color: radios_model.color
             },
             providers: {
                 code: sims_provider.code,
                 name: sims_provider.name,
-                color: sims_provider.color,
-                count: count(sims_provider.code)
+                color: sims_provider.color
             }
         })
         .from(clients)
-        .leftJoin(radios, eq(radios.client_id, clients.id))
+        .innerJoin(radios, eq(radios.client_id, clients.id))
         .leftJoin(radios_model, eq(radios.model_id, radios_model.id))
         .leftJoin(sims, eq(radios.sim_id, sims.id))
         .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
-        .where(eq(clients.group_id, group_id))
-        .groupBy(sql`${clients.code}, ${clients.name}, ${clients.color}, ${radios_model.code}, ${radios_model.name}, ${radios_model.color}, ${sims_provider.code}, ${sims_provider.name}, ${sims_provider.color}`)
-        .orderBy(clients.code, radios_model.code, sims_provider.code)
+        .where(eq(clients.group_id, group_id)) as Array<ResultType>
 
-        const result = rows.reduce<Record<string, ClientsSchemaCounterType>>((acc, row) => {
-            const client = row.client
-            const models = row.models
-            const providers = row.providers
+        const data = groupBy(rows, (v) => v.client.code)
 
-            const client_code = client.code
+        const result = Object.entries(data).map(([_, value]) => {
+            const models = groupByAndCount(value, (v) => v.models.code)
+            const providers = groupByAndCount(value.filter(v => v.providers), (v) => v.providers?.code)
 
-            if (!Object.prototype.hasOwnProperty.call(acc, client_code)) {
-                acc[client_code] = {
-                    ...client,
-                    models: [],
-                    providers: []
-                }
-            }
+            return {
+                ...value.at(0).client,
+                count: value.length,
+                models: Object.values(models).map((v) => ({ ...v.models, count: v.count })),
+                providers: Object.values(providers).map((v) => ({ ...v.providers, count: v.count }))
+            } as ClientsSchemaCounterType
+        })
 
-            if (models !== null) {
-                acc[client_code].models.push(models)
-            }
+        const x = [...Object.values(result)]
 
-            if (providers !== null) {
-                acc[client_code].providers.push(providers)
-            }
+        // Sort by count
+        x.sort((a, b) => b.count - a.count)
 
-            return acc
-        }, {})
-
-        const data = [...Object.values(result)]
-
-        data.sort((a, b) => a.count - b.count)
-
-        return data
+        return x
     }
 }
