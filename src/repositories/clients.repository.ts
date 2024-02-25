@@ -1,5 +1,5 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { and, eq, sql } from 'drizzle-orm'
+import { and, eq, isNull, sql } from 'drizzle-orm'
 import { ClientsSchemaCounterType, ClientsSchemaCreateRawType, ClientsSchemaSelectPaginatedType, ClientsSchemaSelectType, ClientsSchemaUpdateRawType, clients } from '@models/clients.model'
 import { clients_modality } from '@models/clients_modality.model'
 import { sellers } from '@models/sellers.model'
@@ -133,7 +133,7 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
         .leftJoin(radios_model, eq(radios.model_id, radios_model.id))
         .leftJoin(sims, eq(radios.sim_id, sims.id))
         .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
-        .where(eq(clients.group_id, group_id)) as Array<ResultType>
+        .where(and(eq(clients.group_id, group_id), isNull(clients.deleted_at))) as Array<ResultType>
 
         const data = groupBy(rows, (v) => v.client.code)
 

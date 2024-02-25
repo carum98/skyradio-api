@@ -1,5 +1,5 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { count, eq, sql } from 'drizzle-orm'
+import { and, count, desc, eq, isNull, sql } from 'drizzle-orm'
 import { SellerSchemaCounterType, SellersSchemaCreateType, SellersSchemaSelect, SellersSchemaSelectPaginated, SellersSchemaSelectPaginatedType, SellersSchemaSelectType, SellersSchemaUpdateType, sellers } from '@models/sellers.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { IRepository, RepositoryCore } from '@/core/repository.core'
@@ -70,7 +70,8 @@ export class SellersRepository extends RepositoryCore<SellersSchemaSelectType, S
         })
         .from(clients)
         .rightJoin(sellers, eq(sellers.id, clients.seller_id))
-        .where(eq(clients.group_id, group_id))
+        .where(and(eq(clients.group_id, group_id), isNull(clients.deleted_at)))
         .groupBy(sql`${sellers.code}, ${sellers.name}`)
+        .orderBy(desc(count(sellers.code)))
     }
 }

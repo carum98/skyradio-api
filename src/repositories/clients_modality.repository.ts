@@ -1,5 +1,5 @@
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { count, eq, sql } from 'drizzle-orm'
+import { and, count, desc, eq, isNull, sql } from 'drizzle-orm'
 import { ClientsModalitySchemaCounterType, ClientsModalitySchemaCreateType, ClientsModalitySchemaSelect, ClientsModalitySchemaSelectPaginated, ClientsModalitySchemaSelectPaginatedType, ClientsModalitySchemaSelectType, ClientsModalitySchemaUpdateType, clients_modality } from '@models/clients_modality.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { IRepository, RepositoryCore } from '@/core/repository.core'
@@ -72,7 +72,8 @@ export class ClientsModalityRepository extends RepositoryCore<ClientsModalitySch
         })
         .from(clients)
         .rightJoin(clients_modality, eq(clients_modality.id, clients.modality_id))
-        .where(eq(clients.group_id, group_id))
+        .where(and(eq(clients.group_id, group_id), isNull(clients.deleted_at)))
         .groupBy(sql`${clients_modality.code}, ${clients_modality.name}, ${clients_modality.color}`)
+        .orderBy(desc(count(clients_modality.code)))
     }
 }
