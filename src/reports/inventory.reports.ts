@@ -1,24 +1,27 @@
 import { RadiosSchemaSelectType } from '@models/radios.model'
+import { SimsShemaSelectType } from '@models/sims.model'
 
 import { cellCircleColor, createPdf } from './util'
 
 import ExcelJS from 'exceljs'
 
 export async function xlsx (
-    radios: RadiosSchemaSelectType[]
+    radios: RadiosSchemaSelectType[],
+    sims: SimsShemaSelectType[]
 ): Promise<Buffer> {
     const workbook = new ExcelJS.Workbook()
 
-    const worksheet = workbook.addWorksheet('Inventario')
+    // Radios
+    const worksheetRadios = workbook.addWorksheet('Radios')
 
-    worksheet.columns = [
+    worksheetRadios.columns = [
         { key: 'code', width: 8 },
         { key: 'imei', width: 20 },
         { key: 'model', width: 10 }
     ]
 
     // Table
-    worksheet.addTable({
+    worksheetRadios.addTable({
         name: 'Radios',
         ref: 'A1',
         headerRow: true,
@@ -39,7 +42,40 @@ export async function xlsx (
         ])
     })
 
-    worksheet.getColumn('C').eachCell(cellCircleColor)
+    worksheetRadios.getColumn('C').eachCell(cellCircleColor)
+
+    // Sims
+    const worksheetSims = workbook.addWorksheet('Sims')
+
+    worksheetSims.columns = [
+        { key: 'code', width: 8 },
+        { key: 'number', width: 10 },
+        { key: 'provider', width: 15 }
+    ]
+
+    // Table
+    worksheetSims.addTable({
+        name: 'Sims',
+        ref: 'A1',
+        headerRow: true,
+        totalsRow: true,
+        style: {
+            theme: 'TableStyleLight9',
+            showRowStripes: false
+        },
+        columns: [
+            { name: 'Código', filterButton: false },
+            { name: 'Número', filterButton: true },
+            { name: 'Proveedor', filterButton: true }
+        ],
+        rows: sims.map(sim => [
+            sim.code,
+            sim.number,
+            sim.provider
+        ])
+    })
+
+    worksheetSims.getColumn('C').eachCell(cellCircleColor)
 
     const buf = await workbook.xlsx.writeBuffer()
 

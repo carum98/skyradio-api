@@ -99,10 +99,16 @@ export class ReportsService {
     }
 
     public async inventory (group_id: number, params: ReportsSchemaInventoryType): Promise<Buffer> {
-        const radios = await this.radios.getAllBy(group_id, { available: true })
+        const [
+            radios,
+            sims
+        ] = await Promise.all([
+            this.radios.getAllBy(group_id, { available: true }),
+            this.sims.getAllBy(group_id, { available: true })
+        ])
 
         if (params.format === 'xlsx') {
-            return await InventoryReports.xlsx(radios.data)
+            return await InventoryReports.xlsx(radios.data, sims.data)
         } else if (params.format === 'csv') {
             return await InventoryReports.csv(radios.data)
         } else if (params.format === 'pdf') {

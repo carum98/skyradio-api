@@ -1,6 +1,6 @@
 import { SimsSchemaCreateRawType, SimsSchemaSelectPaginatedType, SimsSchemaUpdateRawType, SimsShemaSelectType, sims } from '@/models/sims.model'
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, isNull } from 'drizzle-orm'
 import { sims_provider } from '@models/sims_provider.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { IRepository, RepositoryCore } from '@/core/repository.core'
@@ -77,7 +77,7 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsSche
         return await super.deleteCore(eq(sims.code, code))
     }
 
-    public async getAllBy (group_id: number, params: { provider_code?: string }): Promise<SimsSchemaSelectPaginatedType> {
+    public async getAllBy (group_id: number, params: { provider_code?: string, available?: boolean }): Promise<SimsSchemaSelectPaginatedType> {
         const { provider_code } = params
 
         const where = [
@@ -86,6 +86,11 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsSche
 
         if (provider_code !== undefined) {
             where.push(eq(sims_provider.code, provider_code))
+        }
+
+        if (params.available === true) {
+            where.push(isNull(sims.deleted_at))
+            where.push(isNull(radios.client_id))
         }
 
         return await super.getAllCore({
