@@ -199,8 +199,9 @@ export class RadiosController {
 
     public import = async (req: Request, res: Response): Promise<void> => {
         const file = req.file as Express.Multer.File
+        const params = req.body as SessionUserInfoSchemaType
 
-        await this.importt.importRadios(file.buffer)
+        await this.importt.importRadios(file.buffer, params)
 
         res.status(204).json()
     }

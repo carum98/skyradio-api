@@ -9,6 +9,7 @@ import { RadiosCompanySchema, RadiosSchemaCreate, RadiosSchemaUniqueIdentifier, 
 import { PaginationSchema } from '@/utils/pagination'
 import { LogsService } from '@/services/logs.service'
 import { ImportService } from '@/services/import.service'
+import { rolesMiddleware } from '@middlewares/roles.middleware'
 
 export class RadiosRauter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -161,7 +162,14 @@ export class RadiosRauter extends RouterCore {
             name: '/imports',
             handler: controller.import,
             middlewares: [
+                rolesMiddleware(['admin']),
                 fileMiddleware(),
+                requestMiddleware({
+                    file: {
+                        maxSize: 1024 * 1024 * 2,
+                        types: ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+                    }
+                })
             ]
         })
     }

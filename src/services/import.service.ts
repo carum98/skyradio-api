@@ -1,3 +1,4 @@
+import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
 import { DataSource } from '@/core/data-source.core'
 import { RadiosRepository } from '@/repositories/radios.repository'
 
@@ -10,7 +11,7 @@ export class ImportService {
         this.radios = datasource.create(RadiosRepository)
     }
 
-    public async importRadios (buffer: Buffer): Promise<void> {
+    public async importRadios (buffer: Buffer, params: SessionUserInfoSchemaType): Promise<void> {
         const workbook = new ExcelJS.Workbook()
         await workbook.xlsx.load(buffer)
 
@@ -21,10 +22,14 @@ export class ImportService {
 
             return {
                 imei: values.at(1),
-                model: values.at(2),
+                model: values.at(2)
             }
         })
 
-        console.log(radios)
+        console.log({
+            radios,
+            user_id: params.user_id,
+            group_id: params.group_id
+        })
     }
 }
