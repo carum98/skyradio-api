@@ -4,9 +4,11 @@ import { authMiddleware } from '@middlewares/auth.middleware'
 import { RadiosService } from '@services/radios.service'
 import { RadiosController } from '@controllers/radios.controller'
 import { requestMiddleware } from '@middlewares/request.middleware'
+import { fileMiddleware } from '@middlewares/file.middleware'
 import { RadiosCompanySchema, RadiosSchemaCreate, RadiosSchemaUniqueIdentifier, RadiosSchemaUpdate, RadiosSimsSchema } from '@models/radios.model'
 import { PaginationSchema } from '@/utils/pagination'
 import { LogsService } from '@/services/logs.service'
+import { ImportService } from '@/services/import.service'
 
 export class RadiosRauter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -17,7 +19,8 @@ export class RadiosRauter extends RouterCore {
 
         const service = new RadiosService(datasource)
         const logs = new LogsService(datasource)
-        const controller = new RadiosController(service, logs)
+        const importt = new ImportService(datasource)
+        const controller = new RadiosController(service, logs, importt)
 
         this.get({
             name: '/',
@@ -151,6 +154,14 @@ export class RadiosRauter extends RouterCore {
                     params: RadiosSchemaUniqueIdentifier,
                     query: PaginationSchema
                 })
+            ]
+        })
+
+        this.post({
+            name: '/imports',
+            handler: controller.import,
+            middlewares: [
+                fileMiddleware(),
             ]
         })
     }

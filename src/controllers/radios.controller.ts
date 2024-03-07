@@ -4,11 +4,13 @@ import { RadiosCompanySchemaType, RadiosSchemaCreateType, RadiosSchemaUpdateType
 import { PaginationSchemaType } from '@/utils/pagination'
 import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
 import { LogsService } from '@/services/logs.service'
+import { ImportService } from '@/services/import.service'
 
 export class RadiosController {
     constructor (
         private readonly service: RadiosService,
-        private readonly logs: LogsService
+        private readonly logs: LogsService,
+        private readonly importt: ImportService
     ) {}
 
     public getAll = async (req: Request, res: Response): Promise<void> => {
@@ -193,5 +195,13 @@ export class RadiosController {
         const data = await this.service.getLogs(code, query)
 
         res.json(data)
+    }
+
+    public import = async (req: Request, res: Response): Promise<void> => {
+        const file = req.file as Express.Multer.File
+
+        await this.importt.importRadios(file.buffer)
+
+        res.status(204).json()
     }
 }
