@@ -1,5 +1,6 @@
 import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
 import { DataSource } from '@/core/data-source.core'
+import { RadiosSchemaCreateRawType } from '@/models/radios.model'
 import { RadiosRepository } from '@/repositories/radios.repository'
 
 import ExcelJS from 'exceljs'
@@ -22,14 +23,11 @@ export class ImportService {
 
             return {
                 imei: values.at(1),
-                model: values.at(2)
+                model_id: parseInt(values.at(2) as string),
+                group_id: params.group_id
             }
-        })
+        }) as RadiosSchemaCreateRawType[]
 
-        console.log({
-            radios,
-            user_id: params.user_id,
-            group_id: params.group_id
-        })
+        await this.radios.createMany(radios)
     }
 }

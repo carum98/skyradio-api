@@ -33,6 +33,10 @@ interface InsertParams<TInsert> {
     params: TInsert
 }
 
+interface InsertManyParams<TInsert> {
+    params: TInsert[]
+}
+
 interface UpdateParams<TUpdate> {
     where: Where
     params: Partial<TUpdate>
@@ -116,6 +120,14 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
         })
 
         return code
+    }
+
+    protected async insertManyCore ({ params }: InsertManyParams<TInsert>): Promise<string[]> {
+        const items = params.map((item) => ({ ...item, code: generateCode() }))
+
+        await this.db.insert(this.table).values(items)
+
+        return items.map((item) => item.code)
     }
 
     protected async deleteCore (where: Where): Promise<boolean> {

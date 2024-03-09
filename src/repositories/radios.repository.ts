@@ -89,6 +89,12 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
         })
     }
 
+    public async createMany (params: RadiosSchemaCreateRawType[]): Promise<string[]> {
+        return await super.insertManyCore({
+            params
+        })
+    }
+
     public async update (code: string, params: RadiosSchemaUpdateRawType): Promise<string> {
         const isUpdated = await super.updateCore({
             params,
