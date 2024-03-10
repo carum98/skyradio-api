@@ -75,4 +75,10 @@ export class LogsRepository extends RepositoryCore<LogsSchemaSelectType, LogsSch
             params
         })
     }
+
+    public async createMany (params: LogsSchemaCreateType[]): Promise<string[]> {
+        return await super.insertManyCore({
+            params
+        })
+    }
 }

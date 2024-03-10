@@ -72,6 +72,12 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
         })
     }
 
+    public async getIds (codes: string[]): Promise<number[]> {
+        return await super.getIdsCore({
+            where: inArray(radios.code, codes)
+        })
+    }
+
     public async getByClient (client_code: string, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
         const client_id = await this.db.select({ id: clients.id })
             .from(clients)

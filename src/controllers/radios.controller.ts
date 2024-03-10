@@ -203,14 +203,12 @@ export class RadiosController {
 
         const codes = await this.importt.importRadios(file.buffer, params)
 
-        for (const code of codes) {
-            await this.logs.createRadio({
-                session: params,
-                params: {
-                    radio_code: code
-                }
-            })
-        }
+        await this.logs.createRadioMany({
+            session: req.body,
+            params: {
+                radios_codes: codes
+            }
+        })
 
         res.status(204).json()
     }

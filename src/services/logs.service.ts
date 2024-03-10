@@ -11,6 +11,8 @@ interface Relations {
     radio_code: string
     client_code: string
     sim_code: string
+    radios_codes: string[]
+    sims_codes: string[]
 }
 
 interface LogsPropsBase {
@@ -49,19 +51,35 @@ export class LogsService {
         const { session, action, params } = props
 
         const { user_id, group_id } = session
-        const { radio_id, client_id, sim_id } = await this.findIdsByCodes(params)
+        const { radio_id, client_id, sim_id, radios_ids } = await this.findIdsByCodes(params)
 
-        await this.logs.create({
-            action,
-            client_id,
-            radio_id,
-            sim_id,
-            user_id,
-            group_id
-        })
+        if (radios_ids !== undefined) {
+            await this.logs.createMany(radios_ids.map(radio_id => ({
+                action,
+                radio_id,
+                user_id,
+                group_id
+            })))
+        } else {
+            await this.logs.create({
+                action,
+                client_id,
+                radio_id,
+                sim_id,
+                user_id,
+                group_id
+            })
+        }
     }
 
     public async createRadio (props: LogsProps<'radio_code'>): Promise<void> {
+        await this.create({
+            action: 'create-radio',
+            ...props
+        })
+    }
+
+    public async createRadioMany (props: LogsProps<'radios_codes'>): Promise<void> {
         await this.create({
             action: 'create-radio',
             ...props
@@ -149,8 +167,8 @@ export class LogsService {
         }))
     }
 
-    private async findIdsByCodes (params: Partial<Relations>): Promise<{ client_id?: number, sim_id?: number, radio_id?: number }> {
-        const { client_code, sim_code, radio_code } = params
+    private async findIdsByCodes (params: Partial<Relations>): Promise<{ client_id?: number, sim_id?: number, radio_id?: number, radios_ids?: number[] }> {
+        const { client_code, sim_code, radio_code, radios_codes } = params
 
         const client_id = client_code !== undefined
             ? await this.client.getId(client_code)
@@ -164,10 +182,15 @@ export class LogsService {
             ? await this.radios.getId(radio_code)
             : undefined
 
+        const radios_ids = radios_codes !== undefined
+            ? await this.radios.getIds(radios_codes)
+            : undefined
+
         return {
             client_id,
             sim_id,
-            radio_id
+            radio_id,
+            radios_ids
         }
     }
 }
