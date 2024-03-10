@@ -25,8 +25,8 @@ export class TemplatesService {
         })
 
         worksheet.columns = [
-            { key: 'imei', width: 18 },
-            { key: 'model', width: 8 },
+            { key: 'imei', width: 18, style: { numFmt: '0', alignment: { horizontal: 'left' } } },
+            { key: 'model', width: 8, style: { alignment: { horizontal: 'center' } } },
             { key: 'model_id', hidden: true }
         ]
 
@@ -45,7 +45,7 @@ export class TemplatesService {
                 { name: 'Modelo ID', filterButton: false }
             ],
             rows: [
-                ['88888888888888888', 'T199']
+                ['88888888888888888', 'T199', 0]
             ]
         })
 
@@ -55,7 +55,7 @@ export class TemplatesService {
         }
 
         worksheet.getCell('C2').value = {
-            formula: `=VLOOKUP(@[Modelo],modelos!$A$1:$B$${models.length},2,FALSE)`
+            formula: `=IF(B2="","",VLOOKUP(B2,modelos!$A$1:$B$${models.length},2,FALSE))`
         }
 
         const buffer = await workbook.xlsx.writeBuffer()
