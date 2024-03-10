@@ -201,7 +201,16 @@ export class RadiosController {
         const file = req.file as Express.Multer.File
         const params = req.body as SessionUserInfoSchemaType
 
-        await this.importt.importRadios(file.buffer, params)
+        const codes = await this.importt.importRadios(file.buffer, params)
+
+        for (const code of codes) {
+            await this.logs.createRadio({
+                session: params,
+                params: {
+                    radio_code: code
+                }
+            })
+        }
 
         res.status(204).json()
     }
