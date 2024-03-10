@@ -69,4 +69,13 @@ export class RadiosModelRepository extends RepositoryCore<RadiosModelShemaSelect
         .where(eq(radios.client_id, client_id))
         .groupBy(sql`${radios_model.code}, ${radios_model.name}, ${radios_model.color}`)
     }
+
+    public async getAllWithId (group_id: number): Promise<Array<{ id: number, name: string }>> {
+        return await this.db.select({
+            id: radios_model.id,
+            name: radios_model.name
+        })
+        .from(radios_model)
+        .where(eq(radios_model.group_id, group_id))
+    }
 }
