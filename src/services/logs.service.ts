@@ -51,12 +51,19 @@ export class LogsService {
         const { session, action, params } = props
 
         const { user_id, group_id } = session
-        const { radio_id, client_id, sim_id, radios_ids } = await this.findIdsByCodes(params)
+        const { radio_id, client_id, sim_id, radios_ids, sims_ids } = await this.findIdsByCodes(params)
 
         if (radios_ids !== undefined) {
             await this.logs.createMany(radios_ids.map(radio_id => ({
                 action,
                 radio_id,
+                user_id,
+                group_id
+            })))
+        } else if (sims_ids !== undefined) {
+            await this.logs.createMany(sims_ids.map(sim_id => ({
+                action,
+                sim_id,
                 user_id,
                 group_id
             })))
@@ -94,6 +101,13 @@ export class LogsService {
     }
 
     public async createSim (props: LogsProps<'sim_code'>): Promise<void> {
+        await this.create({
+            action: 'create-sim',
+            ...props
+        })
+    }
+
+    public async createSimMany (props: LogsProps<'sims_codes'>): Promise<void> {
         await this.create({
             action: 'create-sim',
             ...props
@@ -167,8 +181,8 @@ export class LogsService {
         }))
     }
 
-    private async findIdsByCodes (params: Partial<Relations>): Promise<{ client_id?: number, sim_id?: number, radio_id?: number, radios_ids?: number[] }> {
-        const { client_code, sim_code, radio_code, radios_codes } = params
+    private async findIdsByCodes (params: Partial<Relations>): Promise<{ client_id?: number, sim_id?: number, radio_id?: number, radios_ids?: number[], sims_ids?: number[] }> {
+        const { client_code, sim_code, radio_code, radios_codes, sims_codes } = params
 
         const client_id = client_code !== undefined
             ? await this.client.getId(client_code)
@@ -186,11 +200,16 @@ export class LogsService {
             ? await this.radios.getIds(radios_codes)
             : undefined
 
+        const sims_ids = sims_codes !== undefined
+            ? await this.sim.getIds(sims_codes)
+            : undefined
+
         return {
             client_id,
             sim_id,
             radio_id,
-            radios_ids
+            radios_ids,
+            sims_ids
         }
     }
 }

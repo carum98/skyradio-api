@@ -7,6 +7,9 @@ import { requestMiddleware } from '@middlewares/request.middleware'
 import { SimsRadioSchema, SimsShemaCreate, SimsShemaUniqueIdentifier, SimsShemaUpdate } from '@models/sims.model'
 import { PaginationSchema } from '@/utils/pagination'
 import { LogsService } from '@/services/logs.service'
+import { rolesMiddleware } from '@/middlewares/roles.middleware'
+import { fileMiddleware } from '@/middlewares/file.middleware'
+import { ImportService } from '@/services/import.service'
 
 export class SimsRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -19,7 +22,8 @@ export class SimsRouter extends RouterCore {
 
         const service = new SimsService(datasource)
         const logs = new LogsService(datasource)
-        const controller = new SimsController(service, logs)
+        const importt = new ImportService(datasource)
+        const controller = new SimsController(service, logs, importt)
 
         this.get({
             name: '/',
@@ -110,6 +114,21 @@ export class SimsRouter extends RouterCore {
                 requestMiddleware({
                     params: SimsShemaUniqueIdentifier,
                     query: PaginationSchema
+                })
+            ]
+        })
+
+        this.post({
+            name: '/imports',
+            handler: controller.import,
+            middlewares: [
+                rolesMiddleware(['admin']),
+                fileMiddleware(),
+                requestMiddleware({
+                    file: {
+                        maxSize: 1024 * 1024 * 2,
+                        types: ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+                    }
                 })
             ]
         })

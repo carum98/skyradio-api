@@ -1,6 +1,6 @@
 import { SimsSchemaCreateRawType, SimsSchemaSelectPaginatedType, SimsSchemaUpdateRawType, SimsShemaSelectType, sims } from '@/models/sims.model'
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { and, eq, isNull } from 'drizzle-orm'
+import { and, eq, inArray, isNull } from 'drizzle-orm'
 import { sims_provider } from '@models/sims_provider.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { IRepository, RepositoryCore } from '@/core/repository.core'
@@ -58,8 +58,20 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsSche
         })
     }
 
+    public async getIds (codes: string[]): Promise<number[]> {
+        return await super.getIdsCore({
+            where: inArray(sims.code, codes)
+        })
+    }
+
     public async create (params: SimsSchemaCreateRawType): Promise<string> {
         return await super.insertCore({
+            params
+        })
+    }
+
+    public async createMany (params: SimsSchemaCreateRawType[]): Promise<string[]> {
+        return await super.insertManyCore({
             params
         })
     }

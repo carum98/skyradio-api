@@ -4,11 +4,13 @@ import { SimsShemaCreateType, SimsShemaUpdateType, SimsRadioSchemaType } from '@
 import { PaginationSchemaType } from '@/utils/pagination'
 import { LogsService } from '@/services/logs.service'
 import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
+import { ImportService } from '@/services/import.service'
 
 export class SimsController {
     constructor (
         private readonly service: SimsService,
-        private readonly logs: LogsService
+        private readonly logs: LogsService,
+        private readonly importt: ImportService
     ) {}
 
     public getAll = async (req: Request, res: Response): Promise<void> => {
@@ -121,5 +123,21 @@ export class SimsController {
         const data = await this.service.getLogs(code, query)
 
         res.json(data)
+    }
+
+    public import = async (req: Request, res: Response): Promise<void> => {
+        const file = req.file as Express.Multer.File
+        const params = req.body as SessionUserInfoSchemaType
+
+        const codes = await this.importt.importSims(file.buffer, params)
+
+        await this.logs.createSimMany({
+            session: req.body,
+            params: {
+                sims_codes: codes
+            }
+        })
+
+        res.status(204).json()
     }
 }
