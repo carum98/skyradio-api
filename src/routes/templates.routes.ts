@@ -18,5 +18,10 @@ export class TemplatesRouter extends RouterCore {
             name: '/radios',
             handler: controller.getRadiosTemplate
         })
+
+        this.get({
+            name: '/sims',
+            handler: controller.getSimsTemplate
+        })
     }
 }

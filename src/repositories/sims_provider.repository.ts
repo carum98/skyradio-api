@@ -71,4 +71,13 @@ export class SimsProviderRepository extends RepositoryCore<SimsProviderShemaSele
         .where(eq(radios.client_id, client_id))
         .groupBy(sql`${sims_provider.code}, ${sims_provider.name}, ${sims_provider.color}`)
     }
+
+    public async getAllWithId (group_id: number): Promise<Array<{ id: number, name: string }>> {
+        return await this.db.select({
+            id: sims_provider.id,
+            name: sims_provider.name
+        })
+        .from(sims_provider)
+        .where(eq(sims_provider.group_id, group_id))
+    }
 }

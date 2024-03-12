@@ -15,6 +15,14 @@ export class TemplatesController {
         this.responseFile(res, data)
     }
 
+    public getSimsTemplate = async (req: Request, res: Response): Promise<void> => {
+        const params = req.body as SessionUserInfoSchemaType
+
+        const data = await this.templates.getSimsTemplate(params)
+
+        this.responseFile(res, data)
+    }
+
     private responseFile (res: Response, data: Buffer): void {
         res.attachment('skyradio-template.xlsx')
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
