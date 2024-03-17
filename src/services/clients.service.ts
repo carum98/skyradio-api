@@ -10,6 +10,8 @@ import { LogsRepository } from '@repositories/logs.repository'
 import { LogsSchemaSelectPaginated, LogsSchemaSelectPaginatedType } from '@/models/logs.model'
 import { RadiosModelRepository } from '@repositories/radios_model.repository'
 import { SimsProviderRepository } from '@repositories/sims_provider.repository'
+import { ClientsConsoleRepository } from '@repositories/clients_console.repository'
+import { ConsoleSchemaSelect, ConsoleSchemaSelectType } from '@models/clients_console.model'
 
 export class ClientsService {
     private readonly radios: RadiosRepository
@@ -19,6 +21,7 @@ export class ClientsService {
     private readonly logs: LogsRepository
     private readonly models: RadiosModelRepository
     private readonly providers: SimsProviderRepository
+    private readonly console: ClientsConsoleRepository
 
     constructor (datasource: DataSource) {
         this.radios = datasource.create(RadiosRepository)
@@ -28,6 +31,7 @@ export class ClientsService {
         this.logs = datasource.create(LogsRepository)
         this.models = datasource.create(RadiosModelRepository)
         this.providers = datasource.create(SimsProviderRepository)
+        this.console = datasource.create(ClientsConsoleRepository)
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<ClientsSchemaSelectPaginatedType> {
@@ -129,6 +133,26 @@ export class ClientsService {
             modality,
             clients
         })
+    }
+
+    public async getConsole (client_code: string): Promise<ConsoleSchemaSelectType> {
+        const { client_id = 0 } = await this.findIdsByCodes({ client_code })
+
+        const data = await this.console.getByClient(client_id)
+
+        return ConsoleSchemaSelect.parse(data)
+    }
+
+    public async addConsole (client_code: string, params: ConsoleSchemaSelectType): Promise<boolean> {
+        throw new Error('Not implemented')
+    }
+
+    public async updateConsole (client_code: string, params: ConsoleSchemaSelectType): Promise<boolean> {
+        throw new Error('Not implemented')
+    }
+
+    public async removeConsole (client_code: string): Promise<boolean> {
+        throw new Error('Not implemented')
     }
 
     private async findIdsByCodes ({ modality_code, seller_code, client_code }: { modality_code?: string, seller_code?: string, client_code?: string }): Promise<{ modality_id?: number, seller_id?: number, client_id?: number }> {

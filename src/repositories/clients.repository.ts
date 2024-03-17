@@ -8,8 +8,10 @@ import { PaginationSchemaType } from '@/utils/pagination'
 import { IRepository, RepositoryCore } from '@/core/repository.core'
 import { radios_model } from '@models/radios_model.model'
 import { sims_provider } from '@models/sims_provider.model'
+import { console } from '@models/clients_console.model'
 import { sims } from '@models/sims.model'
 import { groupBy, groupByAndCount } from '@/utils'
+import { licenses } from '@models/licenses.model'
 
 export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, ClientsSchemaCreateRawType, ClientsSchemaUpdateRawType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
@@ -28,11 +30,20 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
                 code: sellers.code,
                 name: sellers.name
             },
+            console: {
+                code: console.code
+            },
+            console_license: {
+                code: licenses.code,
+                key: licenses.code
+            },
             radios_count: sql<number>`(select count(${radios.id}) from ${radios} where ${radios.client_id} = ${clients.id})`
         })
         .from(table)
         .leftJoin(clients_modality, eq(clients_modality.id, clients.modality_id))
         .leftJoin(sellers, eq(sellers.id, clients.seller_id))
+        .leftJoin(console, eq(console.id, clients.console_id))
+        .leftJoin(licenses, eq(licenses.id, console.license_id))
 
         super({ db, table, select, search_columns: [clients.name] })
     }
@@ -93,7 +104,7 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
     }
 
     public async countAll (group_id: number): Promise<ClientsSchemaCounterType[]> {
-        type ResultType = {
+        interface ResultType {
             client: {
                 code: string
                 name: string
@@ -133,7 +144,7 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
         .leftJoin(radios_model, eq(radios.model_id, radios_model.id))
         .leftJoin(sims, eq(radios.sim_id, sims.id))
         .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
-        .where(and(eq(clients.group_id, group_id), isNull(clients.deleted_at))) as Array<ResultType>
+        .where(and(eq(clients.group_id, group_id), isNull(clients.deleted_at))) as ResultType[]
 
         const data = groupBy(rows, (v) => v.client.code)
 
@@ -146,7 +157,7 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
                 count: value.length,
                 models: Object.values(models).map((v) => ({ ...v.models, count: v.count })),
                 providers: Object.values(providers).map((v) => ({ ...v.providers, count: v.count }))
-            } as ClientsSchemaCounterType
+            } satisfies ClientsSchemaCounterType
         })
 
         const x = [...Object.values(result)]

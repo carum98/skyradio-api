@@ -139,5 +139,47 @@ export class ClientsRouter extends RouterCore {
                 })
             ]
         })
+
+        this.get({
+            name: '/:code/console',
+            handler: controller.getConsole,
+            middlewares: [
+                requestMiddleware({
+                    params: ClientsSchemaUniqueIdentifier
+                })
+            ]
+        })
+
+        this.post({
+            name: '/:code/console',
+            handler: controller.addConsole,
+            middlewares: [
+                requestMiddleware({
+                    params: ClientsSchemaUniqueIdentifier,
+                    body: ClientsSchemaUniqueIdentifier
+                })
+            ]
+        })
+
+        this.put({
+            name: '/:code/console',
+            handler: controller.updateConsole,
+            middlewares: [
+                requestMiddleware({
+                    params: ClientsSchemaUniqueIdentifier,
+                    body: ClientsSchemaUniqueIdentifier
+                })
+            ]
+        })
+
+        this.delete({
+            name: '/:code/console',
+            handler: controller.removeConsole,
+            middlewares: [
+                requestMiddleware({
+                    params: ClientsSchemaUniqueIdentifier
+                })
+            ]
+        })
     }
 }

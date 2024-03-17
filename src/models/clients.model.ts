@@ -9,6 +9,7 @@ import { ResponsePaginationSchema } from '@/utils/pagination'
 import { HexColorSchema } from '@/utils/schemas'
 import { RadioModelSchemaCounter } from './radios_model.model'
 import { SimsProviderSchemaCounter } from './sims_provider.model'
+import { ConsoleSchemaSelect, console } from './clients_console.model'
 
 export const clients = mysqlTable('clients', {
     id: int('id').autoincrement().primaryKey(),
@@ -18,6 +19,7 @@ export const clients = mysqlTable('clients', {
 	group_id: int('group_id').notNull().references(() => groups.id),
     modality_id: int('modality_id').notNull().references(() => clients_modality.id),
     seller_id: int('seller_id').references(() => sellers.id),
+    console_id: int('console_id').references(() => console.id),
 	created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updated_at: datetime('updated_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
 	deleted_at: datetime('deleted_at', { mode: 'string' })
@@ -25,7 +27,8 @@ export const clients = mysqlTable('clients', {
     return {
 		group_id: index('group_id').on(table.group_id),
         modality_id: index('modality_id').on(table.modality_id),
-        seller_id: index('seller_id').on(table.seller_id)
+        seller_id: index('seller_id').on(table.seller_id),
+        console_id: index('console_id').on(table.console_id)
     }
 })
 
@@ -34,6 +37,7 @@ export const ClientsSchemaSelect = createSelectSchema(clients)
     .extend({
         modality: ClientsModalitySchemaSelect.pick({ code: true, name: true, color: true }),
         seller: SellersSchemaSelect.pick({ code: true, name: true }).nullable(),
+        console: ConsoleSchemaSelect.pick({ code: true }).nullable(),
         radios_count: z.number().int()
     })
 
@@ -90,7 +94,7 @@ export const ClientsSchemaUniqueIdentifier = createSelectSchema(clients, {
 export const ClientsSchemaSelectPaginated = ResponsePaginationSchema(ClientsSchemaSelect)
 
 export const ClientsSchemaCounter = ClientsSchemaSelect
-    .omit({ modality: true, seller: true, radios_count: true })
+    .omit({ modality: true, seller: true, console: true, radios_count: true })
     .extend({
         count: z.number().int(),
         models: RadioModelSchemaCounter.array(),
