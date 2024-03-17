@@ -16,6 +16,7 @@ import { TemplatesRouter } from '@routes/templates.routes'
 
 import { errorMiddleware } from '@middlewares/errors.middleware'
 import { DataSource } from './core/data-source.core'
+import { LicensesRouter } from './routes/licenses.routes'
 
 const datasource = new DataSource()
 
@@ -35,7 +36,8 @@ server.routes([
     new RadiosStatusRouter(datasource),
     new RadiosRauter(datasource),
     new ReportsRouter(datasource),
-    new TemplatesRouter(datasource)
+    new TemplatesRouter(datasource),
+    new LicensesRouter(datasource)
 ])
 
 // Error middleware
