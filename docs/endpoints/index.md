@@ -59,3 +59,10 @@ The endpoints of the API are divided into the following categories.
 - [[POST /providers] - Create Provider](./radios_provider/create.md)
 - [[PUT /providers/:id] - Update Provider](./radios_provider/update.md)
 - [[DELETE /providers/:id] - Delete Provider](./radios_provider/delete.md)
+
+### License
+- [[GET /licenses] - Get Licenses](./licenses/get-all.md)
+- [[GET /licenses/:code] - Get License](./licenses/get-one.md)
+- [[POST /licenses] - Create License](./licenses/create.md)
+- [[PUT /licenses/:code] - Update License](./licenses/update.md)
+- [[DELETE /licenses/:code] - Delete License](./licenses/delete.md)

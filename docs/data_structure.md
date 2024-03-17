@@ -177,3 +177,14 @@ The [logs](#logs) table is used to store the logs of the system, the logs have a
 | action | string | The action of the log ('create-client','create-radio','create-sim','add-radio-to-client','add-sim-to-radio','remove-radio-from-client','remove-sim-from-radio','swap-radio-from-client','swap-sim-from-radio') |
 | created_at | datetime | The date and time the log was created |
 | deleted_at | datetime | The date and time the log was deleted |
+
+### License
+| Name | Type | Description |
+| --- | --- | --- |
+| id | int | The unique identifier of the license |
+| code | string | The code of the license |
+| key | string | The key of the license |
+| group_id | int | The unique identifier of the [group](#groups) |
+| created_at | datetime | The date and time the license was created |
+| updated_at | datetime | The date and time the license was last updated |
+| deleted_at | datetime | The date and time the license was deleted |
