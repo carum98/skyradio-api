@@ -33,16 +33,16 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
             console: {
                 code: console.code
             },
-            console_license: {
+            console__license: {
                 code: licenses.code,
-                key: licenses.code
+                key: licenses.key
             },
             radios_count: sql<number>`(select count(${radios.id}) from ${radios} where ${radios.client_id} = ${clients.id})`
         })
         .from(table)
         .leftJoin(clients_modality, eq(clients_modality.id, clients.modality_id))
         .leftJoin(sellers, eq(sellers.id, clients.seller_id))
-        .leftJoin(console, eq(console.id, clients.console_id))
+        .leftJoin(console, eq(clients.id, console.client_id))
         .leftJoin(licenses, eq(licenses.id, console.license_id))
 
         super({ db, table, select, search_columns: [clients.name] })

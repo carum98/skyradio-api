@@ -10,6 +10,11 @@
 | seller | object | Client's seller |
 | seller.code | string | Seller's code |
 | seller.name | string | Seller's name |
+| console | object | Client's console |
+| console.code | string | Console's code |
+| console.license | object | Client's console license |
+| console.license.code | string | Console's license code |
+| console.license.key | string | Console's license key |
 | radios_count | number | Client's radios count |
 
 ```json
@@ -25,6 +30,13 @@
     "seller": {
         "code": "...",
         "name": "..."
+    },
+    "console": {
+        "code": "...",
+        "license": {
+            "code": "...",
+            "key": "..."
+        }
     },
     "radios_count": 0
 }

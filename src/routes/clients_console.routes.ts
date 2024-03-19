@@ -63,7 +63,7 @@ export class ClientsConsoleRouter extends RouterCore {
             handler: controller.delete,
             middlewares: [
                 requestMiddleware({
-                    params: ConsoleSchemaUniqueIdentifier,
+                    params: ConsoleSchemaUniqueIdentifier
                 })
             ]
         })

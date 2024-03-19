@@ -24,7 +24,7 @@ export class ClientsConsoleRepository extends RepositoryCore<ConsoleSchemaSelect
         })
         .from(table)
         .leftJoin(licenses, eq(licenses.id, table.license_id))
-        .leftJoin(clients, eq(clients.console_id, table.id))
+        .rightJoin(clients, eq(clients.id, table.client_id))
 
         super({ db, table, select, search_columns: [table.code] })
     }
@@ -32,7 +32,7 @@ export class ClientsConsoleRepository extends RepositoryCore<ConsoleSchemaSelect
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<ConsoleSchemaSelectPaginatedType> {
         return await this.getAllCore({
             query,
-            where: eq(clients.group_id, group_id)
+            where: and(isNotNull(console.license_id), eq(clients.group_id, group_id))
         })
     }
 

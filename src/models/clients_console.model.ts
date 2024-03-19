@@ -4,11 +4,13 @@ import { LicensesSchemaSelect, licenses } from './licenses.model'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 import { ResponsePaginationSchema } from '@/utils/pagination'
+import { clients } from './clients.model'
 
 export const console = mysqlTable('clients_console', {
     id: int('id').autoincrement().primaryKey(),
     code: varchar('code', { length: 6 }).notNull(),
     license_id: int('license_id').notNull().references(() => licenses.id),
+    client_id: int('client_id').references(() => clients.id).unique(),
     created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
     updated_at: datetime('updated_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
     deleted_at: datetime('deleted_at', { mode: 'string' })
