@@ -3,6 +3,7 @@ import { datetime, int, mysqlTable, varchar, index } from 'drizzle-orm/mysql-cor
 import { LicensesSchemaSelect, licenses } from './licenses.model'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
+import { ResponsePaginationSchema } from '@/utils/pagination'
 
 export const console = mysqlTable('clients_console', {
     id: int('id').autoincrement().primaryKey(),
@@ -29,20 +30,32 @@ export const ConsoleSchemaSelect = createSelectSchema(console)
         }).nullable()
     })
 
-export const ConsoleSchemaCreate = createInsertSchema(console, {
-    code: (schema) => schema.code.length(6),
-    license_id: (schema) => schema.license_id
-}).pick({ code: true, license_id: true }).required()
-
-export const ConsoleSchemaUpdate = ConsoleSchemaCreate
+export const ConsoleSchemaCreateRaw = createInsertSchema(console)
     .pick({ license_id: true })
-    .partial()
+
+export const ConsoleSchemaCreate = ConsoleSchemaCreateRaw
+    .omit({ license_id: true })
+    .extend({ license_code: z.string().length(6) })
+    .required()
+
+export const ConsoleSchemaUpdateRaw = createInsertSchema(console)
+    .pick({ license_id: true })
+
+export const ConsoleSchemaUpdate = ConsoleSchemaUpdateRaw
+    .omit({ license_id: true })
+    .extend({ license_code: z.string().length(6) })
+    .required()
 
 export const ConsoleSchemaUniqueIdentifier = z.object({
     code: z.string().length(6)
 })
 
+export const ConsoleSchemaSelectPaginated = ResponsePaginationSchema(ConsoleSchemaSelect)
+
+export type ConsoleSchemaCreateRawType = z.infer<typeof ConsoleSchemaCreateRaw>
 export type ConsoleSchemaCreateType = z.infer<typeof ConsoleSchemaCreate>
 export type ConsoleSchemaSelectType = z.infer<typeof ConsoleSchemaSelect>
 export type ConsoleSchemaUpdateType = z.infer<typeof ConsoleSchemaUpdate>
+export type ConsoleSchemaUpdateRawType = z.infer<typeof ConsoleSchemaUpdateRaw>
 export type ConsoleSchemaUniqueIdentifierType = z.infer<typeof ConsoleSchemaUniqueIdentifier>
+export type ConsoleSchemaSelectPaginatedType = z.infer<typeof ConsoleSchemaSelectPaginated>

@@ -66,3 +66,9 @@ The endpoints of the API are divided into the following categories.
 - [[POST /licenses] - Create License](./licenses/create.md)
 - [[PUT /licenses/:code] - Update License](./licenses/update.md)
 - [[DELETE /licenses/:code] - Delete License](./licenses/delete.md)
+
+### Console
+- [[GET /consoles] - Get Consoles](./consoles/get-all.md)
+- [[GET /consoles/:code] - Get Console](./consoles/get-one.md)
+- [[POST /consoles] - Create Console](./consoles/create.md)
+- [[PUT /consoles/:code] - Update Console](./consoles/update.md)
