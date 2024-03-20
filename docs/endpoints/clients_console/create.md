@@ -13,9 +13,11 @@ None
 | Name | Type |
 | --- | --- |
 | license_code | string |
+| client_code | string |
 
 ```json
 {
-    "license_code": "..."
+    "license_code": "...",
+    "client_code": "..."
 }
 ```

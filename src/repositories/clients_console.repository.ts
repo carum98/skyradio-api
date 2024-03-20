@@ -14,7 +14,7 @@ export class ClientsConsoleRepository extends RepositoryCore<ConsoleSchemaSelect
             code: table.code,
             license: {
                 code: licenses.code,
-                key: licenses.code
+                key: licenses.key
             },
             client: {
                 code: clients.code,

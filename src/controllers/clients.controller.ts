@@ -4,11 +4,13 @@ import { ClientsSchemaCreateType, ClientsSchemaUpdateType, ClientsRadiosSchemaTy
 import { PaginationSchemaType } from '@/utils/pagination'
 import { LogsService } from '@/services/logs.service'
 import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
+import { ClientsConsoleService } from '@services/clients_console.service'
 
 export class ClientsController {
     constructor (
         private readonly service: ClientsService,
-        private readonly logs: LogsService
+        private readonly logs: LogsService,
+        private readonly console: ClientsConsoleService
     ) {}
 
     public getAll = async (req: Request, res: Response): Promise<void> => {
@@ -171,7 +173,10 @@ export class ClientsController {
         const { code } = req.params
         const params = req.body
 
-        const data = await this.service.addConsole(code, params)
+        const data = await this.console.create({
+            client_code: code,
+            ...params
+        })
 
         return res.json(data)
     }

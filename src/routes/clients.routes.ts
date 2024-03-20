@@ -5,8 +5,10 @@ import { ClientsService } from '@services/clients.service'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { ClientRadiosSwapSchema, ClientsRadiosSchema, ClientsSchemaCreate, ClientsSchemaUniqueIdentifier, ClientsSchemaUpdate } from '@models/clients.model'
-import { PaginationSchema } from '@/utils/pagination'
-import { LogsService } from '@/services/logs.service'
+import { PaginationSchema } from '@utils/pagination'
+import { LogsService } from '@services/logs.service'
+import { ConsoleSchemaCreate } from '@models/clients_console.model'
+import { ClientsConsoleService } from '@services/clients_console.service'
 
 export class ClientsRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -17,7 +19,8 @@ export class ClientsRouter extends RouterCore {
 
         const service = new ClientsService(datasource)
         const logs = new LogsService(datasource)
-        const controller = new ClientsController(service, logs)
+        const console = new ClientsConsoleService(datasource)
+        const controller = new ClientsController(service, logs, console)
 
         this.get({
             name: '/',
@@ -156,7 +159,7 @@ export class ClientsRouter extends RouterCore {
             middlewares: [
                 requestMiddleware({
                     params: ClientsSchemaUniqueIdentifier,
-                    body: ClientsSchemaUniqueIdentifier
+                    body: ConsoleSchemaCreate.omit({ client_code: true })
                 })
             ]
         })

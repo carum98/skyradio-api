@@ -3,14 +3,17 @@ import { ClientsConsoleRepository } from '@repositories/clients_console.reposito
 import { ConsoleSchemaCreateType, ConsoleSchemaSelectPaginatedType, ConsoleSchemaSelectType, ConsoleSchemaUpdateType } from '@models/clients_console.model'
 import { DataSource } from '@/core/data-source.core'
 import { LicensesRepository } from '@repositories/licenses.repository'
+import { ClientsRepository } from '@repositories/clients.repository'
 
 export class ClientsConsoleService {
     private readonly repository: ClientsConsoleRepository
     private readonly license: LicensesRepository
+    private readonly companies: ClientsRepository
 
     constructor (datasource: DataSource) {
         this.repository = datasource.create(ClientsConsoleRepository)
         this.license = datasource.create(LicensesRepository)
+        this.companies = datasource.create(ClientsRepository)
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<ConsoleSchemaSelectPaginatedType> {
@@ -22,10 +25,11 @@ export class ClientsConsoleService {
     }
 
     public async create (params: ConsoleSchemaCreateType): Promise<ConsoleSchemaSelectType> {
-        const { license_id = 0 } = await this.findIdsByCodes(params)
+        const { license_id = 0, client_id } = await this.findIdsByCodes(params)
 
         const code = await this.repository.create({
-            license_id
+            license_id,
+            client_id
         })
 
         return await this.get(code)
@@ -35,7 +39,7 @@ export class ClientsConsoleService {
         const { license_id = 0 } = await this.findIdsByCodes(params)
 
         const data = await this.repository.update(code, {
-            license_id
+            license_id,
         })
 
         return await this.get(data)
@@ -45,13 +49,18 @@ export class ClientsConsoleService {
         return await this.repository.delete(code)
     }
 
-    private async findIdsByCodes ({ license_code }: { license_code?: string }): Promise<{ license_id?: number }> {
+    private async findIdsByCodes ({ license_code, client_code }: { license_code?: string, client_code?: string }): Promise<{ license_id?: number, client_id?: number }> {
         const license_id = license_code !== undefined
             ? await this.license.getId(license_code)
             : undefined
 
+        const client_id = client_code !== undefined
+            ? await this.companies.getId(client_code)
+            : undefined
+
         return {
-            license_id
+            license_id,
+            client_id
         }
     }
 }

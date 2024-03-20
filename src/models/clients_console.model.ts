@@ -33,11 +33,14 @@ export const ConsoleSchemaSelect = createSelectSchema(console)
     })
 
 export const ConsoleSchemaCreateRaw = createInsertSchema(console)
-    .pick({ license_id: true })
+    .pick({ license_id: true, client_id: true })
 
 export const ConsoleSchemaCreate = ConsoleSchemaCreateRaw
-    .omit({ license_id: true })
-    .extend({ license_code: z.string().length(6) })
+    .omit({ license_id: true, client_id: true })
+    .extend({
+        license_code: z.string().length(6),
+        client_code: z.string().length(6)
+    })
     .required()
 
 export const ConsoleSchemaUpdateRaw = createInsertSchema(console)
