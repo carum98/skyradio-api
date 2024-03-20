@@ -63,7 +63,7 @@ export class ClientsConsoleRepository extends RepositoryCore<ConsoleSchemaSelect
 
     public async getByClient (client_id: number): Promise<ConsoleSchemaSelectType> {
         return await this.getOneCore({
-            where: and(eq(clients.id, client_id), isNotNull(console.license_id))
+            where: eq(console.client_id, client_id)
         })
     }
 }

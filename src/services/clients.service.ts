@@ -147,14 +147,6 @@ export class ClientsService {
         throw new Error('Not implemented')
     }
 
-    public async updateConsole (client_code: string, params: ConsoleSchemaSelectType): Promise<boolean> {
-        throw new Error('Not implemented')
-    }
-
-    public async removeConsole (client_code: string): Promise<boolean> {
-        throw new Error('Not implemented')
-    }
-
     private async findIdsByCodes ({ modality_code, seller_code, client_code }: { modality_code?: string, seller_code?: string, client_code?: string }): Promise<{ modality_id?: number, seller_id?: number, client_id?: number }> {
         const modality_id = modality_code !== undefined
             ? await this.modality.getId(modality_code)

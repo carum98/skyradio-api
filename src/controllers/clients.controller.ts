@@ -175,25 +175,4 @@ export class ClientsController {
 
         return res.json(data)
     }
-
-    public updateConsole = async (req: Request, res: Response): Promise<Response> => {
-        const { code } = req.params
-        const params = req.body
-
-        const data = await this.service.updateConsole(code, params)
-
-        return res.json(data)
-    }
-
-    public removeConsole = async (req: Request, res: Response): Promise<Response> => {
-        const { code } = req.params
-
-        const data = await this.service.removeConsole(code)
-
-        if (data) {
-            return res.status(204).json()
-        } else {
-            return res.status(400).json()
-        }
-    }
 }

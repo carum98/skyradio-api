@@ -160,26 +160,5 @@ export class ClientsRouter extends RouterCore {
                 })
             ]
         })
-
-        this.put({
-            name: '/:code/console',
-            handler: controller.updateConsole,
-            middlewares: [
-                requestMiddleware({
-                    params: ClientsSchemaUniqueIdentifier,
-                    body: ClientsSchemaUniqueIdentifier
-                })
-            ]
-        })
-
-        this.delete({
-            name: '/:code/console',
-            handler: controller.removeConsole,
-            middlewares: [
-                requestMiddleware({
-                    params: ClientsSchemaUniqueIdentifier
-                })
-            ]
-        })
     }
 }
