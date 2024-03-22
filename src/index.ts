@@ -15,10 +15,10 @@ import { ReportsRouter } from '@routes/reports.routes'
 import { TemplatesRouter } from '@routes/templates.routes'
 import { LicensesRouter } from '@routes/licenses.routes'
 import { ClientsConsoleRouter } from '@routes/clients_console.routes'
+import { AppsRouter } from '@routes/apps.routes'
 
 import { errorMiddleware } from '@middlewares/errors.middleware'
 import { DataSource } from './core/data-source.core'
-
 
 const datasource = new DataSource()
 
@@ -40,7 +40,8 @@ server.routes([
     new ReportsRouter(datasource),
     new TemplatesRouter(datasource),
     new LicensesRouter(datasource),
-    new ClientsConsoleRouter(datasource)
+    new ClientsConsoleRouter(datasource),
+    new AppsRouter(datasource)
 ])
 
 // Error middleware
