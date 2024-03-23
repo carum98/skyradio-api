@@ -12,12 +12,17 @@ The endpoints of the API are divided into the following categories.
 - [[PUT /clients/:id] - Update Client](./clients/update.md)
 - [[DELETE /clients/:id] - Delete Client](./clients/delete.md)
 - [[GET /clients/stats/all] - Get Clients Stats](./clients/stats.md)
+- [[GET /clients/:code/radios] - Get Client Radios](./clients/radios.md)
+- [[GET /clients/:code/console] - Get Client Console](./clients/console.md)
+- [[POST /clients/:code/console] - Set Client Console](./clients/set-console.md)
+
 ### Modality
 - [[GET /modalities] - Get Modalities](./clients_modality/get-all.md)
 - [[GET /modalities/:id] - Get Modality](./clients_modality/get-one.md)
 - [[POST /modalities] - Create Modality](./clients_modality/create.md)
 - [[PUT /modalities/:id] - Update Modality](./clients_modality/update.md)
 - [[DELETE /modalities/:id] - Delete Modality](./clients_modality/delete.md)
+
 ### Seller
 - [[GET /sellers] - Get Sellers](./clients_seller/get-all.md)
 - [[GET /sellers/:id] - Get Seller](./clients_seller/get-one.md)
