@@ -12,6 +12,7 @@ import { console } from '@models/clients_console.model'
 import { sims } from '@models/sims.model'
 import { groupBy, groupByAndCount } from '@/utils'
 import { licenses } from '@models/licenses.model'
+import { apps } from '@models/apps.model'
 
 export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, ClientsSchemaCreateRawType, ClientsSchemaUpdateRawType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
@@ -37,7 +38,8 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
                 code: licenses.code,
                 key: licenses.key
             },
-            radios_count: sql<number>`(select count(${radios.id}) from ${radios} where ${radios.client_id} = ${clients.id})`
+            radios_count: sql<number>`(select count(${radios.id}) from ${radios} where ${radios.client_id} = ${clients.id})`,
+            apps_count: sql<number>`(select count(${apps.id}) from ${apps} where ${apps.client_id} = ${clients.id})`
         })
         .from(table)
         .leftJoin(clients_modality, eq(clients_modality.id, clients.modality_id))

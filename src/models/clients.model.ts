@@ -36,7 +36,8 @@ export const ClientsSchemaSelect = createSelectSchema(clients)
         modality: ClientsModalitySchemaSelect.pick({ code: true, name: true, color: true }),
         seller: SellersSchemaSelect.pick({ code: true, name: true }).nullable(),
         console: ConsoleSchemaSelect.pick({ code: true, license: true }).nullable(),
-        radios_count: z.number().int()
+        radios_count: z.number().int(),
+        apps_count: z.number().int()
     })
 
 export const ClientsSchemaCreateRaw = createInsertSchema(clients, {
