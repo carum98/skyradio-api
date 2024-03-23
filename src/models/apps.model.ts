@@ -5,6 +5,7 @@ import { LicensesSchemaSelect, licenses } from './licenses.model'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 import { z } from 'zod'
+import { groups } from './groups.model'
 
 export const apps = mysqlTable('apps', {
     id: int('id').autoincrement().primaryKey(),
@@ -12,13 +13,15 @@ export const apps = mysqlTable('apps', {
     name: varchar('name', { length: 100 }),
     license_id: int('license_id').notNull().references(() => licenses.id),
     client_id: int('client_id').references(() => clients.id).unique(),
+    group_id: int('group_id').notNull().references(() => groups.id),
     created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
     updated_at: datetime('updated_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
     deleted_at: datetime('deleted_at', { mode: 'string' })
 }, (table) => {
     return {
         console_code: index('console_code').on(table.code),
-        license_id: index('license_id').on(table.license_id)
+        license_id: index('license_id').on(table.license_id),
+        group_id: index('group_id').on(table.group_id)
     }
 })
 
@@ -33,16 +36,26 @@ export const AppsSchemaSelect = createSelectSchema(apps)
         }).nullable()
     })
 
-export const AppsSchemaCreateRaw = createInsertSchema(apps)
-    .pick({ license_id: true, client_id: true })
+export const AppsSchemaCreateRaw = createInsertSchema(apps, {
+    name: (schema) => schema.name.min(3).max(100)
+})
+.pick({
+    name: true,
+    license_id: true,
+    client_id: true,
+    group_id: true
+})
 
 export const AppsSchemaCreate = AppsSchemaCreateRaw
-    .omit({ license_id: true, client_id: true })
-    .extend({
-        license_code: z.string().length(6),
-        client_code: z.string().length(6)
-    })
-    .required()
+.pick({
+    name: true,
+    group_id: true
+})
+.extend({
+    license_code: z.string().length(6),
+    client_code: z.string().length(6)
+})
+.required()
 
 export const AppsSchemaUpdateRaw = createInsertSchema(apps)
     .pick({ license_id: true })

@@ -1,6 +1,8 @@
 import { Request, Response } from 'express'
-import { PaginationSchemaType } from "@/utils/pagination";
-import { AppsService } from "@services/apps.service";
+import { PaginationSchemaType } from '@/utils/pagination'
+import { AppsService } from '@services/apps.service'
+import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
+import { AppsSchemaCreateType } from '@models/apps.model'
 
 export class AppsController {
     constructor (private readonly service: AppsService) {}
@@ -23,7 +25,7 @@ export class AppsController {
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        const params = req.body
+        const params = req.body as AppsSchemaCreateType & SessionUserInfoSchemaType
 
         const data = await this.service.create(params)
 

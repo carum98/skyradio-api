@@ -1,5 +1,5 @@
 import { DataSource } from '@/core/data-source.core'
-import { AppsSchemaSelectPaginatedType, AppsSchemaSelectType } from '@models/apps.model'
+import { AppsSchemaCreateType, AppsSchemaSelectPaginatedType, AppsSchemaSelectType } from '@models/apps.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { AppsRepository } from '@repositories/apps.repository'
 import { LicensesRepository } from '@repositories/licenses.repository'
@@ -24,10 +24,11 @@ export class AppsService {
         return await this.apps.get(code)
     }
 
-    public async create (params: { license_code: string, client_code: string }): Promise<AppsSchemaSelectType> {
+    public async create (params: AppsSchemaCreateType): Promise<AppsSchemaSelectType> {
         const { license_id = 0, client_id } = await this.findIdsByCodes(params)
 
         const code = await this.apps.create({
+            ...params,
             license_id,
             client_id
         })

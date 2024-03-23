@@ -1,10 +1,10 @@
 import { RepositoryCore } from '@/core/repository.core'
-import { licenses } from '@models/licenses.model';
-import { AppsSchemaCreateRawType, AppsSchemaSelectPaginatedType, AppsSchemaSelectType, AppsSchemaUpdateRawType, apps } from '@models/apps.model';
-import { MySql2Database } from 'drizzle-orm/mysql2';
-import { clients } from '@/models/clients.model';
-import { and, eq, isNotNull } from 'drizzle-orm';
-import { PaginationSchemaType } from '@/utils/pagination';
+import { licenses } from '@models/licenses.model'
+import { AppsSchemaCreateRawType, AppsSchemaSelectPaginatedType, AppsSchemaSelectType, AppsSchemaUpdateRawType, apps } from '@models/apps.model'
+import { MySql2Database } from 'drizzle-orm/mysql2'
+import { clients } from '@/models/clients.model'
+import { and, eq, isNotNull } from 'drizzle-orm'
+import { PaginationSchemaType } from '@/utils/pagination'
 
 export class AppsRepository extends RepositoryCore<AppsSchemaSelectType, AppsSchemaCreateRawType, AppsSchemaUpdateRawType> {
     constructor (public readonly db: MySql2Database) {
@@ -12,6 +12,7 @@ export class AppsRepository extends RepositoryCore<AppsSchemaSelectType, AppsSch
 
         const select = db.select({
             code: table.code,
+            name: table.name,
             license: {
                 code: licenses.code,
                 key: licenses.key
