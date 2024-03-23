@@ -1,5 +1,5 @@
 import { DataSource } from '@/core/data-source.core'
-import { AppsSchemaCreateType, AppsSchemaSelectPaginatedType, AppsSchemaSelectType, AppsSchemaUpdateType } from '@models/apps.model'
+import { AppsSchemaCreateType, AppsSchemaSelectPaginated, AppsSchemaSelectPaginatedType, AppsSchemaSelectType, AppsSchemaUpdateType } from '@models/apps.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { AppsRepository } from '@repositories/apps.repository'
 import { LicensesRepository } from '@repositories/licenses.repository'
@@ -17,7 +17,9 @@ export class AppsService {
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<AppsSchemaSelectPaginatedType> {
-        return await this.apps.getAll(group_id, query)
+        const data = await this.apps.getAll({ group_id }, query)
+
+        return AppsSchemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<AppsSchemaSelectType> {

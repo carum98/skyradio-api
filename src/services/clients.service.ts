@@ -12,6 +12,8 @@ import { RadiosModelRepository } from '@repositories/radios_model.repository'
 import { SimsProviderRepository } from '@repositories/sims_provider.repository'
 import { ClientsConsoleRepository } from '@repositories/clients_console.repository'
 import { ConsoleSchemaSelect, ConsoleSchemaSelectType } from '@models/clients_console.model'
+import { AppsRepository } from '@repositories/apps.repository'
+import { AppsSchemaSelectPaginated, AppsSchemaSelectPaginatedType } from '@models/apps.model'
 
 export class ClientsService {
     private readonly radios: RadiosRepository
@@ -22,6 +24,7 @@ export class ClientsService {
     private readonly models: RadiosModelRepository
     private readonly providers: SimsProviderRepository
     private readonly console: ClientsConsoleRepository
+    private readonly apps: AppsRepository
 
     constructor (datasource: DataSource) {
         this.radios = datasource.create(RadiosRepository)
@@ -32,6 +35,7 @@ export class ClientsService {
         this.models = datasource.create(RadiosModelRepository)
         this.providers = datasource.create(SimsProviderRepository)
         this.console = datasource.create(ClientsConsoleRepository)
+        this.apps = datasource.create(AppsRepository)
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<ClientsSchemaSelectPaginatedType> {
@@ -107,6 +111,14 @@ export class ClientsService {
         const data = await this.logs.getAll({ client_id }, query)
 
         return LogsSchemaSelectPaginated.parse(data)
+    }
+
+    public async getApps (client_code: string, query: PaginationSchemaType): Promise<AppsSchemaSelectPaginatedType> {
+        const { client_id = 0 } = await this.findIdsByCodes({ client_code })
+
+        const data = await this.apps.getAll({ client_id }, query)
+
+        return AppsSchemaSelectPaginated.parse(data)
     }
 
     public async getStatsByClient (client_code: string): Promise<ClientsSchemaStatsByClientType> {

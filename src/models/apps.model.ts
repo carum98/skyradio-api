@@ -26,7 +26,7 @@ export const apps = mysqlTable('apps', {
 })
 
 export const AppsSchemaSelect = createSelectSchema(apps)
-    .pick({ code: true })
+    .pick({ code: true, name: true })
     .extend({
         license: LicensesSchemaSelect,
         client: z.object({

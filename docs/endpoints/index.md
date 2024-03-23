@@ -15,6 +15,7 @@ The endpoints of the API are divided into the following categories.
 - [[GET /clients/:code/radios] - Get Client Radios](./clients/radios.md)
 - [[GET /clients/:code/console] - Get Client Console](./clients/console.md)
 - [[POST /clients/:code/console] - Set Client Console](./clients/set-console.md)
+- [[GET /clients/:code/apps] - Get Client Apps](./clients/apps.md)
 
 ### Modality
 - [[GET /modalities] - Get Modalities](./clients_modality/get-all.md)

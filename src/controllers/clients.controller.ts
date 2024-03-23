@@ -180,4 +180,13 @@ export class ClientsController {
 
         return res.json(data)
     }
+
+    public getApps = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+        const query = req.query as unknown as PaginationSchemaType
+
+        const data = await this.service.getApps(code, query)
+
+        res.json(data)
+    }
 }

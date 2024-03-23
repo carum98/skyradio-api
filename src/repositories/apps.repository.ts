@@ -30,10 +30,21 @@ export class AppsRepository extends RepositoryCore<AppsSchemaSelectType, AppsSch
         super({ db, table, select, search_columns: [table.code] })
     }
 
-    public async getAll (group_id: number, query: PaginationSchemaType): Promise<AppsSchemaSelectPaginatedType> {
-        return await this.getAllCore({
+    public async getAll (params: { group_id?: number, client_id?: number }, query: PaginationSchemaType): Promise<AppsSchemaSelectPaginatedType> {
+        const { group_id, client_id } = params
+        const where = []
+
+        if (group_id !== undefined) {
+            where.push(and(isNotNull(apps.license_id), eq(clients.group_id, group_id)))
+        }
+
+        if (client_id !== undefined) {
+            where.push(eq(apps.client_id, client_id))
+        }
+
+        return await super.getAllCore({
             query,
-            where: and(isNotNull(apps.license_id), eq(clients.group_id, group_id))
+            where: and(...where)
         })
     }
 
