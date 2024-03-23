@@ -72,3 +72,10 @@ The endpoints of the API are divided into the following categories.
 - [[GET /consoles/:code] - Get Console](./consoles/get-one.md)
 - [[POST /consoles] - Create Console](./consoles/create.md)
 - [[PUT /consoles/:code] - Update Console](./consoles/update.md)
+
+### Apps
+- [[GET /apps] - Get Apps](./apps/get-all.md)
+- [[GET /apps/:code] - Get App](./apps/get-one.md)
+- [[POST /apps] - Create App](./apps/create.md)
+- [[PUT /apps/:code] - Update App](./apps/update.md)
+- [[DELETE /apps/:code] - Delete App](./apps/delete.md)
