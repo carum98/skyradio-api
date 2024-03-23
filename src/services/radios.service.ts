@@ -30,7 +30,7 @@ export class RadiosService {
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
-        const data = await this.radios.getAll(group_id, query)
+        const data = await this.radios.getAll({ group_id }, query)
 
         return RadiosSchemaSelectPaginated.parse(data)
     }

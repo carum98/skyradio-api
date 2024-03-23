@@ -75,8 +75,10 @@ export class ClientsService {
         return await this.companies.delete(code)
     }
 
-    public async getRadios (code: string, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
-        const data = await this.radios.getByClient(code, query)
+    public async getRadios (client_code: string, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
+        const { client_id = 0 } = await this.findIdsByCodes({ client_code })
+
+        const data = await this.radios.getAll({ client_id }, query)
 
         return RadiosSchemaSelectPaginated.parse(data)
     }
