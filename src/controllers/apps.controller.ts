@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { AppsService } from '@services/apps.service'
 import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
-import { AppsSchemaCreateType } from '@models/apps.model'
+import { AppsSchemaCreateType, AppsSchemaUpdateType } from '@models/apps.model'
 
 export class AppsController {
     constructor (private readonly service: AppsService) {}
@@ -34,7 +34,7 @@ export class AppsController {
 
     public update = async (req: Request, res: Response): Promise<void> => {
         const { code } = req.params
-        const params = req.body
+        const params = req.body as AppsSchemaUpdateType
 
         const data = await this.service.update(code, params)
 

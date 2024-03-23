@@ -58,12 +58,13 @@ export const AppsSchemaCreate = AppsSchemaCreateRaw
 .required()
 
 export const AppsSchemaUpdateRaw = createInsertSchema(apps)
-    .pick({ license_id: true })
+    .pick({ name: true, license_id: true })
+    .partial()
 
 export const AppsSchemaUpdate = AppsSchemaUpdateRaw
     .omit({ license_id: true })
     .extend({ license_code: z.string().length(6) })
-    .required()
+    .partial()
 
 export const AppsSchemaUniqueIdentifier = z.object({
     code: z.string().length(6)
