@@ -5,12 +5,14 @@ import { PaginationSchemaType } from '@/utils/pagination'
 import { LogsService } from '@/services/logs.service'
 import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
 import { ClientsConsoleService } from '@services/clients_console.service'
+import { AppsService } from '@services/apps.service'
 
 export class ClientsController {
     constructor (
         private readonly service: ClientsService,
         private readonly logs: LogsService,
-        private readonly console: ClientsConsoleService
+        private readonly console: ClientsConsoleService,
+        private readonly app: AppsService
     ) {}
 
     public getAll = async (req: Request, res: Response): Promise<void> => {
@@ -186,6 +188,18 @@ export class ClientsController {
         const query = req.query as unknown as PaginationSchemaType
 
         const data = await this.service.getApps(code, query)
+
+        res.json(data)
+    }
+
+    public addApp = async (req: Request, res: Response): Promise<void> => {
+        const { code } = req.params
+        const params = req.body
+
+        const data = await this.app.create({
+            client_code: code,
+            ...params
+        })
 
         res.json(data)
     }

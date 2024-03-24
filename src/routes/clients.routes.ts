@@ -9,6 +9,8 @@ import { PaginationSchema } from '@utils/pagination'
 import { LogsService } from '@services/logs.service'
 import { ConsoleSchemaCreate } from '@models/clients_console.model'
 import { ClientsConsoleService } from '@services/clients_console.service'
+import { AppsService } from '@services/apps.service'
+import { AppsSchemaCreate } from '@models/apps.model'
 
 export class ClientsRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -20,7 +22,8 @@ export class ClientsRouter extends RouterCore {
         const service = new ClientsService(datasource)
         const logs = new LogsService(datasource)
         const console = new ClientsConsoleService(datasource)
-        const controller = new ClientsController(service, logs, console)
+        const app = new AppsService(datasource)
+        const controller = new ClientsController(service, logs, console, app)
 
         this.get({
             name: '/',
@@ -171,6 +174,17 @@ export class ClientsRouter extends RouterCore {
                 requestMiddleware({
                     query: PaginationSchema,
                     params: ClientsSchemaUniqueIdentifier
+                })
+            ]
+        })
+
+        this.post({
+            name: '/:code/apps',
+            handler: controller.addApp,
+            middlewares: [
+                requestMiddleware({
+                    params: ClientsSchemaUniqueIdentifier,
+                    body: AppsSchemaCreate.omit({ client_code: true })
                 })
             ]
         })
