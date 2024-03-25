@@ -1,7 +1,7 @@
 import { DataSource } from '@/core/data-source.core'
 import { PaginationSchemaType } from '@utils/pagination'
 import { LicensesRepository } from '@repositories/licenses.repository'
-import { LicensesSchemaCreateType, LicensesSchemaSelectPaginatedType, LicensesSchemaSelectType, LicensesSchemaUpdateType } from '@models/licenses.model'
+import { LicensesSchemaCreateType, LicensesSchemaSelect, LicensesSchemaSelectPaginated, LicensesSchemaSelectPaginatedType, LicensesSchemaSelectType, LicensesSchemaUpdateType } from '@models/licenses.model'
 
 export class LicensesService {
     private readonly licenses: LicensesRepository
@@ -11,11 +11,15 @@ export class LicensesService {
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<LicensesSchemaSelectPaginatedType> {
-        return await this.licenses.getAll(group_id, query)
+        const data = await this.licenses.getAll(group_id, query)
+
+        return LicensesSchemaSelectPaginated.parse(data)
     }
 
     public async get (code: string): Promise<LicensesSchemaSelectType> {
-        return await this.licenses.get(code)
+        const data = await this.licenses.get(code)
+
+        return LicensesSchemaSelect.parse(data)
     }
 
     public async create (params: LicensesSchemaCreateType): Promise<LicensesSchemaSelectType> {

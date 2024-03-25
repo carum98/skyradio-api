@@ -1,7 +1,7 @@
 import { RepositoryCore } from '@/core/repository.core'
 import { PaginationSchemaType } from '@utils/pagination'
 import { LicensesSchemaCreateType, LicensesSchemaSelectPaginatedType, LicensesSchemaSelectType, LicensesSchemaUpdateType, licenses } from '@models/licenses.model'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { MySql2Database } from 'drizzle-orm/mysql2'
 
 export class LicensesRepository extends RepositoryCore<LicensesSchemaSelectType, LicensesSchemaCreateType, LicensesSchemaUpdateType> {
@@ -10,7 +10,8 @@ export class LicensesRepository extends RepositoryCore<LicensesSchemaSelectType,
 
         const select = db.select({
             code: licenses.code,
-            key: licenses.key
+            key: licenses.key,
+            is_active: sql<boolean>`EXISTS(SELECT 1 FROM clients_console WHERE clients_console.license_id=licenses.id AND clients_console.deleted_at IS NULL)OR EXISTS(SELECT 1 FROM apps WHERE apps.license_id=licenses.id AND apps.deleted_at IS NULL)`
         }).from(table)
 
         super({ db, table, select, search_columns: [licenses.key] })

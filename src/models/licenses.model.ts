@@ -22,6 +22,9 @@ export const licenses = mysqlTable('licenses', {
 
 export const LicensesSchemaSelect = createSelectSchema(licenses)
     .pick({ code: true, key: true })
+    .extend({
+        is_active: z.coerce.boolean()
+    })
 
 export const LicensesSchemaCreate = createInsertSchema(licenses, {
     code: (schema) => schema.code.length(6),
