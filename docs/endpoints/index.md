@@ -16,6 +16,7 @@ The endpoints of the API are divided into the following categories.
 - [[GET /clients/:code/console] - Get Client Console](./clients/console.md)
 - [[POST /clients/:code/console] - Set Client Console](./clients/set-console.md)
 - [[GET /clients/:code/apps] - Get Client Apps](./clients/apps.md)
+- [[POST /clients/:code/apps] - Set Client App](./clients/set-app.md)
 
 ### Modality
 - [[GET /modalities] - Get Modalities](./clients_modality/get-all.md)

@@ -38,8 +38,8 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
                 code: licenses.code,
                 key: licenses.key
             },
-            radios_count: sql<number>`(select count(${radios.id}) from ${radios} where ${radios.client_id} = ${clients.id})`,
-            apps_count: sql<number>`(select count(${apps.id}) from ${apps} where ${apps.client_id} = ${clients.id})`
+            radios_count: sql<number>`(select count(${radios.id}) from ${radios} where ${radios.client_id} = ${clients.id} and ${radios.deleted_at} is null)`,
+            apps_count: sql<number>`(select count(${apps.id}) from ${apps} where ${apps.client_id} = ${clients.id} and ${apps.deleted_at} is null)`
         })
         .from(table)
         .leftJoin(clients_modality, eq(clients_modality.id, clients.modality_id))
