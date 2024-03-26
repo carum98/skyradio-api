@@ -11,7 +11,7 @@ export const apps = mysqlTable('apps', {
     id: int('id').autoincrement().primaryKey(),
     code: varchar('code', { length: 6 }).notNull(),
     name: varchar('name', { length: 100 }),
-    license_id: int('license_id').notNull().references(() => licenses.id).unique(),
+    license_id: int('license_id').references(() => licenses.id).unique(),
     client_id: int('client_id').references(() => clients.id),
     group_id: int('group_id').notNull().references(() => groups.id),
     created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
