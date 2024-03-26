@@ -3,6 +3,8 @@ import { PaginationSchemaType } from '@utils/pagination'
 import { LicensesSchemaCreateType, LicensesSchemaSelectPaginatedType, LicensesSchemaSelectType, LicensesSchemaUpdateType, licenses } from '@models/licenses.model'
 import { eq, sql } from 'drizzle-orm'
 import { MySql2Database } from 'drizzle-orm/mysql2'
+import { console } from '@models/clients_console.model'
+import { apps } from '@models/apps.model'
 
 export class LicensesRepository extends RepositoryCore<LicensesSchemaSelectType, LicensesSchemaCreateType, LicensesSchemaUpdateType> {
     constructor (public readonly db: MySql2Database) {
@@ -53,5 +55,17 @@ export class LicensesRepository extends RepositoryCore<LicensesSchemaSelectType,
 
     public async delete (code: string): Promise<boolean> {
         return await super.deleteCore(eq(licenses.code, code))
+    }
+
+    // Remove all relations with clients_console and apps set to null
+    public async clearRelations (id: number): Promise<void> {
+        await Promise.all([
+            this.db.update(console)
+                .set({ license_id: null })
+                .where(eq(console.license_id, id)),
+            this.db.update(apps)
+                .set({ license_id: null })
+                .where(eq(apps.license_id, id))
+        ])
     }
 }

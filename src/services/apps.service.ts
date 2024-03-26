@@ -29,6 +29,7 @@ export class AppsService {
     public async create (params: AppsSchemaCreateType): Promise<AppsSchemaSelectType> {
         const { license_id = 0, client_id } = await this.findIdsByCodes(params)
 
+        await this.license.clearRelations(license_id)
         const code = await this.apps.create({
             ...params,
             license_id,
@@ -41,6 +42,10 @@ export class AppsService {
     public async update (code: string, params: AppsSchemaUpdateType): Promise<AppsSchemaSelectType> {
         const { name } = params
         const { license_id } = await this.findIdsByCodes(params)
+
+        if (license_id !== undefined) {
+            await this.license.clearRelations(license_id)
+        }
 
         const data = await this.apps.update(code, {
             name,

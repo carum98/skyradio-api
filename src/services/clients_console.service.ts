@@ -27,6 +27,7 @@ export class ClientsConsoleService {
     public async create (params: ConsoleSchemaCreateType): Promise<ConsoleSchemaSelectType> {
         const { license_id = 0, client_id } = await this.findIdsByCodes(params)
 
+        await this.license.clearRelations(license_id)
         const code = await this.repository.create({
             license_id,
             client_id
@@ -36,10 +37,14 @@ export class ClientsConsoleService {
     }
 
     public async update (code: string, params: ConsoleSchemaUpdateType): Promise<ConsoleSchemaSelectType> {
-        const { license_id = 0 } = await this.findIdsByCodes(params)
+        const { license_id } = await this.findIdsByCodes(params)
+
+        if (license_id !== undefined) {
+            await this.license.clearRelations(license_id)
+        }
 
         const data = await this.repository.update(code, {
-            license_id,
+            license_id
         })
 
         return await this.get(data)

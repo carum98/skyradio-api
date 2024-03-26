@@ -25,7 +25,7 @@ export class AppsRepository extends RepositoryCore<AppsSchemaSelectType, AppsSch
         })
         .from(table)
         .leftJoin(licenses, eq(licenses.id, table.license_id))
-        .rightJoin(clients, eq(clients.id, table.client_id))
+        .leftJoin(clients, eq(clients.id, table.client_id))
 
         super({ db, table, select, search_columns: [table.code] })
     }
@@ -35,7 +35,7 @@ export class AppsRepository extends RepositoryCore<AppsSchemaSelectType, AppsSch
         const where = []
 
         if (group_id !== undefined) {
-            where.push(and(isNotNull(apps.license_id), eq(clients.group_id, group_id)))
+            where.push(eq(clients.group_id, group_id))
         }
 
         if (client_id !== undefined) {
