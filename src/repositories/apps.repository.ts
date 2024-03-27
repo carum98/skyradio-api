@@ -3,7 +3,7 @@ import { licenses } from '@models/licenses.model'
 import { AppsSchemaCreateRawType, AppsSchemaSelectPaginatedType, AppsSchemaSelectType, AppsSchemaUpdateRawType, apps } from '@models/apps.model'
 import { MySql2Database } from 'drizzle-orm/mysql2'
 import { clients } from '@/models/clients.model'
-import { and, eq, isNotNull } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { PaginationSchemaType } from '@/utils/pagination'
 
 export class AppsRepository extends RepositoryCore<AppsSchemaSelectType, AppsSchemaCreateRawType, AppsSchemaUpdateRawType> {
@@ -30,7 +30,7 @@ export class AppsRepository extends RepositoryCore<AppsSchemaSelectType, AppsSch
         super({ db, table, select, search_columns: [table.code] })
     }
 
-    public async getAll (params: { group_id?: number, client_id?: number }, query: PaginationSchemaType): Promise<AppsSchemaSelectPaginatedType> {
+    public async getAll (params: { group_id?: number, client_id?: number }, query?: PaginationSchemaType): Promise<AppsSchemaSelectPaginatedType> {
         const { group_id, client_id } = params
         const where = []
 
@@ -43,7 +43,7 @@ export class AppsRepository extends RepositoryCore<AppsSchemaSelectType, AppsSch
         }
 
         return await super.getAllCore({
-            query,
+            query: query ?? { page: 1, per_page: 1000, sort_by: 'created_at', sort_order: 'desc' },
             where: and(...where)
         })
     }

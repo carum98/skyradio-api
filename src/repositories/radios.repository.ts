@@ -53,7 +53,7 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
         super({ db, table, select, search_columns: [radios.name, radios.imei, radios.serial] })
     }
 
-    public async getAll (params: { group_id?: number, client_id?: number }, query: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
+    public async getAll (params: { group_id?: number, client_id?: number }, query?: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
         const { group_id, client_id } = params
         const where = []
 
@@ -66,7 +66,7 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
         }
 
         return await super.getAllCore({
-            query,
+            query: query ?? { page: 1, per_page: 1000, sort_by: 'created_at', sort_order: 'desc' },
             where: and(...where)
         })
     }

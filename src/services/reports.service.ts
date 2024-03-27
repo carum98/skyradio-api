@@ -6,6 +6,7 @@ import { RadiosModelRepository } from '@repositories/radios_model.repository'
 import { SellersRepository } from '@repositories/sellers.repository'
 import { SimsProviderRepository } from '@repositories/sims_provider.repository'
 import { SimsRepository } from '@repositories/sims.repository'
+import { AppsRepository } from '@repositories/apps.repository'
 
 import * as ClientsReports from '@/reports/clients.reports'
 import * as ModelsReports from '@/reports/models.reports'
@@ -20,6 +21,7 @@ export class ReportsService {
     private readonly seller: SellersRepository
     private readonly sims: SimsRepository
     private readonly provider: SimsProviderRepository
+    private readonly apps: AppsRepository
 
     constructor (datasource: DataSource) {
         this.client = datasource.create(ClientsRepository)
@@ -28,20 +30,24 @@ export class ReportsService {
         this.seller = datasource.create(SellersRepository)
         this.sims = datasource.create(SimsRepository)
         this.provider = datasource.create(SimsProviderRepository)
+        this.apps = datasource.create(AppsRepository)
     }
 
     public async clients (group_id: number, params: ReportsSchemaClientsType): Promise<Buffer> {
-        const client = await this.client.get(params.client_code)
-        const radios = await this.radios.getAllBy(group_id, {
-            client_code: params.client_code
-        })
+        const { client_id = 0 } = await this.findIdsByCodes(params)
+
+        const [client, { data: radios }, { data: apps }] = await Promise.all([
+            this.client.get(params.client_code),
+            this.radios.getAll({ group_id, client_id }),
+            this.apps.getAll({ group_id, client_id })
+        ])
 
         if (params.format === 'xlsx') {
-            return await ClientsReports.xlsx(client, radios.data)
+            return await ClientsReports.xlsx(client, radios, apps)
         } else if (params.format === 'csv') {
-            return await ClientsReports.csv(radios.data)
+            return await ClientsReports.csv(radios)
         } else if (params.format === 'pdf') {
-            return await ClientsReports.pdf(client, radios.data)
+            return await ClientsReports.pdf(client, radios)
         } else {
             throw new Error('Formato inválido')
         }
@@ -115,6 +121,16 @@ export class ReportsService {
             return await InventoryReports.pdf(radios.data)
         } else {
             throw new Error('Formato inválido')
+        }
+    }
+
+    private async findIdsByCodes ({ client_code }: { client_code?: string }): Promise<{ client_id?: number }> {
+        const client_id = client_code !== undefined
+            ? await this.client.getId(client_code)
+            : undefined
+
+        return {
+            client_id
         }
     }
 }
