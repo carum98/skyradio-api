@@ -245,10 +245,10 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
                 ...item[group],
                 [property]: item[key]
             }
-
-            // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-            delete item[key]
         }
+
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete item[key]
     }
 
     private buildWhere (initial: SQL[], filters?: Record<string, unknown>): SQL {

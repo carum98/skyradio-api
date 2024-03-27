@@ -91,8 +91,8 @@ export async function xlsx (
             { name: 'Proveedor', filterButton: false },
             { name: 'Cantidad', filterButton: false }
         ],
-        rows: Object.entries(groupBy(radios, radio => radio.sim.provider.name)).map(([provider, radios]) => [
-            radios[0].sim.provider,
+        rows: Object.entries(groupBy(radios, radio => radio.sim?.provider.name)).map(([provider, radios]) => [
+            radios[0].sim?.provider ?? { color: '#808080', name: 'Sin proveedor' },
             radios.length
         ])
     })
