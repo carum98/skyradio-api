@@ -31,7 +31,7 @@ export const SimsShemaSelect = createSelectSchema(sims)
         provider: createSelectSchema(sims_provider).pick({ code: true, name: true, color: true }),
         radio: z.object({
             code: z.string(),
-            name: z.string(),
+            name: z.string().nullable(),
             imei: z.string(),
             client: ClientsSchemaSelect.pick({ code: true, name: true, color: true }).nullable()
         }).nullable()
