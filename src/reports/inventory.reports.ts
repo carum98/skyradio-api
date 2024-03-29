@@ -70,7 +70,6 @@ export async function xlsx (
     const worksheetRadios = workbook.addWorksheet('Radios')
 
     worksheetRadios.columns = [
-        { key: 'code', width: 8 },
         { key: 'imei', width: 20 },
         { key: 'model', width: 10 }
     ]
@@ -85,24 +84,21 @@ export async function xlsx (
             showRowStripes: false
         },
         columns: [
-            { name: 'Código', filterButton: false },
             { name: 'IMEI', filterButton: true },
             { name: 'Modelo', filterButton: true, totalsRowFunction: 'count' }
         ],
         rows: radios.map(radio => [
-            radio.code,
             radio.imei,
             radio.model
         ])
     })
 
-    worksheetRadios.getColumn('C').eachCell(cellCircleColor)
+    worksheetRadios.getColumn('B').eachCell(cellCircleColor)
 
     // Sims
     const worksheetSims = workbook.addWorksheet('Sims')
 
     worksheetSims.columns = [
-        { key: 'code', width: 8 },
         { key: 'number', width: 10 },
         { key: 'provider', width: 15 }
     ]
@@ -117,18 +113,16 @@ export async function xlsx (
             showRowStripes: false
         },
         columns: [
-            { name: 'Código', filterButton: false },
             { name: 'Número', filterButton: true },
             { name: 'Proveedor', filterButton: true, totalsRowFunction: 'count' }
         ],
         rows: sims.map(sim => [
-            sim.code,
             sim.number,
             sim.provider
         ])
     })
 
-    worksheetSims.getColumn('C').eachCell(cellCircleColor)
+    worksheetSims.getColumn('B').eachCell(cellCircleColor)
 
     const buf = await workbook.xlsx.writeBuffer()
 
