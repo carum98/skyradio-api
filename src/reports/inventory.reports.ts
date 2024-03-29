@@ -1,7 +1,7 @@
 import { RadiosSchemaSelectType } from '@models/radios.model'
 import { SimsShemaSelectType } from '@models/sims.model'
 
-import { cellCircleColor, createPdf } from './util'
+import { cellCircleColor } from './util'
 
 import ExcelJS from 'exceljs'
 import { groupByAndCount } from '@/utils'
@@ -16,7 +16,7 @@ export async function xlsx (
     radios.sort((a, b) => a.model.name.localeCompare(b.model.name))
     sims.sort((a, b) => a.provider.name.localeCompare(b.provider.name))
 
-    // Counters 
+    // Counters
     const counters = workbook.addWorksheet('Inventario')
 
     const radiosGroupBy = groupByAndCount(radios, (radio) => radio.model.code)
@@ -127,43 +127,4 @@ export async function xlsx (
     const buf = await workbook.xlsx.writeBuffer()
 
     return buf as Buffer
-}
-
-export async function csv (
-    radios: RadiosSchemaSelectType[]
-): Promise<Buffer> {
-    const csv = [
-        ['Código', 'IMEI', 'Modelo'],
-        ...radios.map(radio => [
-            radio.code,
-            radio.imei,
-            radio.model.name
-        ])
-    ].map(row => row.join(','))
-
-    return Buffer.from(csv.join('\n'))
-}
-
-export async function pdf (
-    radios: RadiosSchemaSelectType[]
-): Promise<Buffer> {
-    return await createPdf([
-        {
-            text: 'Inventario',
-            style: 'header'
-        },
-        {
-            style: 'tableExample',
-            table: {
-                body: [
-                    ['Código', 'IMEI', 'Modelo'],
-                    ...radios.map(radio => [
-                        radio.code,
-                        radio.imei,
-                        radio.model.name
-                    ])
-                ]
-            }
-        }
-    ])
 }

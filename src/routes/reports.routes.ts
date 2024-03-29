@@ -3,7 +3,7 @@ import { DataSource } from '@/core/data-source.core'
 import { RouterCore } from '@/core/router.core'
 import { authMiddleware } from '@/middlewares/auth.middleware'
 import { requestMiddleware } from '@/middlewares/request.middleware'
-import { ReportSchemaSellers, ReportSchemaSimsProvider, ReportsSchemaClients, ReportsSchemaInventory, ReportsSchemaModels } from '@models/reports.model'
+import { ReportSchemaSellers, ReportSchemaSimsProvider, ReportsSchemaClients, ReportsSchemaModels } from '@models/reports.model'
 import { ReportsService } from '@/services/reports.service'
 
 export class ReportsRouter extends RouterCore {
@@ -58,12 +58,7 @@ export class ReportsRouter extends RouterCore {
 
         this.post({
             name: '/inventory',
-            handler: controller.inventory,
-            middlewares: [
-                requestMiddleware({
-                    body: ReportsSchemaInventory
-                })
-            ]
+            handler: controller.inventory
         })
 
         this.post({

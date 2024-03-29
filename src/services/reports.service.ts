@@ -1,5 +1,5 @@
 import { DataSource } from '@/core/data-source.core'
-import { ReportsSchemaClientsType, ReportsSchemaInventoryType, ReportsSchemaModelsType, ReportsSchemaSellersType, ReportsSchemaSimsProviderType } from '@models/reports.model'
+import { ReportsSchemaClientsType, ReportsSchemaModelsType, ReportsSchemaSellersType, ReportsSchemaSimsProviderType } from '@models/reports.model'
 import { ClientsRepository } from '@repositories/clients.repository'
 import { RadiosRepository } from '@repositories/radios.repository'
 import { RadiosModelRepository } from '@repositories/radios_model.repository'
@@ -105,24 +105,16 @@ export class ReportsService {
         }
     }
 
-    public async inventory (group_id: number, params: ReportsSchemaInventoryType): Promise<Buffer> {
+    public async inventory (group_id: number): Promise<Buffer> {
         const [
-            radios,
-            sims
+            { data: radios },
+            { data: sims }
         ] = await Promise.all([
             this.radios.getAllBy(group_id, { available: true }),
             this.sims.getAllBy(group_id, { available: true })
         ])
 
-        if (params.format === 'xlsx') {
-            return await InventoryReports.xlsx(radios.data, sims.data)
-        } else if (params.format === 'csv') {
-            return await InventoryReports.csv(radios.data)
-        } else if (params.format === 'pdf') {
-            return await InventoryReports.pdf(radios.data)
-        } else {
-            throw new Error('Formato inválido')
-        }
+        return await InventoryReports.xlsx(radios, sims)
     }
 
     public async general (group_id: number): Promise<Buffer> {

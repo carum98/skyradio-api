@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { ReportsService } from '@/services/reports.service'
-import { ReportsFormatsType, ReportsSchemaClientsType, ReportsSchemaInventoryType, ReportsSchemaModelsType, ReportsSchemaSellersType, ReportsSchemaSimsProviderType } from '@models/reports.model'
+import { ReportsFormatsType, ReportsSchemaClientsType, ReportsSchemaModelsType, ReportsSchemaSellersType, ReportsSchemaSimsProviderType } from '@models/reports.model'
 
 export class ReportsController {
     constructor (
@@ -45,11 +45,10 @@ export class ReportsController {
 
     public inventory = async (req: Request, res: Response): Promise<void> => {
         const { group_id } = req.body
-        const params = req.body as unknown as ReportsSchemaInventoryType
 
-        const data = await this.service.inventory(group_id, params)
+        const data = await this.service.inventory(group_id)
 
-        this.responseFile(res, data, params.format)
+        this.responseFile(res, data, 'xlsx')
     }
 
     public general = async (req: Request, res: Response): Promise<void> => {
