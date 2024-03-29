@@ -50,7 +50,7 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
         super({ db, table, select, search_columns: [clients.name] })
     }
 
-    public async getAll (group_id: number, query: PaginationSchemaType): Promise<ClientsSchemaSelectPaginatedType> {
+    public async getAll (group_id: number, query?: PaginationSchemaType): Promise<ClientsSchemaSelectPaginatedType> {
         return await super.getAllCore({
             query,
             where: eq(clients.group_id, group_id)

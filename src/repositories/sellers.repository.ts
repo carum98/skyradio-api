@@ -18,7 +18,7 @@ export class SellersRepository extends RepositoryCore<SellersSchemaSelectType, S
         super({ db, table, select, search_columns: [sellers.name] })
     }
 
-    public async getAll (group_id: number, query: PaginationSchemaType): Promise<SellersSchemaSelectPaginatedType> {
+    public async getAll (group_id: number, query?: PaginationSchemaType): Promise<SellersSchemaSelectPaginatedType> {
         const data = await super.getAllCore({
             query,
             where: eq(sellers.group_id, group_id)

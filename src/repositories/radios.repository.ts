@@ -66,7 +66,7 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
         }
 
         return await super.getAllCore({
-            query: query ?? { page: 1, per_page: 1000, sort_by: 'created_at', sort_order: 'desc' },
+            query,
             where: and(...where)
         })
     }

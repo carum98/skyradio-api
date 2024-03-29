@@ -19,7 +19,7 @@ interface RepositoryCoreParams {
 }
 
 interface PaginateParams {
-    query: PaginationSchemaType
+    query?: PaginationSchemaType
     where: Where
 }
 
@@ -68,7 +68,7 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
     }
 
     protected async getAllCore ({ query, where }: PaginateParams): Promise<ResponsePaginationSchemaType<TSelect>> {
-        const { page, per_page, search, sort_by, sort_order, ...filters } = query
+        const { page, per_page, search, sort_by, sort_order, ...filters } = query ?? { page: 1, per_page: 1000, sort_by: 'created_at', sort_order: 'desc' }
 
         const offset = (page - 1) * per_page
 
@@ -86,9 +86,9 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
             data,
             pagination: {
                 total,
-                page: query.page,
-                per_page: query.per_page,
-                total_pages: Math.ceil(total / query.per_page)
+                page,
+                per_page,
+                total_pages: Math.ceil(total / per_page)
             }
         }
     }

@@ -39,7 +39,7 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsSche
         super({ db, table, select, search_columns: [sims.number] })
     }
 
-    public async getAll (group_id: number, query: PaginationSchemaType): Promise<SimsSchemaSelectPaginatedType> {
+    public async getAll (group_id: number, query?: PaginationSchemaType): Promise<SimsSchemaSelectPaginatedType> {
         return await super.getAllCore({
             query,
             where: eq(sims.group_id, group_id)
