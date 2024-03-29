@@ -93,7 +93,7 @@ export const ClientsSchemaUniqueIdentifier = createSelectSchema(clients, {
 export const ClientsSchemaSelectPaginated = ResponsePaginationSchema(ClientsSchemaSelect)
 
 export const ClientsSchemaCounter = ClientsSchemaSelect
-    .omit({ modality: true, seller: true, console: true, radios_count: true })
+    .omit({ modality: true, seller: true, console: true, radios_count: true, apps_count: true })
     .extend({
         count: z.number().int(),
         models: RadioModelSchemaCounter.array(),
