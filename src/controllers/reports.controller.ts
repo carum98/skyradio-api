@@ -52,6 +52,14 @@ export class ReportsController {
         this.responseFile(res, data, params.format)
     }
 
+    public general = async (req: Request, res: Response): Promise<void> => {
+        const { group_id } = req.body
+
+        const data = await this.service.general(group_id)
+
+        this.responseFile(res, data, 'xlsx')
+    }
+
     private responseFile (res: Response, data: Buffer, format: ReportsFormatsType): void {
         const fileName = `skyradio-report-${Date.now()}`
 

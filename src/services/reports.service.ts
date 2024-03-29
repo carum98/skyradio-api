@@ -13,6 +13,7 @@ import * as ModelsReports from '@/reports/models.reports'
 import * as SellersReports from '@/reports/sellers.reports'
 import * as SimsProviderReports from '@/reports/sim_provider.reports'
 import * as InventoryReports from '@/reports/inventory.reports'
+import * as GeneralReports from '@/reports/general.reports'
 
 export class ReportsService {
     private readonly client: ClientsRepository
@@ -122,6 +123,27 @@ export class ReportsService {
         } else {
             throw new Error('Formato inválido')
         }
+    }
+
+    public async general (group_id: number): Promise<Buffer> {
+        const [
+            { data: clients },
+            { data: radios },
+            { data: sims },
+            { data: apps }
+        ] = await Promise.all([
+            this.client.getAll(group_id),
+            this.radios.getAll({ group_id }, { page: 1, per_page: 3000, sort_by: 'created_at', sort_order: 'desc', ...{ clients: { code: { not_null: '' } } } }),
+            this.sims.getAll(group_id, { page: 1, per_page: 3000, sort_by: 'created_at', sort_order: 'desc', ...{ clients: { code: { not_null: '' } } } }),
+            this.apps.getAll({ group_id }, { page: 1, per_page: 3000, sort_by: 'created_at', sort_order: 'desc', ...{ clients: { code: { not_null: '' } } } })
+        ])
+
+        return await GeneralReports.xlsx({
+            clients,
+            radios,
+            sims,
+            apps
+        })
     }
 
     private async findIdsByCodes ({ client_code }: { client_code?: string }): Promise<{ client_id?: number }> {

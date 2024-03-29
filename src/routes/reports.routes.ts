@@ -65,5 +65,10 @@ export class ReportsRouter extends RouterCore {
                 })
             ]
         })
+
+        this.post({
+            name: '/general',
+            handler: controller.general
+        })
     }
 }

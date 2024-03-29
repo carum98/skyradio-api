@@ -29,10 +29,12 @@ export async function xlsx (
             { name: 'Modelo', filterButton: false },
             { name: 'Cantidad', filterButton: false, totalsRowFunction: 'sum' }
         ],
-        rows: radios.length > 0 ? Object.entries(groupBy(radios, radio => radio.model.name)).map(([model, radios]) => [
-            radios[0].model,
-            radios.length
-        ]) : [['Sin radios', 0]]
+        rows: radios.length > 0
+                ? Object.entries(groupBy(radios, radio => radio.model.name)).map(([model, radios]) => [
+                    radios[0].model,
+                    radios.length
+                ])
+                : [['Sin radios', 0]]
     })
 
     worksheet.getColumn('A').width = 10
@@ -53,10 +55,12 @@ export async function xlsx (
             { name: 'Proveedor', filterButton: false },
             { name: 'Cantidad', filterButton: false, totalsRowFunction: 'sum' }
         ],
-        rows: radios.length > 0 ? Object.entries(groupBy(radios, radio => radio.sim?.provider.name)).map(([_, radios]) => [
-            radios[0].sim?.provider ?? { color: '#808080', name: 'Sin proveedor' },
-            radios.length
-        ]) : [['Sin radios', 0]]
+        rows: radios.length > 0
+                ? Object.entries(groupBy(radios, radio => radio.sim?.provider.name)).map(([_, radios]) => [
+                    radios[0].sim?.provider ?? { color: '#808080', name: 'Sin proveedor' },
+                    radios.length
+                ])
+                : [['Sin radios', 0]]
     })
 
     worksheet.getColumn('D').width = 15
@@ -78,7 +82,7 @@ export async function xlsx (
         ],
         rows: [
             ['Apps', apps.length],
-            ['Consola', client.console ? 1 : 0],
+            ['Consola', (client.console != null) ? 1 : 0]
         ]
     })
 
@@ -95,12 +99,12 @@ export async function xlsx (
             { key: 'sim', width: 15 },
             { key: 'provider', width: 15 }
         ]
-    
+
         simsSheet.columns = [
             { key: 'number', width: 15 },
             { key: 'provider', width: 15 }
         ]
-    
+
         radiosSheet.addTable({
             name: 'Radios',
             ref: 'A1',
@@ -125,10 +129,10 @@ export async function xlsx (
                 radio.sim?.provider
             ])
         })
-    
+
         radiosSheet.getColumn('C').eachCell(cellCircleColor)
         radiosSheet.getColumn('E').eachCell(cellCircleColor)
-    
+
         simsSheet.addTable({
             name: 'SIMs',
             ref: 'A1',
@@ -147,7 +151,7 @@ export async function xlsx (
                 radio.sim?.provider
             ])
         })
-    
+
         simsSheet.getColumn('B').eachCell(cellCircleColor)
     }
 
@@ -158,7 +162,7 @@ export async function xlsx (
             { key: 'name', width: 20 },
             { key: 'license', width: 20 }
         ]
-    
+
         appsSheet.addTable({
             name: 'Apps',
             ref: 'A1',
