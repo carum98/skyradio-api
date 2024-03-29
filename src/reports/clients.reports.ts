@@ -3,7 +3,7 @@ import { RadiosSchemaSelectType } from '@models/radios.model'
 import { AppsSchemaSelectType } from '@models/apps.model'
 
 import { groupBy } from '@/utils/index'
-import { cellCircleColor, createPdf, setLogo } from './util'
+import { cellCircleColor, createPdf, richTextColor } from './util'
 
 import ExcelJS from 'exceljs'
 
@@ -14,11 +14,11 @@ export async function xlsx (
 ): Promise<Buffer> {
     const workbook = new ExcelJS.Workbook()
 
-    const worksheet = workbook.addWorksheet(client.name)
+    const worksheet = workbook.addWorksheet('Detalle')
 
     worksheet.addTable({
         name: 'Modelos',
-        ref: 'A3',
+        ref: 'A5',
         headerRow: true,
         totalsRow: true,
         style: {
@@ -42,7 +42,7 @@ export async function xlsx (
 
     worksheet.addTable({
         name: 'Proveedores',
-        ref: 'D3',
+        ref: 'D5',
         headerRow: true,
         totalsRow: true,
         style: {
@@ -64,16 +64,25 @@ export async function xlsx (
 
     worksheet.getColumn('E').alignment = { horizontal: 'center' }
 
-    // Logo
-    setLogo(workbook, worksheet)
+    worksheet.addTable({
+        name: 'Extra',
+        ref: 'G5',
+        headerRow: true,
+        style: {
+            theme: 'TableStyleLight9',
+            showRowStripes: false
+        },
+        columns: [
+            { name: 'Tipo', filterButton: false },
+            { name: 'Cantidad', filterButton: false }
+        ],
+        rows: [
+            ['Apps', apps.length],
+            ['Consola', client.console ? 1 : 0],
+        ]
+    })
 
-    // Header
-    worksheet.mergeCells('B1:F1')
-    worksheet.getCell('B1').value = client.name
-    worksheet.getCell('B1').font = { bold: true, size: 20 }
-
-    worksheet.mergeCells('B2:F2')
-    worksheet.getCell('B2').value = 'Ejecutivo: ' + (client.seller?.name ?? '-')
+    worksheet.getColumn('H').alignment = { horizontal: 'center' }
 
     const radiosSheet = workbook.addWorksheet('Radios')
     const simsSheet = workbook.addWorksheet('SIMs')
@@ -163,6 +172,27 @@ export async function xlsx (
             app.name,
             app.license?.key
         ])
+    })
+
+    // Header
+    worksheet.mergeCells('A1:D1')
+    worksheet.getCell('A1').value = richTextColor({
+        text: client.name,
+        color: client.color,
+        size: 20,
+        shape: '██  '
+    })
+
+    worksheet.getCell('A1').alignment = { horizontal: 'left' }
+
+    worksheet.getCell('A2').value = 'Vendedor:'
+    worksheet.getCell('B2').value = client.seller?.name ?? '-'
+    worksheet.getCell('B2').alignment = { horizontal: 'left' }
+
+    worksheet.getCell('A3').value = 'Modalidad:'
+    worksheet.getCell('B3').value = richTextColor({
+        text: client.modality.name,
+        color: client.modality.color
     })
 
     const buf = await workbook.xlsx.writeBuffer()

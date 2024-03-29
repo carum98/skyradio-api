@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 
 import { hexaToArgb } from '@/utils/index'
-import { Cell, Worksheet, Workbook } from 'exceljs'
+import { Cell, Worksheet, Workbook, RichText } from 'exceljs'
 
 import PdfPrinter from 'pdfmake'
 import { Content } from 'pdfmake/interfaces'
@@ -12,22 +12,35 @@ export function cellCircleColor (cell: Cell): void {
     if (cell.value != null && !cell.formula && typeof cell.value === 'object') {
         const value = cell.value as unknown as { name: string, color: string }
 
-        cell.value = {
-            richText: [
-                {
-                    text: '⬤',
-                    font: {
-                        bold: true,
-                        color: {
-                            argb: hexaToArgb(value.color)
-                        }
+        cell.value = richTextColor({
+            text: value.name,
+            color: value.color
+        })
+    }
+}
+
+export function richTextColor (params: { text: string, color: string, size?: number, shape?: string }): { richText: RichText[] } {
+    const { text, color, size, shape = '⬤' } = params
+
+    return {
+        richText: [
+            {
+                text: shape,
+                font: {
+                    size,
+                    bold: true,
+                    color: {
+                        argb: hexaToArgb(color)
                     }
-                },
-                {
-                    text: ` ${value.name}`
                 }
-            ]
-        }
+            },
+            {
+                text: ` ${text}`,
+                font: {
+                    size
+                }
+            }
+        ]
     }
 }
 
