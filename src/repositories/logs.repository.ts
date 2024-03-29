@@ -1,4 +1,5 @@
 import { IRepository, RepositoryCore } from '@/core/repository.core'
+import { apps } from '@/models/apps.model'
 import { clients } from '@/models/clients.model'
 import { radios } from '@/models/radios.model'
 import { sims } from '@/models/sims.model'
@@ -29,6 +30,10 @@ export class LogsRepository extends RepositoryCore<LogsSchemaSelectType, LogsSch
                 code: sims.code,
                 number: sims.number
             },
+            values__app: {
+                code: apps.code,
+                name: apps.name
+            },
             created_at: table.created_at,
             action: table.action
         })
@@ -37,6 +42,7 @@ export class LogsRepository extends RepositoryCore<LogsSchemaSelectType, LogsSch
         .leftJoin(radios, eq(table.radio_id, radios.id))
         .leftJoin(clients, eq(table.client_id, clients.id))
         .leftJoin(sims, eq(table.sim_id, sims.id))
+        .leftJoin(apps, eq(table.app_id, apps.id))
 
         super({ db, table, select })
     }

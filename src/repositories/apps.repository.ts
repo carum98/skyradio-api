@@ -54,6 +54,12 @@ export class AppsRepository extends RepositoryCore<AppsSchemaSelectType, AppsSch
         })
     }
 
+    public async getId (code: string): Promise<number> {
+        return await super.getIdCore({
+            where: eq(apps.code, code)
+        })
+    }
+
     public async create (params: AppsSchemaCreateRawType): Promise<string> {
         return await this.insertCore({
             params

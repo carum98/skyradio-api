@@ -6,6 +6,7 @@ import { AppsService } from '@services/apps.service'
 import { authMiddleware } from '@middlewares/auth.middleware'
 import { PaginationSchema } from '@utils/pagination'
 import { AppsSchemaCreate, AppsSchemaUniqueIdentifier, AppsSchemaUpdate } from '@models/apps.model'
+import { LogsService } from '@services/logs.service'
 
 export class AppsRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -15,7 +16,8 @@ export class AppsRouter extends RouterCore {
         })
 
         const service = new AppsService(datasource)
-        const controller = new AppsController(service)
+        const logs = new LogsService(datasource)
+        const controller = new AppsController(service, logs)
 
         this.get({
             name: '/',

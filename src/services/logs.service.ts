@@ -6,11 +6,13 @@ import { RadiosRepository } from '@repositories/radios.repository'
 import { ClientsRepository } from '@repositories/clients.repository'
 import { SimsRepository } from '@repositories/sims.repository'
 import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
+import { AppsRepository } from '@repositories/apps.repository'
 
 interface Relations {
     radio_code: string
     client_code: string
     sim_code: string
+    app_code: string
     radios_codes: string[]
     sims_codes: string[]
 }
@@ -33,12 +35,14 @@ export class LogsService {
     private readonly radios: RadiosRepository
     private readonly client: ClientsRepository
     private readonly sim: SimsRepository
+    private readonly apps: AppsRepository
 
     constructor (datasource: DataSource) {
         this.logs = datasource.create(LogsRepository)
         this.radios = datasource.create(RadiosRepository)
         this.client = datasource.create(ClientsRepository)
         this.sim = datasource.create(SimsRepository)
+        this.apps = datasource.create(AppsRepository)
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<LogsSchemaSelectPaginatedType> {
@@ -51,7 +55,7 @@ export class LogsService {
         const { session, action, params } = props
 
         const { user_id, group_id } = session
-        const { radio_id, client_id, sim_id, radios_ids, sims_ids } = await this.findIdsByCodes(params)
+        const { radio_id, client_id, sim_id, app_id, radios_ids, sims_ids } = await this.findIdsByCodes(params)
 
         if (radios_ids !== undefined) {
             await this.logs.createMany(radios_ids.map(radio_id => ({
@@ -74,6 +78,7 @@ export class LogsService {
                 radio_id,
                 sim_id,
                 user_id,
+                app_id,
                 group_id
             })
         }
@@ -156,6 +161,20 @@ export class LogsService {
         })
     }
 
+    public async createApp (props: LogsProps<'app_code'>): Promise<void> {
+        await this.create({
+            action: 'create-app',
+            ...props
+        })
+    }
+
+    public async addAppToClient (props: LogsProps<'app_code' | 'client_code'>): Promise<void> {
+        await this.create({
+            action: 'add-app-to-client',
+            ...props
+        })
+    }
+
     // Multiple methods
     public async addRadiosToClient (props: LogsProps<'client_code'>, radios_code: string[]): Promise<void> {
         await Promise.all(radios_code.map(async radio_code => {
@@ -181,8 +200,8 @@ export class LogsService {
         }))
     }
 
-    private async findIdsByCodes (params: Partial<Relations>): Promise<{ client_id?: number, sim_id?: number, radio_id?: number, radios_ids?: number[], sims_ids?: number[] }> {
-        const { client_code, sim_code, radio_code, radios_codes, sims_codes } = params
+    private async findIdsByCodes (params: Partial<Relations>): Promise<{ client_id?: number, sim_id?: number, radio_id?: number, app_id?: number, radios_ids?: number[], sims_ids?: number[] }> {
+        const { client_code, sim_code, radio_code, app_code, radios_codes, sims_codes } = params
 
         const client_id = client_code !== undefined
             ? await this.client.getId(client_code)
@@ -194,6 +213,10 @@ export class LogsService {
 
         const radio_id = radio_code !== undefined
             ? await this.radios.getId(radio_code)
+            : undefined
+
+        const app_id = app_code !== undefined
+            ? await this.apps.getId(app_code)
             : undefined
 
         const radios_ids = radios_codes !== undefined
@@ -208,6 +231,7 @@ export class LogsService {
             client_id,
             sim_id,
             radio_id,
+            app_id,
             radios_ids,
             sims_ids
         }

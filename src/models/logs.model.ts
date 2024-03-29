@@ -8,12 +8,15 @@ import { SimsShemaSelect, sims } from './sims.model'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 import { ResponsePaginationSchema } from '@/utils/pagination'
+import { AppsSchemaSelect, apps } from './apps.model'
 
 const Actions = [
     'create-client',
     'create-radio',
     'create-sim',
+    'create-app',
     'add-radio-to-client',
+    'add-app-to-client',
     'add-sim-to-radio',
     'remove-radio-from-client',
     'remove-sim-from-radio',
@@ -28,6 +31,7 @@ export const logs = mysqlTable('logs', {
     radio_id: int('radio_id').references(() => radios.id),
     client_id: int('client_id').references(() => clients.id),
     sim_id: int('sim_id').references(() => sims.id),
+    app_id: int('app_id').references(() => apps.id),
     action: mysqlEnum('action', Actions).notNull(),
 	created_at: datetime('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
     deleted_at: datetime('deleted_at', { mode: 'string' })
@@ -66,6 +70,10 @@ export const actionsMessages = z.function()
                 return 'Cambio de radio'
             case 'swap-sim-from-radio':
                 return 'Cambio de sim'
+            case 'create-app':
+                return 'Creado {{ app }}'
+            case 'add-app-to-client':
+                return 'App {{ app }} relacionado al cliente {{ client }}'
         }
     })
 
@@ -77,7 +85,8 @@ export const LogsSchemaSelect = createSelectSchema(logs)
         values: z.object({
             radio: RadiosSchemaSelect.pick({ code: true, imei: true }).nullable(),
             client: ClientsSchemaSelect.pick({ code: true, name: true }).nullable(),
-            sim: SimsShemaSelect.pick({ code: true, number: true }).nullable()
+            sim: SimsShemaSelect.pick({ code: true, number: true }).nullable(),
+            app: AppsSchemaSelect.pick({ code: true, name: true }).nullable()
         })
     })
 
