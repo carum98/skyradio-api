@@ -202,21 +202,20 @@ export class ClientsController {
         })
 
         if (data != null) {
-            await Promise.all([
-                this.logs.createApp({
-                    session: req.body,
-                    params: {
-                        app_code: data.code
-                    }
-                }),
-                this.logs.addAppToClient({
-                    session: req.body,
-                    params: {
-                        app_code: data.code,
-                        client_code: code
-                    }
-                })
-            ])
+            await this.logs.createApp({
+                session: req.body,
+                params: {
+                    app_code: data.code
+                }
+            })
+
+            await this.logs.addAppToClient({
+                session: req.body,
+                params: {
+                    app_code: data.code,
+                    client_code: code
+                }
+            })
 
             res.status(204).json()
         } else {

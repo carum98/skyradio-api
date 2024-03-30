@@ -33,21 +33,20 @@ export class AppsController {
 
         const data = await this.service.create(params)
 
-        await Promise.all([
-            this.logs.createApp({
-                session: params,
-                params: {
-                    app_code: data.code
-                }
-            }),
-            this.logs.addAppToClient({
-                session: params,
-                params: {
-                    app_code: data.code,
-                    client_code: params.client_code
-                }
-            })
-        ])
+        await this.logs.createApp({
+            session: params,
+            params: {
+                app_code: data.code
+            }
+        })
+
+        await this.logs.addAppToClient({
+            session: params,
+            params: {
+                app_code: data.code,
+                client_code: params.client_code
+            }
+        })
 
         res.json(data)
     }
