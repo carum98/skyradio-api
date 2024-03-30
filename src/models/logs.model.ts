@@ -22,7 +22,9 @@ const Actions = [
     'remove-radio-from-client',
     'remove-sim-from-radio',
     'swap-radio-from-client',
-    'swap-sim-from-radio'
+    'swap-sim-from-radio',
+    'enable-console',
+    'disable-console'
 ] as const
 
 export const logs = mysqlTable('logs', {

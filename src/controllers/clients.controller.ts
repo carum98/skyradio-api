@@ -180,6 +180,13 @@ export class ClientsController {
             ...params
         })
 
+        await this.logs.enableConsole({
+            session: req.body,
+            params: {
+                client_code: code
+            }
+        })
+
         return res.json(data)
     }
 

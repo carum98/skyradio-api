@@ -175,6 +175,20 @@ export class LogsService {
         })
     }
 
+    public async enableConsole (props: LogsProps<'client_code'>): Promise<void> {
+        await this.create({
+            action: 'enable-console',
+            ...props
+        })
+    }
+
+    public async disableConsole (props: LogsProps<'client_code'>): Promise<void> {
+        await this.create({
+            action: 'disable-console',
+            ...props
+        })
+    }
+
     // Multiple methods
     public async addRadiosToClient (props: LogsProps<'client_code'>, radios_code: string[]): Promise<void> {
         await Promise.all(radios_code.map(async radio_code => {

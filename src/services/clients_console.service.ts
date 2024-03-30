@@ -28,7 +28,7 @@ export class ClientsConsoleService {
         const { license_id = 0, client_id } = await this.findIdsByCodes(params)
 
         await this.license.clearRelations(license_id)
-        const code = await this.repository.create({
+        const code = await this.repository.upsert({
             license_id,
             client_id
         })

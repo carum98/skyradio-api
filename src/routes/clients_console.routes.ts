@@ -6,6 +6,7 @@ import { ClientsConsoleController } from '@controllers/clients_console.controlle
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { PaginationSchema } from '@utils/pagination'
 import { ConsoleSchemaCreate, ConsoleSchemaUniqueIdentifier, ConsoleSchemaUpdate } from '@models/clients_console.model'
+import { LogsService } from '@/services/logs.service'
 
 export class ClientsConsoleRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -15,7 +16,8 @@ export class ClientsConsoleRouter extends RouterCore {
         })
 
         const service = new ClientsConsoleService(datasource)
-        const controller = new ClientsConsoleController(service)
+        const logs = new LogsService(datasource)
+        const controller = new ClientsConsoleController(service, logs)
 
         this.get({
             name: '/',

@@ -10,7 +10,9 @@ export const LOGS_MESSAGES: Record<string, Record<string, string>> = {
         'remove-radio-from-client': 'Devolución de radio {{ radio }} del cliente {{ client }}',
         'remove-sim-from-radio': 'Sim {{ sim }} removido del radio {{ radio }}',
         'swap-radio-from-client': 'Cambio de radio',
-        'swap-sim-from-radio': 'Cambio de sim'
+        'swap-sim-from-radio': 'Cambio de sim',
+        'enable-console': 'Consola habilitada en el cliente {{ client }}',
+        'disable-console': 'Consola deshabilitada en el cliente {{ client }}'
     },
     radios: {
         'create-radio': 'Radio creado',
@@ -25,7 +27,9 @@ export const LOGS_MESSAGES: Record<string, Record<string, string>> = {
         'add-radio-to-client': 'Entrega de radio {{ radio }}',
         'remove-radio-from-client': 'Devolución de radio {{ radio }}',
         'swap-radio-from-client': 'Cambio de radio',
-        'add-app-to-client': 'App {{ app }} relacionado al cliente'
+        'add-app-to-client': 'App {{ app }} relacionado al cliente',
+        'enable-console': 'Consola habilitada',
+        'disable-console': 'Consola deshabilitada'
     },
     sims: {
         'create-sim': 'Sim creado',

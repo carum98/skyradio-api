@@ -42,7 +42,19 @@ export class ClientsConsoleRepository extends RepositoryCore<ConsoleSchemaSelect
         })
     }
 
-    public async create (params: ConsoleSchemaCreateRawType): Promise<string> {
+    public async upsert (params: ConsoleSchemaCreateRawType): Promise<string> {
+        const code = await this.db.select({ code: console.code })
+            .from(console)
+            .where(eq(console.client_id, params.client_id ?? 0))
+        
+        if (code.length > 0) {
+            await this.db.update(console)
+                .set({ ...params, deleted_at: null })
+                .where(eq(console.code, code[0].code ?? 0))
+
+            return code[0].code
+        }
+        
         return await this.insertCore({
             params
         })
