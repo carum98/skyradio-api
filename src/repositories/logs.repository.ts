@@ -51,16 +51,22 @@ export class LogsRepository extends RepositoryCore<LogsSchemaSelectType, LogsSch
         const { group_id, radio_id, client_id, sim_id, app_id } = params
 
         const where = []
+        let rel = ''
 
         if (radio_id !== undefined) {
+            rel = 'radios'
             where.push(eq(logs.radio_id, radio_id))
         } else if (client_id !== undefined) {
+            rel = 'clients'
             where.push(eq(logs.client_id, client_id))
         } else if (sim_id !== undefined) {
+            rel = 'sims'
             where.push(eq(logs.sim_id, sim_id))
         } else if (group_id !== undefined) {
+            rel = 'groups'
             where.push(eq(logs.group_id, group_id))
         } else if (app_id !== undefined) {
+            rel = 'apps'
             where.push(eq(logs.app_id, app_id))
         }
 
@@ -73,7 +79,7 @@ export class LogsRepository extends RepositoryCore<LogsSchemaSelectType, LogsSch
             ...data,
             data: data.data.map((item) => ({
                 ...item,
-                message: actionsMessages(item.action)
+                message: actionsMessages(item.action, rel)
             }))
         }
     }

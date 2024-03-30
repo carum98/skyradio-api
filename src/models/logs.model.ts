@@ -9,6 +9,7 @@ import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 import { AppsSchemaSelect, apps } from './apps.model'
+import { LOGS_MESSAGES } from '@utils/logs-messages'
 
 const Actions = [
     'create-client',
@@ -48,34 +49,9 @@ export const logs = mysqlTable('logs', {
 export const ActionsSchema = z.enum(Actions)
 
 export const actionsMessages = z.function()
-    .args(ActionsSchema)
+    .args(ActionsSchema, z.string())
     .returns(z.string())
-    .implement((action) => {
-        switch (action) {
-            case 'create-client':
-                return 'Creado {{ client }}'
-            case 'create-radio':
-                return 'Creado {{ radio }}'
-            case 'create-sim':
-                return 'Creado {{ sim }}'
-            case 'add-radio-to-client':
-                return 'Radio {{ radio }} relacionado al cliente {{ client }}'
-            case 'add-sim-to-radio':
-                return 'Sim {{ sim }} relacionado al radio {{ radio }}'
-            case 'remove-radio-from-client':
-                return 'Radio {{ radio }} removido de cliente {{ client }}'
-            case 'remove-sim-from-radio':
-                return 'Sim {{ sim }} removido de radio {{ radio }}'
-            case 'swap-radio-from-client':
-                return 'Cambio de radio'
-            case 'swap-sim-from-radio':
-                return 'Cambio de sim'
-            case 'create-app':
-                return 'Creado {{ app }}'
-            case 'add-app-to-client':
-                return 'App {{ app }} relacionado al cliente {{ client }}'
-        }
-    })
+    .implement((action, rel) => LOGS_MESSAGES[rel][action] ?? 'no message found')
 
 export const LogsSchemaSelect = createSelectSchema(logs)
     .pick({ action: true, created_at: true })
