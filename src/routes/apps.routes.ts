@@ -69,5 +69,16 @@ export class AppsRouter extends RouterCore {
                 })
             ]
         })
+
+        this.get({
+            name: '/:code/logs',
+            handler: controller.getLogs,
+            middlewares: [
+                requestMiddleware({
+                    params: AppsSchemaUniqueIdentifier,
+                    query: PaginationSchema
+                })
+            ]
+        })
     }
 }

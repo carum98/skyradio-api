@@ -47,8 +47,8 @@ export class LogsRepository extends RepositoryCore<LogsSchemaSelectType, LogsSch
         super({ db, table, select })
     }
 
-    public async getAll (params: { group_id?: number, radio_id?: number, client_id?: number, sim_id?: number }, query: PaginationSchemaType): Promise<LogsSchemaSelectPaginatedType> {
-        const { group_id, radio_id, client_id, sim_id } = params
+    public async getAll (params: { group_id?: number, radio_id?: number, client_id?: number, sim_id?: number, app_id?: number }, query: PaginationSchemaType): Promise<LogsSchemaSelectPaginatedType> {
+        const { group_id, radio_id, client_id, sim_id, app_id } = params
 
         const where = []
 
@@ -60,6 +60,8 @@ export class LogsRepository extends RepositoryCore<LogsSchemaSelectType, LogsSch
             where.push(eq(logs.sim_id, sim_id))
         } else if (group_id !== undefined) {
             where.push(eq(logs.group_id, group_id))
+        } else if (app_id !== undefined) {
+            where.push(eq(logs.app_id, app_id))
         }
 
         const data = await super.getAllCore({
