@@ -48,5 +48,3 @@ server.routes([
 server.middleware(errorMiddleware)
 
 server.listen(process.env.PORT ?? 3000)
-
-console.log('Testing Vultr')
