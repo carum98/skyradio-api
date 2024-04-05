@@ -1,0 +1,183 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - '*.*.*-vultr'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    environment: vultr
+
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v4
+
+    - name: Docker Login
+      uses: docker/login-action@v3.0.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.TOKEN_DEPLOY }}
+        logout: true
+    
+    - name: Build the Docker image
+      run: docker build . --file ./docker/Dockerfile.prod --tag ghcr.io/carum98/skyradio-api:${{ github.ref_name }}
+
+    - name: Send to registry
+      run: docker push ghcr.io/carum98/skyradio-api:${{ github.ref_name }}
+
+  pull-image:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    environment: vultr
+
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v4
+
+    - name: Pull the image
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.TOKEN_DEPLOY }} &&
+          docker pull ghcr.io/carum98/skyradio-api:${{ github.ref_name }}
+
+  create-folder:
+    runs-on: ubuntu-latest
+    environment: vultr
+
+    steps:
+    - name: Create folder
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          mkdir -p ~/backend
+
+  env-file:
+    runs-on: ubuntu-latest
+    needs: create-folder
+    environment: vultr
+
+    steps:
+    - name: Create .env file
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd ~/backend &&
+          echo "PORT=${{ secrets.PORT }}" >> .env &&
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env &&
+          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env &&
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env &&
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env &&
+          echo "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> .env &&
+          echo "SECRET_TOKEN=${{ secrets.SECRET_TOKEN }}" >> .env &&
+          echo "SECRET_REFRESH_TOKEN=${{ secrets.SECRET_REFRESH_TOKEN }}" >> .env
+
+  docker-compose-files:
+    runs-on: ubuntu-latest
+    needs: create-folder
+    environment: vultr
+
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v4
+
+    - name: Copy docker-compose.yml
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        source: "docker-compose.yml"
+        target: "~/backend"
+
+    - name: Copy docker-compose.prod.yml
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        source: "docker/docker-compose.prod.yml"
+        target: "~/backend"
+        strip_components: 1
+
+    - name: Create docker-compose override
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          echo -e "services:\n  api:\n    image: ghcr.io/carum98/skyradio-api:${{ github.ref_name }}" > ~/backend/docker-compose.override.yml
+
+  backup-db:
+    runs-on: ubuntu-latest
+    environment: vultr
+
+    steps:
+    - name: Backup the database and copy it to the server
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          # Check if container is running
+          if [ "$(docker ps -q -f status=running -f name=skyradio-db)" ]; then
+            cd ~/backend &&
+            # Backup the database
+            docker exec skyradio-db sh -c 'exec mysqldump -p${{ secrets.DB_ROOT_PASSWORD }} ${{ secrets.DB_DATABASE }} > backup_${{ github.ref_name }}.sql' &&
+            # Copy the backup to the host
+            docker cp skyradio-db:/backup_${{ github.ref_name }}.sql ~/backend/backup_${{ github.ref_name }}.sql && 
+            echo "Backup done"
+          else 
+            echo "Container not running"
+          fi
+
+  docker-compose-up:
+    runs-on: ubuntu-latest
+    needs: [pull-image, backup-db, docker-compose-files]
+    environment: vultr
+
+    steps:
+    - name: Start the containers
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd ~/backend &&
+          # Check if the container is running
+          if [ "$(docker ps -q -f name=skyradio-api)" ]; then
+            # Stop the container
+            docker compose down
+          fi &&
+          # Start the container
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.override.yml --env-file .env up -d
+
+  database-migration:
+    runs-on: ubuntu-latest
+    needs: docker-compose-up
+    environment: vultr
+
+    steps:
+    - name: Run database migration
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          docker exec skyradio-api sh -c 'cd dist && node -e "require(\"./src/core/migrations.core.js\").init()"'
