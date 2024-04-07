@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy to Production
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    environment: production
+    environment: Production
 
     steps:
     - name: Checkout the code
@@ -31,7 +31,7 @@ jobs:
   pull-image:
     runs-on: ubuntu-latest
     needs: build-and-push
-    environment: production
+    environment: Production
 
     steps:
     - name: Checkout the code
@@ -41,40 +41,44 @@ jobs:
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
         username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
+        password: ${{ secrets.SSH_PASSWORD }}
         script: |
           docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.TOKEN_DEPLOY }} &&
           docker pull ghcr.io/carum98/skyradio-api:${{ github.ref_name }}
 
   create-folder:
     runs-on: ubuntu-latest
-    environment: production
+    environment: Production
 
     steps:
     - name: Create folder
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
         username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
+        password: ${{ secrets.SSH_PASSWORD }}
         script: |
           mkdir -p ~/backend
 
   env-file:
     runs-on: ubuntu-latest
     needs: create-folder
-    environment: production
+    environment: Production
 
     steps:
     - name: Create .env file
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
         username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
+        password: ${{ secrets.SSH_PASSWORD }}
         script: |
           cd ~/backend &&
+          echo "" > .env &&
           echo "PORT=${{ secrets.PORT }}" >> .env &&
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env &&
           echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env &&
@@ -87,7 +91,7 @@ jobs:
   docker-compose-files:
     runs-on: ubuntu-latest
     needs: create-folder
-    environment: production
+    environment: Production
 
     steps:
     - name: Checkout the code
@@ -97,8 +101,9 @@ jobs:
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
         username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
+        password: ${{ secrets.SSH_PASSWORD }}
         source: "docker-compose.yml"
         target: "~/backend"
 
@@ -106,8 +111,9 @@ jobs:
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
         username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
+        password: ${{ secrets.SSH_PASSWORD }}
         source: "docker/docker-compose.prod.yml"
         target: "~/backend"
         strip_components: 1
@@ -116,22 +122,24 @@ jobs:
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
         username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
+        password: ${{ secrets.SSH_PASSWORD }}
         script: |
           echo -e "services:\n  api:\n    image: ghcr.io/carum98/skyradio-api:${{ github.ref_name }}" > ~/backend/docker-compose.override.yml
 
   backup-db:
     runs-on: ubuntu-latest
-    environment: production
+    environment: Production
 
     steps:
     - name: Backup the database and copy it to the server
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
         username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
+        password: ${{ secrets.SSH_PASSWORD }}
         script: |
           # Check if container is running
           if [ "$(docker ps -q -f status=running -f name=skyradio-db)" ]; then
@@ -148,15 +156,16 @@ jobs:
   docker-compose-up:
     runs-on: ubuntu-latest
     needs: [pull-image, backup-db, docker-compose-files]
-    environment: production
+    environment: Production
 
     steps:
     - name: Start the containers
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
         username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
+        password: ${{ secrets.SSH_PASSWORD }}
         script: |
           cd ~/backend &&
           # Check if the container is running
@@ -170,14 +179,15 @@ jobs:
   database-migration:
     runs-on: ubuntu-latest
     needs: docker-compose-up
-    environment: production
+    environment: Production
 
     steps:
     - name: Run database migration
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
         username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
+        password: ${{ secrets.SSH_PASSWORD }}
         script: |
           docker exec skyradio-api sh -c 'cd dist && node -e "require(\"./src/core/migrations.core.js\").init()"'
