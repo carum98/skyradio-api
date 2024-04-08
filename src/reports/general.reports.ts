@@ -34,10 +34,12 @@ export async function xlsx ({
             { name: 'Cliente', filterButton: false },
             { name: 'Cantidad', filterButton: false, totalsRowFunction: 'sum' }
         ],
-        rows: clients.map(client => [
-            client,
-            client.radios_count
-        ])
+        rows: clients
+            .toSorted((a, b) => b.radios_count - a.radios_count)
+            .map(client => [
+                client,
+                client.radios_count
+            ])
     })
     worksheet.getColumn('A').eachCell(cellCircleColor)
     worksheet.getColumn('A').width = 45
@@ -54,10 +56,12 @@ export async function xlsx ({
             { name: 'Modelo', filterButton: false },
             { name: 'Cantidad', filterButton: false }
         ],
-        rows: Object.entries(groupBy(radios, radio => radio.model.code)).map(([_, radios]) => [
-            radios.at(0).model,
-            radios.length
-        ])
+        rows: Object.entries(groupBy(radios, radio => radio.model.code))
+            .map(([_, radios]) => [
+                radios.at(0).model,
+                radios.length
+            ])
+            .toSorted((a, b) => b[1] - a[1])
     })
     worksheet.getColumn('D').eachCell(cellCircleColor)
     worksheet.getColumn('D').width = 15
@@ -74,10 +78,12 @@ export async function xlsx ({
             { name: 'Proveedor', filterButton: false },
             { name: 'Cantidad', filterButton: false }
         ],
-        rows: Object.entries(groupBy(radios, radio => radio.sim?.provider.code)).map(([_, radios]) => [
-            radios.at(0).sim?.provider ?? { color: '#808080', name: 'Sin proveedor' },
-            radios.length
-        ])
+        rows: Object.entries(groupBy(radios, radio => radio.sim?.provider.code))
+            .map(([_, radios]) => [
+                radios.at(0).sim?.provider ?? { color: '#808080', name: 'Sin proveedor' },
+                radios.length
+            ])
+            .toSorted((a, b) => b[1] - a[1])
     })
     worksheet.getColumn('G').eachCell(cellCircleColor)
     worksheet.getColumn('G').width = 15
@@ -94,10 +100,12 @@ export async function xlsx ({
             { name: 'Modalidad', filterButton: false },
             { name: 'Cantidad', filterButton: false }
         ],
-        rows: Object.entries(groupBy(clients, client => client.modality.code)).map(([_, clients]) => [
-            clients.at(0).modality,
-            clients.length
-        ])
+        rows: Object.entries(groupBy(clients, client => client.modality.code))
+            .map(([_, clients]) => [
+                clients.at(0).modality,
+                clients.length
+            ])
+            .toSorted((a, b) => b[1] - a[1])
     })
     worksheet.getColumn('J').eachCell(cellCircleColor)
     worksheet.getColumn('J').width = 15
@@ -114,10 +122,12 @@ export async function xlsx ({
             { name: 'Vendedor', filterButton: false },
             { name: 'Cantidad', filterButton: false }
         ],
-        rows: Object.entries(groupBy(clients, client => client.seller?.code)).map(([_, clients]) => [
-            clients.at(0).seller?.name ?? 'Sin vendedor',
-            clients.length
-        ])
+        rows: Object.entries(groupBy(clients, client => client.seller?.code))
+            .map(([_, clients]) => [
+                clients.at(0).seller?.name ?? 'Sin vendedor',
+                clients.length
+            ])
+            .toSorted((a, b) => b[1] - a[1])
     })
     worksheet.getColumn('M').width = 15
     worksheet.getColumn('N').alignment = { horizontal: 'center' }
