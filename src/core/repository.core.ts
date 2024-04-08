@@ -268,27 +268,28 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
 
         if (filters !== undefined) {
             Object.entries(filters).forEach(([key, value]) => {
-                const [column, data] = Object.entries(value as any)[0] as [string, Record<string, string>]
-                const [condition, item] = Object.entries(data as any)[0] as [keyof typeof conditions, string]
+                Object.entries(value as any).forEach(([column, data]) => {
+                    const [condition, item] = Object.entries(data as any)[0] as [keyof typeof conditions, string]
 
-                const table_column = `${key}.${column}`
-                const condition_symbol = conditions[condition]
+                    const table_column = `${key}.${column}`
+                    const condition_symbol = conditions[condition]
 
-                const queryChunks = [
-                    sql.raw(table_column),
-                    sql.raw(condition_symbol)
-                ]
+                    const queryChunks = [
+                        sql.raw(table_column),
+                        sql.raw(condition_symbol)
+                    ]
 
-                if (item.length > 0) {
-                    if (condition === 'in' || condition === 'not_in') {
-                        const values = item.split(',').map((value) => sql`${value}`)
-                        queryChunks.push(sql`(${sql.join(values, sql.raw(','))})`)
-                    } else {
-                        queryChunks.push(sql`${item}`)
+                    if (item.length > 0) {
+                        if (condition === 'in' || condition === 'not_in') {
+                            const values = item.split(',').map((value) => sql`${value}`)
+                            queryChunks.push(sql`(${sql.join(values, sql.raw(','))})`)
+                        } else {
+                            queryChunks.push(sql`${item}`)
+                        }
                     }
-                }
 
-                sqlChunks.push(sql.join(queryChunks, sql.raw(' ')))
+                    sqlChunks.push(sql.join(queryChunks, sql.raw(' ')))
+                })
             })
         }
 
