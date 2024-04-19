@@ -21,7 +21,8 @@ export class UserService {
     public async create (params: UserSchemaCreateType): Promise<UserSchemaSelectType> {
         const id = await this.repository.create({
             ...params,
-            password: await generatePassword(params.password)
+            password: await generatePassword(params.password),
+            role: params.user_role
         })
 
         return await this.get(id)

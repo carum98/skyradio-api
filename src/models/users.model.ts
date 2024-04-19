@@ -49,9 +49,12 @@ export const UserSchemaSelect = UserSchema.omit({
 
 export const UserSchemaCreate = createInsertSchema(users, {
     email: (schema) => schema.email.email(),
-	password: (schema) => schema.password.min(3).max(100),
+	password: (schema) => schema.password.min(6).max(100),
 	name: (schema) => schema.name.min(3).max(100)
-}).pick({ name: true, email: true, password: true, role: true, group_id: true }).required()
+})
+.pick({ name: true, email: true, password: true, role: true, group_id: true })
+.extend({ user_role: UserSchemaRoles })
+.required()
 
 export const UserSchemaUpdate = UserSchemaCreate
 	.pick({ name: true, email: true, password: true })

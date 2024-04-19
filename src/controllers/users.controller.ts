@@ -1,6 +1,8 @@
 import { Request, Response } from 'express'
 import { UserService } from '@services/users.service'
 import { PaginationSchemaType } from '@/utils/pagination'
+import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
+import { UserSchemaCreateType } from '@/models/users.model'
 
 export class UserController {
     constructor (private readonly service: UserService) {}
@@ -22,15 +24,9 @@ export class UserController {
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        const { name, email, password, group_id, role } = req.body
+        const params = req.body as UserSchemaCreateType & SessionUserInfoSchemaType
 
-        const data = await this.service.create({
-            name,
-            email,
-            password,
-            group_id: parseInt(group_id),
-            role
-        })
+        const data = await this.service.create(params)
 
         res.json(data)
     }
