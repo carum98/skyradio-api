@@ -17,6 +17,7 @@ The documentation of the project is located in the `/docs` folder, and is divide
 - [Endpoints](./docs/endpoints/index.md)
 - [File Structure](./docs/file_structure.md)
 - [Database Structure](./docs/database_structure.md)
+- [Pagination](./docs/pagination.md)
 - [Query Filters](./docs/query_filters.md)
 
 ## Environment variables
