@@ -29,7 +29,12 @@ export class UserService {
     }
 
     public async update (code: string, params: UserSchemaUpdateType): Promise<UserSchemaSelectType> {
-        const updateId = await this.repository.update(code, params)
+        const updateId = await this.repository.update(code, {
+            name: params.name,
+            email: params.email,
+            password: params.password !== undefined ? await generatePassword(params.password) : undefined,
+            role: params.user_role
+        })
 
         return await this.get(updateId)
     }

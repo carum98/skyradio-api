@@ -57,8 +57,9 @@ export const UserSchemaCreate = createInsertSchema(users, {
 .required()
 
 export const UserSchemaUpdate = UserSchemaCreate
-	.pick({ name: true, email: true, password: true })
-	.partial()
+.pick({ name: true, email: true, password: true, role: true })
+.extend({ user_role: UserSchemaRoles })
+.partial()
 
 export const UserSchemaUniqueIdentifier = createSelectSchema(users, {
 	code: (schema) => schema.code

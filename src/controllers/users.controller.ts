@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { UserService } from '@services/users.service'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { SessionUserInfoSchemaType } from '@/core/auth.shemas'
-import { UserSchemaCreateType } from '@/models/users.model'
+import { UserSchemaCreateType, UserSchemaUpdateType } from '@/models/users.model'
 
 export class UserController {
     constructor (private readonly service: UserService) {}
@@ -33,13 +33,9 @@ export class UserController {
 
     public update = async (req: Request, res: Response): Promise<void> => {
         const { code } = req.params
-        const { name, email, password } = req.body
+        const params = req.body as UserSchemaUpdateType
 
-        const data = await this.service.update(code, {
-            name,
-            email,
-            password
-        })
+        const data = await this.service.update(code, params)
 
         res.json(data)
     }
