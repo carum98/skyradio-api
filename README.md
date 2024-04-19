@@ -38,31 +38,19 @@ To run the project without Docker, you must have [Node.js](https://nodejs.org/en
 ### Development
 To run the project in development mode, you must run the following commands:
 ```bash
-npm install
-```
-```bash
-npm run dev
+npm install && npm run dev
 ```
 
 ### Testing
 To run the project in testing mode, you must run the following commands:
 ```bash
-npm install
-```
-```bash
-npm run test
+npm install && npm run test
 ```
 
 ### Production
 To run the project in production mode, you must run the following commands:
 ```bash
-npm install
-```
-```bash
-npm run build
-```
-```bash
-npm run start
+npm install && npm run build && npm run start
 ```
 
 ## Setup with Docker

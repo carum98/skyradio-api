@@ -5,6 +5,13 @@ The endpoints of the API are divided into the following categories.
 - [[POST /login] - Login](./auth/login.md)
 - [[POST /refresh-token] - Refresh Token](./auth/refresh-token.md)
 
+### User
+- [[GET /users] - Get Users](./users/get-all.md)
+- [[GET /users/:code] - Get User](./users/get-one.md)
+- [[POST /users] - Create User](./users/create.md)
+- [[PUT /users/:code] - Update User](./users/update.md)
+- [[DELETE /users/:code] - Delete User](./users/delete.md)
+
 ### Client
 - [[GET /clients] - Get Clients](./clients/get-all.md)
 - [[GET /clients/:id] - Get Client](./clients/get-one.md)
