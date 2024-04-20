@@ -2,7 +2,7 @@ import { RepositoryCore } from '@/core/repository.core'
 import { licenses } from '@models/licenses.model'
 import { ConsoleSchemaCreateRawType, ConsoleSchemaSelectPaginatedType, ConsoleSchemaSelectType, ConsoleSchemaUpdateRawType, console } from '@models/clients_console.model'
 import { MySql2Database } from 'drizzle-orm/mysql2'
-import { and, eq, isNotNull } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { clients } from '@/models/clients.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 
@@ -24,15 +24,26 @@ export class ClientsConsoleRepository extends RepositoryCore<ConsoleSchemaSelect
         })
         .from(table)
         .leftJoin(licenses, eq(licenses.id, table.license_id))
-        .rightJoin(clients, eq(clients.id, table.client_id))
+        .leftJoin(clients, eq(clients.id, table.client_id))
 
         super({ db, table, select, search_columns: [table.code] })
     }
 
-    public async getAll (group_id: number, query: PaginationSchemaType): Promise<ConsoleSchemaSelectPaginatedType> {
-        return await this.getAllCore({
+    public async getAll (params: { group_id?: number, client_id?: number }, query?: PaginationSchemaType): Promise<ConsoleSchemaSelectPaginatedType> {
+        const { group_id, client_id } = params
+        const where = []
+
+        if (group_id !== undefined) {
+            where.push(eq(clients.group_id, group_id))
+        }
+
+        if (client_id !== undefined) {
+            where.push(eq(console.client_id, client_id))
+        }
+
+        return await super.getAllCore({
             query,
-            where: and(isNotNull(console.license_id), eq(clients.group_id, group_id))
+            where: and(...where)
         })
     }
 
@@ -46,7 +57,7 @@ export class ClientsConsoleRepository extends RepositoryCore<ConsoleSchemaSelect
         const code = await this.db.select({ code: console.code })
             .from(console)
             .where(eq(console.client_id, params.client_id ?? 0))
-        
+
         if (code.length > 0) {
             await this.db.update(console)
                 .set({ ...params, deleted_at: null })
@@ -54,7 +65,7 @@ export class ClientsConsoleRepository extends RepositoryCore<ConsoleSchemaSelect
 
             return code[0].code
         }
-        
+
         return await this.insertCore({
             params
         })

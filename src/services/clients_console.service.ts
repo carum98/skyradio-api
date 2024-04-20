@@ -17,7 +17,7 @@ export class ClientsConsoleService {
     }
 
     public async getAll (group_id: number, query: PaginationSchemaType): Promise<ConsoleSchemaSelectPaginatedType> {
-        return await this.repository.getAll(group_id, query)
+        return await this.repository.getAll({ group_id }, query)
     }
 
     public async get (code: string): Promise<ConsoleSchemaSelectType> {

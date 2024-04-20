@@ -7,6 +7,7 @@ import { SellersRepository } from '@repositories/sellers.repository'
 import { SimsProviderRepository } from '@repositories/sims_provider.repository'
 import { SimsRepository } from '@repositories/sims.repository'
 import { AppsRepository } from '@repositories/apps.repository'
+import { ClientsConsoleRepository } from '@repositories/clients_console.repository'
 
 import * as ClientsReports from '@/reports/clients.reports'
 import * as ModelsReports from '@/reports/models.reports'
@@ -23,6 +24,7 @@ export class ReportsService {
     private readonly sims: SimsRepository
     private readonly provider: SimsProviderRepository
     private readonly apps: AppsRepository
+    private readonly consoles: ClientsConsoleRepository
 
     constructor (datasource: DataSource) {
         this.client = datasource.create(ClientsRepository)
@@ -32,6 +34,7 @@ export class ReportsService {
         this.sims = datasource.create(SimsRepository)
         this.provider = datasource.create(SimsProviderRepository)
         this.apps = datasource.create(AppsRepository)
+        this.consoles = datasource.create(ClientsConsoleRepository)
     }
 
     public async clients (group_id: number, params: ReportsSchemaClientsType): Promise<Buffer> {
@@ -137,23 +140,32 @@ export class ReportsService {
             }
         }
 
+        const consoles_filters = {
+            clients: {
+                code: { is_not_null: '' }
+            }
+        }
+
         const [
             { data: clients },
             { data: radios },
             { data: sims },
-            { data: apps }
+            { data: apps },
+            { data: consoles }
         ] = await Promise.all([
             this.client.getAll(group_id),
             this.radios.getAll({ group_id }, { page: 1, per_page: 3000, sort_by: 'created_at', sort_order: 'desc', ...radios_filters }),
             this.sims.getAll(group_id, { page: 1, per_page: 3000, sort_by: 'created_at', sort_order: 'desc', ...sims_filters }),
-            this.apps.getAll({ group_id }, { page: 1, per_page: 3000, sort_by: 'created_at', sort_order: 'desc', ...apps_filters })
+            this.apps.getAll({ group_id }, { page: 1, per_page: 3000, sort_by: 'created_at', sort_order: 'desc', ...apps_filters }),
+            this.consoles.getAll({ group_id }, { page: 1, per_page: 3000, sort_by: 'created_at', sort_order: 'desc', ...consoles_filters })
         ])
 
         return await GeneralReports.xlsx({
             clients,
             radios,
             sims,
-            apps
+            apps,
+            consoles
         })
     }
 
