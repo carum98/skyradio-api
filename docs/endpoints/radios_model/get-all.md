@@ -1,5 +1,8 @@
 # Radios Model
 
+## Role allowed
+All
+
 ## URL
 `/radios-model`
 

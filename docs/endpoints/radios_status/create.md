@@ -1,5 +1,8 @@
 # Create Status
 
+## Role allowed
+`admin`
+
 ## URL
 `/radios-status`
 

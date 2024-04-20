@@ -1,5 +1,8 @@
 # Radio model
 
+## Role allowed
+All
+
 ## URL
 `/radios-model:code`
 

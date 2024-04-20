@@ -1,5 +1,8 @@
 # Apps
 
+## Role allowed
+All
+
 ## URL
 `/apps`
 

@@ -1,5 +1,8 @@
 # Sellers
 
+## Role allowed
+All
+
 ## URL
 `/sellers`
 

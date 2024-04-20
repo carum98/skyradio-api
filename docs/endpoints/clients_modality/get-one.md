@@ -1,5 +1,8 @@
 # Modality
 
+## Role allowed
+All
+
 ## URL
 `/clients-modality/:code`
 

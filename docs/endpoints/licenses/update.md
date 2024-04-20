@@ -1,5 +1,8 @@
 # Update License
 
+## Role allowed
+`admin`, `user`
+
 ## URL
 `/licenses/:code`
 

@@ -1,5 +1,8 @@
 # Update Radio
 
+## Role allowed
+`admin`, `user`
+
 ## URL
 `/radios/:code`
 

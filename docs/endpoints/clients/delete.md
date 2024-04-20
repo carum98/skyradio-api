@@ -1,5 +1,8 @@
 # Delete Client
 
+## Role allowed
+`admin`, `user`
+
 ## URL
 `/clients/:code`
 

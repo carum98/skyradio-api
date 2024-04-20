@@ -1,5 +1,8 @@
 # Create Sims Provider
 
+## Role allowed
+`admin`
+
 ## URL
 `/sims-provider`
 

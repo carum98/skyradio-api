@@ -1,18 +1,18 @@
-# Delete App
+# Sim Radio
 
 ## Role allowed
-`admin`, `user`
+All
 
 ## URL
-`/apps/:code`
+`/radios/:code/sims`
 
 ## Method
-`DELETE`
+`GET`
 
 ## URL Params
 | Name | Type | Description |
 | --- | --- | --- |
-| code | string | App code |
+| code | string | Radio code |
 
 ## Success Response
-Code: `204 No Content`
+See [Sim Model](../../response/sims.md)

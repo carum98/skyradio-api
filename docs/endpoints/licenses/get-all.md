@@ -1,5 +1,8 @@
 # Licenses
 
+## Role allowed
+All
+
 ## URL
 `/licenses`
 

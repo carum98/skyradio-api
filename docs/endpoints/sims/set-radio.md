@@ -1,28 +1,26 @@
-# Update App
+# Set Radio
 
 ## Role allowed
 `admin`, `user`
 
 ## URL
-`/apps/:code`
+`/sims/:code/radios`
 
 ## Method
-`PUT`
+`POST`
 
 ## URL Params
 | Name | Type | Description |
 | --- | --- | --- |
-| code | string | App code |
+| code | string | Sim code |
 
 ## Data Params
 | Name | Type |
 | --- | --- |
-| name | string |
-| license_code | string |
+| radio_code | string |
 
 ```json
 {
-    "name": "...",
-    "license_code": "..."
+    "radio_code": "..."
 }
 ```

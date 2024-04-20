@@ -1,5 +1,8 @@
 # Create Seller
 
+## Role allowed
+`admin`
+
 ## URL
 `/clients-seller`
 

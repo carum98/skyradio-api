@@ -1,5 +1,8 @@
 # Update Create
 
+## Role allowed
+`admin`, `user`
+
 ## URL
 `/clients/:code`
 

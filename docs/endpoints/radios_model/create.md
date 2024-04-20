@@ -1,5 +1,8 @@
 # Create Radio Model
 
+## Role allowed
+`admin`
+
 ## URL
 `/radios-model`
 

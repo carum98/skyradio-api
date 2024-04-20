@@ -1,5 +1,8 @@
 # Delete Radio Model
 
+## Role allowed
+`admin`
+
 ## URL
 `/radios-model/:code`
 

@@ -1,13 +1,13 @@
-# Set App
+# Swap Radios
 
 ## Role allowed
 `admin`, `user`
 
 ## URL
-`/clients/:code/apps`
+`/clients/:code/radios`
 
 ## Method
-`POST`
+`PUT`
 
 ## URL Params
 | Name | Type | Description |
@@ -17,12 +17,11 @@
 ## Data Params
 | Name | Type |
 | --- | --- |
-| name | string |
-| license_code | string |
+| radio_code_from | string |
+| radio_code_to | string |
 
 ```json
 {
-    "name": "...",
-    "license_code": "..."
+    "radio_code_from": "...",
+    "radio_code_to": "..."
 }
-```

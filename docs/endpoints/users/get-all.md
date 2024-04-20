@@ -1,5 +1,8 @@
 # Users
 
+## Role allowed
+`admin`
+
 ## URL
 `/users`
 

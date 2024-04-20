@@ -15,11 +15,12 @@ The project has 3 environments, development, testing and production. Each enviro
 The documentation of the project is located in the `/docs` folder, and is divided into the following files:
 
 - [Endpoints](./docs/endpoints/index.md)
-- [File Structure](./docs/file_structure.md)
-- [Database Structure](./docs/database_structure.md)
+- [User Roles](./docs/roles.md)
 - [Pagination](./docs/pagination.md)
 - [Query Filters](./docs/query_filters.md)
 - [Sort](./docs/sort.md)
+- [Database Structure](./docs/database_structure.md)
+- [File Structure](./docs/file_structure.md)
 
 ## Environment variables
 The project has a `.env` file, which contains the environment variables, which are:

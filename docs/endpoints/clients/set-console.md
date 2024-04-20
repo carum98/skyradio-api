@@ -1,5 +1,8 @@
 # Set Console
 
+## Role allowed
+`admin`, `user`
+
 ## URL
 `/clients/:code/console`
 

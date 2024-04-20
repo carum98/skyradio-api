@@ -1,5 +1,8 @@
 # Create Console
 
+## Role allowed
+`admin`, `user`
+
 ## URL
 `/consoles`
 

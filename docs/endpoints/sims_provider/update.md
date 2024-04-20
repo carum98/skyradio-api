@@ -1,5 +1,8 @@
 # Update sims provider
 
+## Role allowed
+`admin`
+
 ## URL
 `/sims-provider/:code`
 

@@ -1,5 +1,8 @@
 # Consoles
 
+## Role allowed
+All
+
 ## URL
 `/consoles`
 

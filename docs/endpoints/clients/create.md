@@ -1,5 +1,8 @@
 ## Create client
 
+## Role allowed
+`admin`, `user`
+
 ## URL
 `/clients`
 

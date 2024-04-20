@@ -1,5 +1,8 @@
 # Clients Apps
 
+## Role allowed
+All
+
 ## URL
 `/clients/:code/apps`
 

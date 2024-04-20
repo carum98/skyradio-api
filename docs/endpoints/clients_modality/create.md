@@ -1,5 +1,8 @@
 # Create Modality
 
+## Role allowed
+`admin`
+
 ## URL
 `/clients-modality`
 

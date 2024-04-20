@@ -1,5 +1,8 @@
 # Update Console
 
+## Role allowed
+`admin`, `user`
+
 ## URL
 `/consoles/:code`
 

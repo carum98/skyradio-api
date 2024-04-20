@@ -1,5 +1,8 @@
 # Sim
 
+## Role allowed
+`admin`
+
 ## URL
 `/users/:code`
 

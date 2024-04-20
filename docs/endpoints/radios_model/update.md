@@ -1,5 +1,8 @@
 # Update Radio Model
 
+## Role allowed
+`admin`
+
 ## URL
 `/radios-model/:code`
 

@@ -1,5 +1,8 @@
 # Radio
 
+## Role allowed
+All
+
 ## URL
 `/radios/:code`
 

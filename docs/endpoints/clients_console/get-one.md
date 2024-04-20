@@ -1,5 +1,8 @@
 # Console
 
+## Role allowed
+All
+
 ## URL
 `/consoles/:code`
 

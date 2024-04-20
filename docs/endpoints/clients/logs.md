@@ -1,18 +1,17 @@
-# Delete App
+# Client logs
 
 ## Role allowed
-`admin`, `user`
+All
 
 ## URL
-`/apps/:code`
+`/clients/:code/logs`
 
 ## Method
-`DELETE`
+`GET`
 
 ## URL Params
 | Name | Type | Description |
 | --- | --- | --- |
-| code | string | App code |
+| code | string | Client code |
 
 ## Success Response
-Code: `204 No Content`

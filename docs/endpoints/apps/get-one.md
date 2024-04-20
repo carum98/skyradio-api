@@ -1,5 +1,8 @@
 # App
 
+## Role allowed
+All
+
 ## URL
 `/apps/:code`
 

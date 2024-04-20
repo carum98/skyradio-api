@@ -1,10 +1,10 @@
-# Delete App
+# Remove Client
 
 ## Role allowed
 `admin`, `user`
 
 ## URL
-`/apps/:code`
+`/radios/:code/clients`
 
 ## Method
 `DELETE`
@@ -12,7 +12,7 @@
 ## URL Params
 | Name | Type | Description |
 | --- | --- | --- |
-| code | string | App code |
+| code | string | Radio code |
 
 ## Success Response
 Code: `204 No Content`

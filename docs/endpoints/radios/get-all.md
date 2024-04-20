@@ -1,5 +1,8 @@
 # Radios
 
+## Role allowed
+All
+
 ## URL
 `/radios`
 

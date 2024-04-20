@@ -1,5 +1,8 @@
 # Sim Provider
 
+## Role allowed
+All
+
 ## URL
 `/sims-provider/:code`
 

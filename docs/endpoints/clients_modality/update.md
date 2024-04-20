@@ -1,5 +1,8 @@
 # Update Modality
 
+## Role allowed
+`admin`
+
 ## URL
 `/clients-modality/:code`
 

@@ -1,5 +1,8 @@
 # Seller
 
+## Role allowed
+All
+
 ## URL
 `/seller/:code`
 

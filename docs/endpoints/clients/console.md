@@ -1,5 +1,8 @@
 # Clients Console
 
+## Role allowed
+All
+
 ## URL
 `/clients/:code/console`
 

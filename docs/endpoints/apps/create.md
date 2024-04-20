@@ -1,5 +1,8 @@
 # Create App
 
+## Role allowed
+`admin`, `user`
+
 ## URL
 `/apps`
 

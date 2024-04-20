@@ -1,5 +1,8 @@
 # License
 
+## Role allowed
+All
+
 ## URL
 `/licenses/:code`
 

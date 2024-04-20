@@ -1,5 +1,8 @@
 # Delete Radio Status
 
+## Role allowed
+`admin`
+
 ## URL
 `/radios-status/:code`
 

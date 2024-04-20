@@ -1,5 +1,8 @@
 # Create Radio
 
+## Role allowed
+`admin`, `user`
+
 # URL
 `/radios`
 

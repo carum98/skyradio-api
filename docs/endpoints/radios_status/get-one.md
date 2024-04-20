@@ -1,5 +1,8 @@
 # Radio Status
 
+## Role allowed
+All
+
 ## URL
 `/radios-status:code`
 

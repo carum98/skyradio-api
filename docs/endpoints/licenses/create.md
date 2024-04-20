@@ -1,5 +1,8 @@
 # Create License
 
+## Role allowed
+`admin`, `user`
+
 ## URL
 `/licenses`
 

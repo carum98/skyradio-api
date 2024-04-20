@@ -14,12 +14,16 @@ The endpoints of the API are divided into the following categories.
 
 ### Client
 - [[GET /clients] - Get Clients](./clients/get-all.md)
-- [[GET /clients/:id] - Get Client](./clients/get-one.md)
+- [[GET /clients/:code] - Get Client](./clients/get-one.md)
 - [[POST /clients] - Create Client](./clients/create.md)
-- [[PUT /clients/:id] - Update Client](./clients/update.md)
-- [[DELETE /clients/:id] - Delete Client](./clients/delete.md)
+- [[PUT /clients/:code] - Update Client](./clients/update.md)
+- [[DELETE /clients/:code] - Delete Client](./clients/delete.md)
+- [[GET /clients/:code/logs] - Get Client Logs](./clients/logs.md)
 - [[GET /clients/stats/all] - Get Clients Stats](./clients/stats.md)
 - [[GET /clients/:code/radios] - Get Client Radios](./clients/radios.md)
+- [[POST /clients/:code/radios] - Set Client Radios](./clients/set-radios.md)
+- [[DELETE /clients/:code/radios] - Remove Radios](./clients/remove-radios.md)
+- [[PUT /clients/:code/radios] - Swap Radios](./clients/swap-radios.md)
 - [[GET /clients/:code/console] - Get Client Console](./clients/console.md)
 - [[POST /clients/:code/console] - Set Client Console](./clients/set-console.md)
 - [[GET /clients/:code/apps] - Get Client Apps](./clients/apps.md)
@@ -41,10 +45,16 @@ The endpoints of the API are divided into the following categories.
 
 ### Radios
 - [[GET /radios] - Get Radios](./radios/get-all.md)
-- [[GET /radios/:id] - Get Radio](./radios/get-one.md)
+- [[GET /radios/:code] - Get Radio](./radios/get-one.md)
 - [[POST /radios] - Create Radio](./radios/create.md)
-- [[PUT /radios/:id] - Update Radio](./radios/update.md)
-- [[DELETE /radios/:id] - Delete Radio](./radios/delete.md)
+- [[PUT /radios/:code] - Update Radio](./radios/update.md)
+- [[DELETE /radios/:code] - Delete Radio](./radios/delete.md)
+- [[GET /radios/:code/clients] - Get Radio Clients](./radios/clients.md)
+- [[POST /radios/:code/clients] - Set Radio Clients](./radios/set-client.md)
+- [[DELETE /radios/:code/clients] - Remove Clients](./radios/remove-clients.md)
+- [[GET /radios/:code/sim] - Get Radio Sim](./radios/sim.md)
+- [[POST /radios/:code/sim] - Set Radio Sim](./radios/set-sim.md)
+- [[DELETE /radios/:code/sim] - Remove Sim](./radios/remove-sim.md)
 
 ### Model
 - [[GET /models] - Get Models](./radios_model/get-all.md)
@@ -61,11 +71,14 @@ The endpoints of the API are divided into the following categories.
 - [[DELETE /status/:id] - Delete Status](./radios_status/delete.md)
 
 ### Sims
-- [[GET /sims] - Get Sims](./radios_sim/get-all.md)
-- [[GET /sims/:id] - Get Sim](./radios_sim/get-one.md)
-- [[POST /sims] - Create Sim](./radios_sim/create.md)
-- [[PUT /sims/:id] - Update Sim](./radios_sim/update.md)
-- [[DELETE /sims/:id] - Delete Sim](./radios_sim/delete.md)
+- [[GET /sims] - Get Sims](./sims/get-all.md)
+- [[GET /sims/:code] - Get Sim](./sims/get-one.md)
+- [[POST /sims] - Create Sim](./sims/create.md)
+- [[PUT /sims/:code] - Update Sim](./sims/update.md)
+- [[DELETE /sims/:code] - Delete Sim](./sims/delete.md)
+- [[GET /sims/:code/radios] - Get Radio](./sims/radios.md)
+- [[POST /sims/:code/radios] - Set Radio](./sims/set-radio.md)
+- [[DELETE /sims/:code/radios] - Remove Radio](./sims/remove-radio.md)
 
 ### Provider
 - [[GET /providers] - Get Providers](./radios_provider/get-all.md)

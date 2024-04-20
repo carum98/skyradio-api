@@ -1,5 +1,8 @@
 # Create User
 
+## Role allowed
+`admin`
+
 ## URL
 `/users`
 

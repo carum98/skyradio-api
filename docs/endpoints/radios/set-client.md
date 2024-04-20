@@ -1,28 +1,26 @@
-# Update App
+# Set Client
 
 ## Role allowed
 `admin`, `user`
 
 ## URL
-`/apps/:code`
+`/radios/:code/clients`
 
 ## Method
-`PUT`
+`POST`
 
 ## URL Params
 | Name | Type | Description |
 | --- | --- | --- |
-| code | string | App code |
+| code | string | Radio code |
 
 ## Data Params
 | Name | Type |
 | --- | --- |
-| name | string |
-| license_code | string |
+| client_code | string |
 
 ```json
 {
-    "name": "...",
-    "license_code": "..."
+    "client_code": "..."
 }
 ```

@@ -1,5 +1,8 @@
 # Clients
 
+## Role allowed
+All
+
 ## URL
 `/clients`
 

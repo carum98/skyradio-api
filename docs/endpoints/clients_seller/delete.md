@@ -1,5 +1,8 @@
 # Delete Seller
 
+## Role allowed
+`admin`
+
 ## URL
 `/clients-seller/:code`
 

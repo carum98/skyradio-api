@@ -1,5 +1,8 @@
 # Sims Providers
 
+## Role allowed
+All
+
 ## URL
 `/sims-provider`
 

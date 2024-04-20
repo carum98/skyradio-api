@@ -1,5 +1,8 @@
 # Clients Radios
 
+## Role allowed
+All
+
 ## URL
 `/clients/:code/radios`
 

@@ -1,10 +1,10 @@
-# Delete App
+# Remove Radio
 
 ## Role allowed
 `admin`, `user`
 
 ## URL
-`/apps/:code`
+`/sims/:code/radios`
 
 ## Method
 `DELETE`
@@ -12,7 +12,7 @@
 ## URL Params
 | Name | Type | Description |
 | --- | --- | --- |
-| code | string | App code |
+| code | string | Sim code |
 
 ## Success Response
 Code: `204 No Content`

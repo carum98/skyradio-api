@@ -1,10 +1,10 @@
-# Get Client
+# Client Radio
 
 ## Role allowed
 All
 
 ## URL
-`/clients/:code`
+`/radios/:code/clients`
 
 ## Method
 `GET`
@@ -12,7 +12,7 @@ All
 ## URL Params
 | Name | Type | Description |
 | --- | --- | --- |
-| code | string | Client code |
+| code | string | Radio code |
 
 ## Success Response
 See [Client Model](../../response/clients.md)

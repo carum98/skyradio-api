@@ -1,28 +1,26 @@
-# Update App
+# Remove Radios
 
 ## Role allowed
 `admin`, `user`
 
 ## URL
-`/apps/:code`
+`/clients/:code/radios`
 
 ## Method
-`PUT`
+`DELETE`
 
 ## URL Params
 | Name | Type | Description |
 | --- | --- | --- |
-| code | string | App code |
+| code | string | Client code |
 
 ## Data Params
 | Name | Type |
 | --- | --- |
-| name | string |
-| license_code | string |
+| radios_codes | string[] |
 
 ```json
 {
-    "name": "...",
-    "license_code": "..."
+    "radios_codes": "..."
 }
 ```

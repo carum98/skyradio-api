@@ -1,5 +1,8 @@
 # Update User
 
+## Role allowed
+`admin`
+
 ## URL
 `/users/:code`
 

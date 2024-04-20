@@ -1,5 +1,8 @@
 # Delete Radio
 
+## Role allowed
+`admin`, `user`
+
 ## URL
 `/radios/:code`
 

@@ -1,5 +1,8 @@
 # Clients Stats
 
+## Role allowed
+All
+
 ## URL
 `/clients/stats/all`
 
