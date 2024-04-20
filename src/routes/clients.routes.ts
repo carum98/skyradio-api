@@ -11,6 +11,7 @@ import { ConsoleSchemaCreate } from '@models/clients_console.model'
 import { ClientsConsoleService } from '@services/clients_console.service'
 import { AppsService } from '@services/apps.service'
 import { AppsSchemaCreate } from '@models/apps.model'
+import { rolesMiddleware } from '@middlewares/roles.middleware'
 
 export class ClientsRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -39,6 +40,7 @@ export class ClientsRouter extends RouterCore {
             name: '/',
             handler: controller.create,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     body: ClientsSchemaCreate
                 })
@@ -64,6 +66,7 @@ export class ClientsRouter extends RouterCore {
             name: '/:code',
             handler: controller.update,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: ClientsSchemaUniqueIdentifier,
                     body: ClientsSchemaUpdate
@@ -75,6 +78,7 @@ export class ClientsRouter extends RouterCore {
             name: '/:code',
             handler: controller.delete,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: ClientsSchemaUniqueIdentifier
                 })
@@ -96,6 +100,7 @@ export class ClientsRouter extends RouterCore {
             name: '/:code/radios',
             handler: controller.addRadios,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: ClientsSchemaUniqueIdentifier,
                     body: ClientsRadiosSchema
@@ -107,6 +112,7 @@ export class ClientsRouter extends RouterCore {
             name: '/:code/radios',
             handler: controller.swapRadios,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: ClientsSchemaUniqueIdentifier,
                     body: ClientRadiosSwapSchema
@@ -118,6 +124,7 @@ export class ClientsRouter extends RouterCore {
             name: '/:code/radios',
             handler: controller.removeRadios,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: ClientsSchemaUniqueIdentifier,
                     body: ClientsRadiosSchema
@@ -160,6 +167,7 @@ export class ClientsRouter extends RouterCore {
             name: '/:code/console',
             handler: controller.addConsole,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: ClientsSchemaUniqueIdentifier,
                     body: ConsoleSchemaCreate.omit({ client_code: true })
@@ -182,6 +190,7 @@ export class ClientsRouter extends RouterCore {
             name: '/:code/apps',
             handler: controller.addApp,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: ClientsSchemaUniqueIdentifier,
                     body: AppsSchemaCreate.omit({ client_code: true })

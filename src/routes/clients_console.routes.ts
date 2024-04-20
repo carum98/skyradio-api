@@ -7,6 +7,7 @@ import { requestMiddleware } from '@middlewares/request.middleware'
 import { PaginationSchema } from '@utils/pagination'
 import { ConsoleSchemaCreate, ConsoleSchemaUniqueIdentifier, ConsoleSchemaUpdate } from '@models/clients_console.model'
 import { LogsService } from '@/services/logs.service'
+import { rolesMiddleware } from '@middlewares/roles.middleware'
 
 export class ClientsConsoleRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -33,6 +34,7 @@ export class ClientsConsoleRouter extends RouterCore {
             name: '/',
             handler: controller.create,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     body: ConsoleSchemaCreate
                 })
@@ -53,6 +55,7 @@ export class ClientsConsoleRouter extends RouterCore {
             name: '/:code',
             handler: controller.update,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: ConsoleSchemaUniqueIdentifier,
                     body: ConsoleSchemaUpdate
@@ -64,6 +67,7 @@ export class ClientsConsoleRouter extends RouterCore {
             name: '/:code',
             handler: controller.delete,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: ConsoleSchemaUniqueIdentifier
                 })

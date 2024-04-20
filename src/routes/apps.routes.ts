@@ -7,6 +7,7 @@ import { authMiddleware } from '@middlewares/auth.middleware'
 import { PaginationSchema } from '@utils/pagination'
 import { AppsSchemaCreate, AppsSchemaUniqueIdentifier, AppsSchemaUpdate } from '@models/apps.model'
 import { LogsService } from '@services/logs.service'
+import { rolesMiddleware } from '@middlewares/roles.middleware'
 
 export class AppsRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -33,6 +34,7 @@ export class AppsRouter extends RouterCore {
             name: '/',
             handler: controller.create,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     body: AppsSchemaCreate
                 })
@@ -53,6 +55,7 @@ export class AppsRouter extends RouterCore {
             name: '/:code',
             handler: controller.update,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: AppsSchemaUniqueIdentifier,
                     body: AppsSchemaUpdate
@@ -64,6 +67,7 @@ export class AppsRouter extends RouterCore {
             name: '/:code',
             handler: controller.delete,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: AppsSchemaUniqueIdentifier
                 })

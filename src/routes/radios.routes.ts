@@ -37,6 +37,7 @@ export class RadiosRauter extends RouterCore {
             name: '/',
             handler: controller.create,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     body: RadiosSchemaCreate
                 })
@@ -57,6 +58,7 @@ export class RadiosRauter extends RouterCore {
             name: '/:code',
             handler: controller.update,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: RadiosSchemaUniqueIdentifier,
                     body: RadiosSchemaUpdate
@@ -68,6 +70,7 @@ export class RadiosRauter extends RouterCore {
             name: '/:code',
             handler: controller.delete,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: RadiosSchemaUniqueIdentifier
                 })
@@ -88,6 +91,7 @@ export class RadiosRauter extends RouterCore {
             name: '/:code/clients',
             handler: controller.addClient,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: RadiosSchemaUniqueIdentifier,
                     body: RadiosCompanySchema
@@ -99,6 +103,7 @@ export class RadiosRauter extends RouterCore {
             name: '/:code/clients',
             handler: controller.removeClient,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: RadiosSchemaUniqueIdentifier
                 })
@@ -119,6 +124,7 @@ export class RadiosRauter extends RouterCore {
             name: '/:code/sims',
             handler: controller.addSim,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: RadiosSchemaUniqueIdentifier,
                     body: RadiosSimsSchema
@@ -130,6 +136,7 @@ export class RadiosRauter extends RouterCore {
             name: '/:code/sims',
             handler: controller.swapSim,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: RadiosSchemaUniqueIdentifier,
                     body: RadiosSimsSchema
@@ -141,6 +148,7 @@ export class RadiosRauter extends RouterCore {
             name: '/:code/sims',
             handler: controller.removeSim,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: RadiosSchemaUniqueIdentifier
                 })

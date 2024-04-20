@@ -6,6 +6,7 @@ import { LicensesSchemaCreate, LicensesSchemaUniqueIdentifier, LicensesSchemaUpd
 import { LicensesService } from '@services/licenses.service'
 import { PaginationSchema } from '@utils/pagination'
 import { LicensesController } from '@controllers/licenses.controller'
+import { rolesMiddleware } from '@middlewares/roles.middleware'
 
 export class LicensesRouter extends RouterCore {
     constructor (datasource: DataSource) {
@@ -31,6 +32,7 @@ export class LicensesRouter extends RouterCore {
             name: '/',
             handler: controller.create,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     body: LicensesSchemaCreate
                 })
@@ -51,6 +53,7 @@ export class LicensesRouter extends RouterCore {
             name: '/:code',
             handler: controller.update,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: LicensesSchemaUniqueIdentifier,
                     body: LicensesSchemaUpdate
@@ -62,6 +65,7 @@ export class LicensesRouter extends RouterCore {
             name: '/:code',
             handler: controller.delete,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: LicensesSchemaUniqueIdentifier
                 })

@@ -39,6 +39,7 @@ export class SimsRouter extends RouterCore {
             name: '/',
             handler: controller.create,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     body: SimsShemaCreate
                 })
@@ -59,6 +60,7 @@ export class SimsRouter extends RouterCore {
             name: '/:code',
             handler: controller.update,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: SimsShemaUniqueIdentifier,
                     body: SimsShemaUpdate
@@ -70,6 +72,7 @@ export class SimsRouter extends RouterCore {
             name: '/:code',
             handler: controller.delete,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: SimsShemaUniqueIdentifier
                 })
@@ -90,6 +93,7 @@ export class SimsRouter extends RouterCore {
             name: '/:code/radios',
             handler: controller.addRadio,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: SimsShemaUniqueIdentifier,
                     body: SimsRadioSchema
@@ -101,6 +105,7 @@ export class SimsRouter extends RouterCore {
             name: '/:code/radios',
             handler: controller.removeRadio,
             middlewares: [
+                rolesMiddleware(['admin', 'user']),
                 requestMiddleware({
                     params: SimsShemaUniqueIdentifier
                 })
