@@ -6,7 +6,7 @@ import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 import { ResponsePaginationSchema } from '@/utils/pagination'
 
-export const UserRoles = ['admin', 'user'] as const
+export const UserRoles = ['admin', 'user', 'guest', 'seller'] as const
 
 export const users = mysqlTable('users', {
 	id: int('id').autoincrement().primaryKey(),

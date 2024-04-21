@@ -18,9 +18,11 @@
 | Name | Type | Rule |
 | --- | --- | --- |
 | name | string | Required |
+| user_id | string | Optional |
 
 ```json
 {
-    "name": "Seller name"
+    "name": "Seller name",
+    "user_code": "CODE"
 }
 ```

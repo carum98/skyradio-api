@@ -4,6 +4,7 @@ import { SellerSchemaCounterType, SellersSchemaCreateType, SellersSchemaSelect, 
 import { PaginationSchemaType } from '@/utils/pagination'
 import { IRepository, RepositoryCore } from '@/core/repository.core'
 import { clients } from '@/models/clients.model'
+import { users } from '@/models/users.model'
 
 export class SellersRepository extends RepositoryCore<SellersSchemaSelectType, SellersSchemaCreateType, SellersSchemaUpdateType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
@@ -11,9 +12,14 @@ export class SellersRepository extends RepositoryCore<SellersSchemaSelectType, S
 
         const select = db.select({
             code: sellers.code,
-            name: sellers.name
+            name: sellers.name,
+            user: {
+                code: users.code,
+                name: users.name
+            }
         })
         .from(table)
+        .leftJoin(users, eq(users.id, sellers.user_id))
 
         super({ db, table, select, search_columns: [sellers.name] })
     }

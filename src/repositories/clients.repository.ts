@@ -50,10 +50,21 @@ export class ClientsRepository extends RepositoryCore<ClientsSchemaSelectType, C
         super({ db, table, select, search_columns: [clients.name] })
     }
 
-    public async getAll (group_id: number, query?: PaginationSchemaType): Promise<ClientsSchemaSelectPaginatedType> {
+    public async getAll (params: { group_id?: number, user_id?: number }, query?: PaginationSchemaType): Promise<ClientsSchemaSelectPaginatedType> {
+        const { group_id, user_id } = params
+        const where = []
+
+        if (group_id !== undefined) {
+            where.push(eq(clients.group_id, group_id))
+        }
+
+        if (user_id !== undefined) {
+            where.push(eq(sellers.user_id, user_id))
+        }
+
         return await super.getAllCore({
             query,
-            where: eq(clients.group_id, group_id)
+            where: and(...where)
         })
     }
 

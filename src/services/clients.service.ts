@@ -38,8 +38,9 @@ export class ClientsService {
         this.apps = datasource.create(AppsRepository)
     }
 
-    public async getAll (group_id: number, query: PaginationSchemaType): Promise<ClientsSchemaSelectPaginatedType> {
-        const data = await this.companies.getAll(group_id, query)
+    public async getAll (params: { group_id: number, user_id?: number }, query: PaginationSchemaType): Promise<ClientsSchemaSelectPaginatedType> {
+        const { group_id, user_id } = params
+        const data = await this.companies.getAll({ group_id, user_id }, query)
 
         return ClientsSchemaSelectPaginated.parse(data)
     }

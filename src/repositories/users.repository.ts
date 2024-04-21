@@ -38,6 +38,12 @@ export class UserRepository extends RepositoryCore<UserSchemaSelectType, UserSch
         })
     }
 
+    public async getId (code: string): Promise<number> {
+        return await super.getIdCore({
+            where: eq(users.code, code)
+        })
+    }
+
     public async create (params: UserSchemaCreateType): Promise<string> {
         return await super.insertCore({
             params

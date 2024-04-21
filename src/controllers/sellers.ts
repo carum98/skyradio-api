@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { SellersService } from '@/services/sellers.service'
 import { PaginationSchemaType } from '@/utils/pagination'
+import { SellersSchemaCreateType, SellersSchemaUpdateType } from '@models/sellers.model'
 
 export class SellersController {
     constructor (private readonly service: SellersService) {}
@@ -23,23 +24,18 @@ export class SellersController {
     }
 
     public create = async (req: Request, res: Response): Promise<void> => {
-        const { name, group_id } = req.body
+        const params = req.body as SellersSchemaCreateType
 
-        const data = await this.service.create({
-            name,
-            group_id: parseInt(group_id)
-        })
+        const data = await this.service.create(params)
 
         res.json(data)
     }
 
     public update = async (req: Request, res: Response): Promise<void> => {
         const { code } = req.params
-        const { name } = req.body
+        const params = req.body as SellersSchemaUpdateType
 
-        const data = await this.service.update(code, {
-            name
-        })
+        const data = await this.service.update(code, params)
 
         res.json(data)
     }

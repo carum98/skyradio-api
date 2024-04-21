@@ -6,7 +6,6 @@ import { authMiddleware } from '@middlewares/auth.middleware'
 import { requestMiddleware } from '@middlewares/request.middleware'
 import { rolesMiddleware } from '@middlewares/roles.middleware'
 import { SellersSchemaCreate, SellersSchemaUniqueIdentifier, SellersSchemaUpdate } from '@models/sellers.model'
-import { SellersRepository } from '@/repositories/sellers.repository'
 import { SellersService } from '@/services/sellers.service'
 
 export class SellersRouter extends RouterCore {
@@ -16,8 +15,7 @@ export class SellersRouter extends RouterCore {
             middlewares: [authMiddleware]
         })
 
-        const repository = datasource.create(SellersRepository)
-        const service = new SellersService(repository)
+        const service = new SellersService(datasource)
         const controller = new SellersController(service)
 
         this.get({
