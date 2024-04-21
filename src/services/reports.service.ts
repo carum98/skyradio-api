@@ -155,7 +155,7 @@ export class ReportsService {
         ] = await Promise.all([
             this.client.getAll({ group_id }),
             this.radios.getAll({ group_id }, { page: 1, per_page: 3000, sort_by: 'created_at', sort_order: 'desc', ...radios_filters }),
-            this.sims.getAll(group_id, { page: 1, per_page: 3000, sort_by: 'created_at', sort_order: 'desc', ...sims_filters }),
+            this.sims.getAll({ group_id }, { page: 1, per_page: 3000, sort_by: 'created_at', sort_order: 'desc', ...sims_filters }),
             this.apps.getAll({ group_id }, { page: 1, per_page: 3000, sort_by: 'created_at', sort_order: 'desc', ...apps_filters }),
             this.consoles.getAll({ group_id }, { page: 1, per_page: 3000, sort_by: 'created_at', sort_order: 'desc', ...consoles_filters })
         ])

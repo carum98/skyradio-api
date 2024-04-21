@@ -6,6 +6,7 @@ import { PaginationSchemaType } from '@/utils/pagination'
 import { IRepository, RepositoryCore } from '@/core/repository.core'
 import { radios } from '@models/radios.model'
 import { clients } from '@models/clients.model'
+import { sellers } from '@models/sellers.model'
 
 export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsSchemaCreateRawType, SimsSchemaUpdateRawType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
@@ -35,14 +36,26 @@ export class SimsRepository extends RepositoryCore<SimsShemaSelectType, SimsSche
         .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
         .leftJoin(radios, eq(radios.sim_id, sims.id))
         .leftJoin(clients, eq(radios.client_id, clients.id))
+        .leftJoin(sellers, eq(clients.seller_id, sellers.id))
 
         super({ db, table, select, search_columns: [sims.number] })
     }
 
-    public async getAll (group_id: number, query?: PaginationSchemaType): Promise<SimsSchemaSelectPaginatedType> {
+    public async getAll (params: { group_id?: number, user_id?: number }, query?: PaginationSchemaType): Promise<SimsSchemaSelectPaginatedType> {
+        const { group_id, user_id } = params
+        const where = []
+
+        if (group_id !== undefined) {
+            where.push(eq(sims.group_id, group_id))
+        }
+
+        if (user_id !== undefined) {
+            where.push(eq(sellers.user_id, user_id))
+        }
+
         return await super.getAllCore({
             query,
-            where: eq(sims.group_id, group_id)
+            where: and(...where)
         })
     }
 
