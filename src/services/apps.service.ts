@@ -20,8 +20,9 @@ export class AppsService {
         this.logs = datasource.create(LogsRepository)
     }
 
-    public async getAll (group_id: number, query: PaginationSchemaType): Promise<AppsSchemaSelectPaginatedType> {
-        const data = await this.apps.getAll({ group_id }, query)
+    public async getAll (params: { group_id: number, user_id?: number }, query: PaginationSchemaType): Promise<AppsSchemaSelectPaginatedType> {
+        const { group_id, user_id } = params
+        const data = await this.apps.getAll({ group_id, user_id }, query)
 
         return AppsSchemaSelectPaginated.parse(data)
     }

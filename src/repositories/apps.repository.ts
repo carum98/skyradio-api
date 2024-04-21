@@ -5,6 +5,7 @@ import { MySql2Database } from 'drizzle-orm/mysql2'
 import { clients } from '@/models/clients.model'
 import { and, eq } from 'drizzle-orm'
 import { PaginationSchemaType } from '@/utils/pagination'
+import { sellers } from '@models/sellers.model'
 
 export class AppsRepository extends RepositoryCore<AppsSchemaSelectType, AppsSchemaCreateRawType, AppsSchemaUpdateRawType> {
     constructor (public readonly db: MySql2Database) {
@@ -26,12 +27,13 @@ export class AppsRepository extends RepositoryCore<AppsSchemaSelectType, AppsSch
         .from(table)
         .leftJoin(licenses, eq(licenses.id, table.license_id))
         .leftJoin(clients, eq(clients.id, table.client_id))
+        .leftJoin(sellers, eq(clients.seller_id, sellers.id))
 
         super({ db, table, select, search_columns: [table.code] })
     }
 
-    public async getAll (params: { group_id?: number, client_id?: number }, query?: PaginationSchemaType): Promise<AppsSchemaSelectPaginatedType> {
-        const { group_id, client_id } = params
+    public async getAll (params: { group_id?: number, client_id?: number, user_id?: number }, query?: PaginationSchemaType): Promise<AppsSchemaSelectPaginatedType> {
+        const { group_id, client_id, user_id } = params
         const where = []
 
         if (group_id !== undefined) {
@@ -40,6 +42,10 @@ export class AppsRepository extends RepositoryCore<AppsSchemaSelectType, AppsSch
 
         if (client_id !== undefined) {
             where.push(eq(apps.client_id, client_id))
+        }
+
+        if (user_id !== undefined) {
+            where.push(eq(sellers.user_id, user_id))
         }
 
         return await super.getAllCore({

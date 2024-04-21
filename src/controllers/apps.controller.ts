@@ -12,12 +12,16 @@ export class AppsController {
     ) {}
 
     public getAll = async (req: Request, res: Response): Promise<void> => {
-        const { group_id } = req.body
+        const { group_id, role, user_id } = req.body as SessionUserInfoSchemaType
         const query = req.query as unknown as PaginationSchemaType
 
-        const data = await this.service.getAll(parseInt(group_id), query)
-
-        res.json(data)
+        if (role === 'seller') {
+            const data = await this.service.getAll({ group_id, user_id }, query)
+            res.json(data)
+        } else {
+            const data = await this.service.getAll({ group_id }, query)
+            res.json(data)
+        }
     }
 
     public get = async (req: Request, res: Response): Promise<void> => {
