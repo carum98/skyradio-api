@@ -8,6 +8,7 @@ import { sims_provider } from '@models/sims_provider.model'
 import { clients } from '@/models/clients.model'
 import { PaginationSchemaType } from '@/utils/pagination'
 import { IRepository, RepositoryCore } from '@/core/repository.core'
+import { sellers } from '@models/sellers.model'
 
 export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, RadiosSchemaCreateRawType, RadiosSchemaUpdateRawType> implements IRepository {
     constructor (public readonly db: MySql2Database) {
@@ -49,12 +50,13 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
         .leftJoin(sims, eq(radios.sim_id, sims.id))
         .leftJoin(sims_provider, eq(sims.provider_id, sims_provider.id))
         .leftJoin(clients, eq(radios.client_id, clients.id))
+        .leftJoin(sellers, eq(clients.seller_id, sellers.id))
 
         super({ db, table, select, search_columns: [radios.name, radios.imei, radios.serial] })
     }
 
-    public async getAll (params: { group_id?: number, client_id?: number }, query?: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
-        const { group_id, client_id } = params
+    public async getAll (params: { group_id?: number, client_id?: number, user_id?: number }, query?: PaginationSchemaType): Promise<RadiosSchemaSelectPaginatedType> {
+        const { group_id, client_id, user_id } = params
         const where = []
 
         if (group_id !== undefined) {
@@ -63,6 +65,10 @@ export class RadiosRepository extends RepositoryCore<RadiosSchemaSelectType, Rad
 
         if (client_id !== undefined) {
             where.push(eq(radios.client_id, client_id))
+        }
+
+        if (user_id !== undefined) {
+            where.push(eq(sellers.user_id, user_id))
         }
 
         return await super.getAllCore({
