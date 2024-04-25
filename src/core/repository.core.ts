@@ -4,6 +4,8 @@ import { PaginationSchemaType, ResponsePaginationSchemaType } from '@/utils/pagi
 import { SQL, and, isNull, like, or, sql, desc, asc } from 'drizzle-orm'
 import { MySqlColumn, MySqlSelect, MySqlTable, getTableConfig } from 'drizzle-orm/mysql-core'
 import { MySql2Database } from 'drizzle-orm/mysql2'
+import { queryFiltersSQL } from './query-filters.core'
+import type { Filter } from './query-filters.core'
 
 export interface IRepository {
     db: MySql2Database
@@ -26,7 +28,7 @@ interface PaginateParams {
 interface SelectorParams extends Partial<Omit<PaginationSchemaType, 'search'>> {
     where: Where
     offset?: number
-    filters?: Record<string, unknown>
+    filters?: Filter
 }
 
 interface InsertParams<TInsert> {
@@ -141,10 +143,10 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
     protected async count (params: Pick<SelectorParams, 'where' | 'filters'>): Promise<number> {
         const { where, filters } = params
 
-        const toSQL = this.select.where(this.buildWhere(
-            [where as SQL, isNull(this.deleted_column)],
-            filters
-        )).toSQL()
+        const toSQL = this.select.where(this.joinSql([
+            ...[where as SQL, isNull(this.deleted_column)],
+            ...queryFiltersSQL(filters)
+        ])).toSQL()
 
         const fromIndex = toSQL.sql.lastIndexOf('from')
         const countQuery = 'select count(*) as count ' + toSQL.sql.substring(fromIndex)
@@ -192,10 +194,10 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
     private async query (params: SelectorParams): Promise<TSelect[]> {
         const { where, offset, per_page, sort_by, sort_order, filters } = params
 
-        let query = this.select.where(this.buildWhere(
-            [where as SQL, isNull(this.deleted_column)],
-            filters
-        ))
+        let query = this.select.where(this.joinSql([
+            ...[where as SQL, isNull(this.deleted_column)],
+            ...queryFiltersSQL(filters)
+        ]))
 
         if (per_page !== undefined) {
             query = query.limit(per_page)
@@ -251,48 +253,7 @@ export abstract class RepositoryCore<TSelect, TInsert, TUpdate> {
         delete item[key]
     }
 
-    private buildWhere (initial: SQL[], filters?: Record<string, unknown>): SQL {
-        const conditions = {
-            equal: '=',
-            like: 'LIKE',
-            not_equal: '!=',
-            is_null: 'IS NULL',
-            is_not_null: 'IS NOT NULL',
-            in: 'IN',
-            not_in: 'NOT IN'
-        } as const as Record<string, string>
-
-        const sqlChunks: SQL[] = [
-            ...initial
-        ]
-
-        if (filters !== undefined) {
-            Object.entries(filters).forEach(([key, value]) => {
-                Object.entries(value as any).forEach(([column, data]) => {
-                    const [condition, item] = Object.entries(data as any)[0] as [keyof typeof conditions, string]
-
-                    const table_column = `${key}.${column}`
-                    const condition_symbol = conditions[condition]
-
-                    const queryChunks = [
-                        sql.raw(table_column),
-                        sql.raw(condition_symbol)
-                    ]
-
-                    if (item.length > 0) {
-                        if (condition === 'in' || condition === 'not_in') {
-                            const values = item.split(',').map((value) => sql`${value}`)
-                            queryChunks.push(sql`(${sql.join(values, sql.raw(','))})`)
-                        } else {
-                            queryChunks.push(sql`${item}`)
-                        }
-                    }
-
-                    sqlChunks.push(sql.join(queryChunks, sql.raw(' ')))
-                })
-            })
-        }
-
-        return sql`${sql.join(sqlChunks, sql.raw(' AND '))}`
+    private joinSql (values: SQL[]): SQL {
+        return sql`${sql.join(values, sql.raw(' AND '))}`
     }
 }
