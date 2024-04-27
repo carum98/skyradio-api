@@ -38,9 +38,12 @@ function parseFilter (filters: Filter): SQL[] {
                 sql.raw(condition_symbol)
             ]
 
-            const queryChunk = parseValue(condition_symbol, rawData)
+            if (![conditions.is_null, conditions.is_not_null].includes(condition_symbol)) {
+                const queryChunk = parseValue(condition_symbol, rawData)
+                queryChunks.push(queryChunk)
+            }
 
-            sqlChunks.push(sql.join([...queryChunks, queryChunk], sql.raw(' ')))
+            sqlChunks.push(sql.join(queryChunks, sql.raw(' ')))
         }
     }
 
