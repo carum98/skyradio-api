@@ -1,12 +1,12 @@
-import { Config } from 'drizzle-kit'
+import { defineConfig } from 'drizzle-kit'
 import DatabaseConfig from '@config/database.config'
 
-export default {
+export default defineConfig({
   schema: './src/models/*.model.ts',
   out: './database',
-  driver: 'mysql2',
+  dialect: 'mysql',
   introspect: {
     casing: 'preserve'
   },
   dbCredentials: DatabaseConfig as any
-} satisfies Config
+})
