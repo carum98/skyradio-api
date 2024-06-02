@@ -59,7 +59,7 @@ export const LogsSchemaSelect = createSelectSchema(logs)
     .pick({ action: true, created_at: true })
     .extend({
         message: z.string(),
-        user: UserSchemaSelect.pick({ id: true, name: true }),
+        user: UserSchemaSelect.pick({ name: true }),
         values: z.object({
             radio: RadiosSchemaSelect.pick({ code: true, imei: true }).nullable(),
             client: ClientsSchemaSelect.pick({ code: true, name: true }).nullable(),
