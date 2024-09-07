@@ -47,4 +47,4 @@ server.routes([
 // Error middleware
 server.middleware(errorMiddleware)
 
-server.listen(process.env.PORT ?? 3000)
+server.listen(3000)

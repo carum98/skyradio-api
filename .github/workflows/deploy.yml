@@ -61,7 +61,7 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         password: ${{ secrets.SSH_PASSWORD }}
         script: |
-          mkdir -p ~/backend
+          mkdir -p ~/skyradio/backend
 
   env-file:
     runs-on: ubuntu-latest
@@ -77,9 +77,9 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         password: ${{ secrets.SSH_PASSWORD }}
         script: |
-          cd ~/backend &&
+          cd ~/skyradio/backend &&
           echo "" > .env &&
-          echo "PORT=${{ secrets.PORT }}" >> .env &&
+          echo "PORT=${{ vars.PORT }}" >> .env &&
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env &&
           echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env &&
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env &&
@@ -105,7 +105,7 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         password: ${{ secrets.SSH_PASSWORD }}
         source: "docker-compose.yml"
-        target: "~/backend"
+        target: "~/skyradio/backend"
 
     - name: Copy docker-compose.prod.yml
       uses: appleboy/scp-action@master
@@ -115,7 +115,7 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         password: ${{ secrets.SSH_PASSWORD }}
         source: "docker/docker-compose.prod.yml"
-        target: "~/backend"
+        target: "~/skyradio/backend"
         strip_components: 1
 
     - name: Create docker-compose override
@@ -126,7 +126,7 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         password: ${{ secrets.SSH_PASSWORD }}
         script: |
-          echo -e "services:\n  api:\n    image: ghcr.io/carum98/skyradio-api:${{ github.ref_name }}" > ~/backend/docker-compose.override.yml
+          echo -e "services:\n  api:\n    image: ghcr.io/carum98/skyradio-api:${{ github.ref_name }}" > ~/skyradio/backend/docker-compose.override.yml
 
   backup-db:
     runs-on: ubuntu-latest
@@ -143,11 +143,11 @@ jobs:
         script: |
           # Check if container is running
           if [ "$(docker ps -q -f status=running -f name=skyradio-db)" ]; then
-            cd ~/backend &&
+            cd ~/skyradio/backend &&
             # Backup the database
             docker exec skyradio-db sh -c 'exec mysqldump -p${{ secrets.DB_ROOT_PASSWORD }} ${{ secrets.DB_DATABASE }} > backup_${{ github.ref_name }}.sql' &&
             # Copy the backup to the host
-            docker cp skyradio-db:/backup_${{ github.ref_name }}.sql ~/backend/backup_${{ github.ref_name }}.sql && 
+            docker cp skyradio-db:/backup_${{ github.ref_name }}.sql ~/skyradio/backend/backup_${{ github.ref_name }}.sql && 
             echo "Backup done"
           else 
             echo "Container not running"
@@ -167,7 +167,7 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         password: ${{ secrets.SSH_PASSWORD }}
         script: |
-          cd ~/backend &&
+          cd ~/skyradio/backend &&
           # Check if the container is running
           if [ "$(docker ps -q -f name=skyradio-api)" ]; then
             # Stop the container
